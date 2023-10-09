@@ -13,19 +13,27 @@ final class BookSearchViewContoller: UIViewController {
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configure()
+        bookSearchViewSetLayoutConstraints()
+    }
+}
+
+extension BookSearchViewContoller {
+    private func configure() {
         self.view.backgroundColor = .systemBackground
+        
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(bookSearchView)
+        bookSearchView.searchResultsCollectionView.dataSource = self
+        bookSearchView.searchResultsCollectionView.delegate = self
+    }
+    
+    private func bookSearchViewSetLayoutConstraints() {
         NSLayoutConstraint.activate([
             bookSearchView.topAnchor.constraint(equalTo: self.view.topAnchor),
             bookSearchView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             bookSearchView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             bookSearchView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
-       
-        // Collection view
-        bookSearchView.searchResultsCollectionView.dataSource = self
-        bookSearchView.searchResultsCollectionView.delegate = self
     }
 }
 
