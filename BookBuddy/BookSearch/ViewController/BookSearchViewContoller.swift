@@ -6,21 +6,28 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 import UIKit
 
 final class BookSearchViewContoller: UIViewController {
     private let bookSearchView = BookSearchView()
+    private let viewModel = BookSearchViewModel()
+    private let disposeBag = DisposeBag()
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configure()
+        bookSearchViewConfigure()
         bookSearchViewSetLayoutConstraints()
+        bindAll()
     }
+    
 }
 
 extension BookSearchViewContoller {
-    private func configure() {
+    private func bookSearchViewConfigure() {
         self.view.backgroundColor = .systemBackground
+        self.view.addSubview(bookSearchView)
         
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
         bookSearchView.searchResultsCollectionView.dataSource = self
@@ -35,15 +42,46 @@ extension BookSearchViewContoller {
             bookSearchView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
     }
+    
+    private func bindAll() {
+        bindSearchButton()
+        bindIsParsed()
+    }
+    
+    private func bindSearchButton() {
+        bookSearchView.searchButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let bookTitle = self?.bookSearchView.searchTextField.text else { return }
+                self?.viewModel.parsing(bookTitle: bookTitle)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsParsed() {
+        viewModel.isParsed
+            .subscribe(onNext: { [weak self] isParsed in
+                guard isParsed else { return }
+                DispatchQueue.main.async {
+                    self?.bookSearchView.searchResultsCollectionView.reloadData()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 extension BookSearchViewContoller: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return viewModel.bookSearchResults.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchResultCell", for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
+        
+        let title = viewModel.bookSearchResults[indexPath.row].title
+        let author = viewModel.bookSearchResults[indexPath.row].author
+        
+        cell.setBookTitleLabel(title)
+        cell.setBookAuthorLabel(author)
         
         return cell
     }

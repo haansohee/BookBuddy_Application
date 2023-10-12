@@ -11,18 +11,18 @@ final class SearchResultCell: UICollectionViewCell {
     private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .systemPink
+        imageView.backgroundColor = .systemGray
         return imageView
     }()
     
-    let bookTitleLabel: UILabel = {
+    private let bookTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "테스트 제목"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
-        label.font = .systemFont(ofSize: 22, weight: .bold)
-        label.textColor = .systemPink
-        label.backgroundColor = .blue
+        label.font = .systemFont(ofSize: 18, weight: .semibold)
+        label.numberOfLines = 0
+        label.textColor = .label
         
         return label
     }()
@@ -32,9 +32,8 @@ final class SearchResultCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "테스트 작가"
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .lightGray
-        label.backgroundColor = .blue
         
         return label
     }()
@@ -44,12 +43,19 @@ final class SearchResultCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "테스트 장르"
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .lightGray
-        label.backgroundColor = .blue
         
         return label
     }()
+    
+    func setBookTitleLabel(_ title: String) {
+        self.bookTitleLabel.text = title
+    }
+    
+    func setBookAuthorLabel(_ author: String) {
+        self.bookAuthorLabel.text = author
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -70,7 +76,6 @@ extension SearchResultCell {
             bookAuthorLabel,
             bookCategoryLabel
         ].forEach { self.addSubview($0)}
-        self.backgroundColor = .brown
     }
     
     private func setLayoutConstraints() {

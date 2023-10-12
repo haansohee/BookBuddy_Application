@@ -8,7 +8,7 @@
 import UIKit
 
 final class BookSearchView: UIView {
-    private let searchTextField: UITextField = {
+    let searchTextField: UITextField = {
         let textField =  UITextField()
         textField.placeholder = "🔍 책 이름 혹은 책 장르로 검색해 보세요."
         textField.borderStyle = .roundedRect
@@ -18,7 +18,7 @@ final class BookSearchView: UIView {
         return textField
     }()
     
-    private let searchButton: UIButton = {
+    let searchButton: UIButton = {
         let button = UIButton()
         button.setTitle("검색", for: .normal)
         button.setTitleColor(.systemGreen, for: .normal)
@@ -46,9 +46,9 @@ final class BookSearchView: UIView {
         layout.minimumLineSpacing = 10.0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: "SearchResultCell")
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
         collectionView.isPagingEnabled = false
         
