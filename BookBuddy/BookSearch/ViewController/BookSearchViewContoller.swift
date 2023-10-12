@@ -17,24 +17,27 @@ final class BookSearchViewContoller: UIViewController {
    
     override func viewDidLoad() {
         super.viewDidLoad()
-        bookSearchViewConfigure()
-        bookSearchViewSetLayoutConstraints()
+        configureBookSearchView()
+        setLayoutConstraintsBookSearchView()
         bindAll()
+        self.hideKeyboard()
     }
-    
 }
 
 extension BookSearchViewContoller {
-    private func bookSearchViewConfigure() {
+    private func configureBookSearchView() {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(bookSearchView)
         
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
         bookSearchView.searchResultsCollectionView.dataSource = self
         bookSearchView.searchResultsCollectionView.delegate = self
+        
+        bookSearchView.searchTextField.delegate = self
+        bookSearchView.searchTextField.returnKeyType = .done
     }
     
-    private func bookSearchViewSetLayoutConstraints() {
+    private func setLayoutConstraintsBookSearchView() {
         NSLayoutConstraint.activate([
             bookSearchView.topAnchor.constraint(equalTo: self.view.topAnchor),
             bookSearchView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
@@ -79,6 +82,12 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
         
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
+    
+        if let imageURL = URL(string: viewModel.bookSearchResults[indexPath.row].image) {
+            viewModel.loadImageData(imageURL: imageURL) { data in
+                cell.setBookImage(data)
+            }
+        }
         
         cell.setBookTitleLabel(title)
         cell.setBookAuthorLabel(author)
@@ -96,4 +105,11 @@ extension BookSearchViewContoller: UICollectionViewDelegate {
 
 extension BookSearchViewContoller: UICollectionViewDelegateFlowLayout {
     
+}
+
+extension BookSearchViewContoller: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }

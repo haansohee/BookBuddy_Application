@@ -83,7 +83,7 @@ extension BookSearchView {
             searchTextField.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
             searchTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
             searchTextField.heightAnchor.constraint(equalToConstant: 40.0),
-            searchTextField.widthAnchor.constraint(equalToConstant: 330.0),
+            searchTextField.widthAnchor.constraint(equalToConstant: 300.0),
             
             searchButton.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
             searchButton.leadingAnchor.constraint(equalTo: searchTextField.trailingAnchor),

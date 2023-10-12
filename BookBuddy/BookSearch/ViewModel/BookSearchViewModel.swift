@@ -12,6 +12,7 @@ final class BookSearchViewModel {
     private(set) var isParsed = PublishSubject<Bool>()
     private(set) var bookSearchResults: [BookSearchContents] = []
     private var httpMethod: HTTPMethod = .GET
+    private(set) var imageData: Data?
     
     func parsing(bookTitle: String) {
         guard let baseURL = Bundle.main.infoDictionary?["API_URL"] as? String else { return }
@@ -52,9 +53,18 @@ final class BookSearchViewModel {
                 completion(results.items)
                 
             default:
-                print("")
+                print("ERROR \(String(describing: error?.localizedDescription))")
+                return
             }
         }
         task.resume()
+    }
+    
+    func loadImageData(imageURL: URL, completion: @escaping((Data)) -> Void) {
+        DispatchQueue.global().async {
+            if let data = try? Data(contentsOf: imageURL) {
+                completion(data)
+            }
+        }
     }
 }

@@ -57,6 +57,13 @@ final class SearchResultCell: UICollectionViewCell {
         self.bookAuthorLabel.text = author
     }
     
+    func setBookImage(_ imageData: Data) {
+        let image = UIImage(data: imageData)
+        DispatchQueue.main.async {
+            self.bookImageView.image = image
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubviews()
