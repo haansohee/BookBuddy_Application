@@ -11,6 +11,7 @@ import RxSwift
 final class BookSearchViewModel {
     private(set) var isParsed = PublishSubject<Bool>()
     private(set) var bookSearchResults: [BookSearchContents] = []
+    private var httpMethod: HTTPMethod = .GET
     
     func parsing(bookTitle: String) {
         guard let baseURL = Bundle.main.infoDictionary?["API_URL"] as? String else { return }
@@ -28,7 +29,7 @@ final class BookSearchViewModel {
     
     func startParsing(url: URL, clientID: String, clientSecret: String, completion: @escaping(([BookSearchContents]) -> Void)) {
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        request.httpMethod = httpMethod.rawValue
         request.addValue(clientID, forHTTPHeaderField: "X-Naver-Client-Id")
         request.addValue(clientSecret, forHTTPHeaderField: "X-Naver-Client-Secret")
         
@@ -37,19 +38,21 @@ final class BookSearchViewModel {
             if let error = error {
                 print("ERROR: \(error.localizedDescription)")
                 return
-            } else if let reponse = response  as? HTTPURLResponse {
-                switch reponse.statusCode {
-                case 200..<300:
-                    if let data = data {
-                        let results = try? JSONDecoder().decode(BookSearch.self, from: data)
-                        guard let searchResult = results?.items else { return }
-                        completion(searchResult)
-                    }
-                    
-                default:
-                    print("ERROR \(String(describing: error?.localizedDescription))")
-                    return
-                }
+            }
+            
+            guard let response = response as? HTTPURLResponse else {
+                print("ERROR \(String(describing: error?.localizedDescription))")
+                return
+            }
+            
+            switch response.statusCode {
+            case 200..<300:
+                guard let data = data,
+                      let results = try? JSONDecoder().decode(BookSearchRequestDTO.self, from: data) else { return }
+                completion(results.items)
+                
+            default:
+                print("")
             }
         }
         task.resume()

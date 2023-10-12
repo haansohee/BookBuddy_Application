@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BookSearch: Decodable {
+struct BookSearchRequestDTO: Decodable {
     let items: [BookSearchContents]
 }
 

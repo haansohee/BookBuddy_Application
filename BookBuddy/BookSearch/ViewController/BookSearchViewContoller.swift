@@ -80,8 +80,8 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
         
-        cell.setBookTitleLabel(title: title)
-        cell.setBookAuthorLabel(author: author)
+        cell.setBookTitleLabel(title)
+        cell.setBookAuthorLabel(author)
         
         return cell
     }

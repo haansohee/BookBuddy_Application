@@ -49,11 +49,11 @@ final class SearchResultCell: UICollectionViewCell {
         return label
     }()
     
-    func setBookTitleLabel(title: String) {
+    func setBookTitleLabel(_ title: String) {
         self.bookTitleLabel.text = title
     }
     
-    func setBookAuthorLabel(author: String) {
+    func setBookAuthorLabel(_ author: String) {
         self.bookAuthorLabel.text = author
     }
     
