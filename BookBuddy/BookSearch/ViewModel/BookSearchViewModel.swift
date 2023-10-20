@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import SwiftSoup
 
 final class BookSearchViewModel {
     private(set) var isParsed = PublishSubject<Bool>()
@@ -66,5 +67,30 @@ final class BookSearchViewModel {
                 completion(data)
             }
         }
+    }
+    
+    func crawling(with urlAddress: String, completion: @escaping((()) -> Void)) {
+        guard let url = URL(string: urlAddress) else { return }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = data,
+                  let html = String(data: data, encoding: .utf8) else { return }
+            
+            do {
+                let doc = try SwiftSoup.parse(html)
+                let elements = try doc.select("#book_section-info > div.bookBasicInfo_basic_info__HCWyr > ul > li:nth-child(1) > div > div.bookBasicInfo_info_detail__I0Fx5")
+                print(try elements.text())
+            } catch let error {
+                print("ERROR: \(error.localizedDescription)")
+            }
+            
+            completion(())
+        }
+        task.resume()
     }
 }
