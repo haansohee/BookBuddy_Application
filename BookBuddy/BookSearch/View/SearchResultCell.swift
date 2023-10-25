@@ -7,17 +7,16 @@
 
 import UIKit
 
-final class SearchResultCell: UICollectionViewCell {
+final class SearchResultCell: UICollectionViewCell {    
     private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .systemGray
         return imageView
     }()
     
     private let bookTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "테스트 제목"
+        label.text = "로딩 중..."
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 18, weight: .semibold)
@@ -30,7 +29,7 @@ final class SearchResultCell: UICollectionViewCell {
     private let bookAuthorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트 작가"
+        label.text = "로딩 중..."
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .lightGray
@@ -41,25 +40,21 @@ final class SearchResultCell: UICollectionViewCell {
     private let bookCategoryLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트 장르"
+        label.text = "로딩 중..."
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .lightGray
         
         return label
-    }()
+    }() 
     
-    func setBookTitleLabel(_ title: String) {
-        self.bookTitleLabel.text = title
-    }
-    
-    func setBookAuthorLabel(_ author: String) {
-        self.bookAuthorLabel.text = author
-    }
-    
-    func setBookImage(_ imageData: Data) {
-        let image = UIImage(data: imageData)
+    func setBookInformation(_ information: BookInformation) {
+        let image = UIImage(data: information.image)
+        
         DispatchQueue.main.async {
+            self.bookTitleLabel.text = information.title
+            self.bookAuthorLabel.text = information.author
+            self.bookCategoryLabel.text = information.category
             self.bookImageView.image = image
         }
     }

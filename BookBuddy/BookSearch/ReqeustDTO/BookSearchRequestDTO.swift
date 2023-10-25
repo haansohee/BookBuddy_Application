@@ -16,4 +16,5 @@ struct BookSearchContents: Decodable {
     let link: String
     let image: String
     let author: String
+    let description: String
 }
