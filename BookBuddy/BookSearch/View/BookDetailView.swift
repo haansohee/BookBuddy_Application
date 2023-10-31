@@ -125,8 +125,8 @@ extension BookDetailView {
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            bookImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 60.0),
-            bookImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            bookImageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 60.0),
+            bookImageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
             bookImageView.widthAnchor.constraint(equalToConstant: 180.0),
             bookImageView.heightAnchor.constraint(equalToConstant: 240.0),
             
@@ -141,25 +141,25 @@ extension BookDetailView {
             buyButton.heightAnchor.constraint(equalToConstant: 40.0),
             
             bookTitleLabel.topAnchor.constraint(equalTo: bookImageView.bottomAnchor, constant: 6.0),
-            bookTitleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 14.0),
-            bookTitleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -14.0),
+            bookTitleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 14.0),
+            bookTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -14.0),
             bookTitleLabel.heightAnchor.constraint(equalToConstant: 80.0),
             
             bookAuthorLabel.topAnchor.constraint(equalTo: bookTitleLabel.bottomAnchor, constant: 6.0),
-            bookAuthorLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 14.0),
+            bookAuthorLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 14.0),
             bookAuthorLabel.widthAnchor.constraint(equalToConstant: 200.0),
             bookAuthorLabel.heightAnchor.constraint(equalToConstant: 50.0),
             bookAuthorLabel.bottomAnchor.constraint(equalTo: bookCategoryLabel.bottomAnchor),
         
             bookCategoryLabel.topAnchor.constraint(equalTo: bookTitleLabel.bottomAnchor, constant: 6.0),
             bookCategoryLabel.leadingAnchor.constraint(equalTo: bookAuthorLabel.trailingAnchor, constant: 10.0),
-            bookCategoryLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -14.0),
+            bookCategoryLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -14.0),
             bookCategoryLabel.heightAnchor.constraint(equalToConstant: 50.0),
             
             bookDescriptionLabel.topAnchor.constraint(equalTo: bookAuthorLabel.bottomAnchor, constant: 14.0),
-            bookDescriptionLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 8.0),
-            bookDescriptionLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -8.0),
-            bookDescriptionLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -24.0)
+            bookDescriptionLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+            bookDescriptionLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
+            bookDescriptionLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -24.0)
         ])
         
     }

@@ -20,13 +20,16 @@ final class MainTabBarController: UITabBarController {
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
         bookSeachTab.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let memberTab = UINavigationController(rootViewController: MemberLoginViewController())
+        let memberLoginTab = UINavigationController(rootViewController: MemberLoginViewController())
+        memberLoginTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
+        
+        let memberTab = UINavigationController(rootViewController: MemberViewController())
         memberTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
         
         viewControllers = [
             homeTab,
             bookSeachTab,
-            memberTab
+            memberLoginTab
         ]
         
         tabBarController?.setViewControllers(viewControllers, animated: true)

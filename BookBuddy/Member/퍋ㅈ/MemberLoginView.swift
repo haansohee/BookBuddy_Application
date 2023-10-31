@@ -129,46 +129,45 @@ extension MemberLoginView {
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            welcomeLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            welcomeLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 120.0),
+            welcomeLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            welcomeLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 24.0),
             welcomeLabel.heightAnchor.constraint(equalToConstant: 60.0),
             welcomeLabel.widthAnchor.constraint(equalToConstant: 180.0),
 
             emailTextField.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 30.0),
-            emailTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            emailTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
+            emailTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            emailTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
             emailTextField.heightAnchor.constraint(equalToConstant: 40.0),
 
             passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 12.0),
-            passwordTextField.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            passwordTextField.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 40.0),
+            passwordTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            passwordTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            passwordTextField.heightAnchor.constraint(equalTo: emailTextField.heightAnchor),
             
             loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 12.0),
-            loginButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            loginButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
+            loginButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            loginButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
             loginButton.heightAnchor.constraint(equalToConstant: 40.0),
             
-
             appleLoginButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 8.0),
-            appleLoginButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            appleLoginButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
-            appleLoginButton.heightAnchor.constraint(equalToConstant: 40.0),
+            appleLoginButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
+            appleLoginButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
+            appleLoginButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
 
             firstBookBuddyLabel.topAnchor.constraint(equalTo: appleLoginButton.bottomAnchor, constant: 120),
-            firstBookBuddyLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            firstBookBuddyLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
-            firstBookBuddyLabel.heightAnchor.constraint(equalToConstant: 40.0),
+            firstBookBuddyLabel.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
+            firstBookBuddyLabel.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
+            firstBookBuddyLabel.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
 
             startToEmailButton.topAnchor.constraint(equalTo: firstBookBuddyLabel.bottomAnchor, constant: 14.0),
-            startToEmailButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            startToEmailButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
-            startToEmailButton.heightAnchor.constraint(equalToConstant: 40.0),
+            startToEmailButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
+            startToEmailButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
+            startToEmailButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
 
             startToAppleButton.topAnchor.constraint(equalTo: startToEmailButton.bottomAnchor, constant: 14.0),
-            startToAppleButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24.0),
-            startToAppleButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24.0),
-            startToEmailButton.heightAnchor.constraint(equalToConstant: 40.0)
+            startToAppleButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
+            startToAppleButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
+            startToEmailButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor)
         ])
     }
 }
