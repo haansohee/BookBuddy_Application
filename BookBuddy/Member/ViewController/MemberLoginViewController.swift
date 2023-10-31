@@ -16,8 +16,6 @@ final class MemberLoginViewController: UIViewController {
         self.view.backgroundColor = .systemBackground
         configureMemberLoginView()
         setLayoutConstraintsMemberLoginView()
-        print("테스트")
-        print("준혁이는 바보입니다.")
     }
 }
 
