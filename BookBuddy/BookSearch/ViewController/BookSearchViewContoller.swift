@@ -14,7 +14,6 @@ final class BookSearchViewContoller: UIViewController {
     private let bookSearchView = BookSearchView()
     private let viewModel = BookSearchViewModel()
     private let disposeBag = DisposeBag()
-//    private var bookInformation = BookInformation()
     
     private var endEditingGesture: UITapGestureRecognizer?
    
