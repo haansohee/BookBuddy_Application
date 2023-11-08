@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AuthenticationServices
 
 final class MemberLoginView: UIView {
     private let welcomeLabel: UILabel = {
@@ -15,7 +16,6 @@ final class MemberLoginView: UIView {
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 25, weight: .bold)
-        
         return label
     }()
     
@@ -23,10 +23,10 @@ final class MemberLoginView: UIView {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "이메일을 입력하세요."
+        textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
-        textField.layer.cornerRadius = 10
-        
+        textField.layer.cornerRadius = 6.0
         return textField
     }()
     
@@ -34,32 +34,27 @@ final class MemberLoginView: UIView {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "비밀번호를 입력하세요."
+        textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
-        textField.layer.cornerRadius = 10
-        
+        textField.layer.cornerRadius = 6.0
         return textField
     }()
     
     private let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("로그인", for: .normal)
+        button.setTitle("Sign in", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemGreen
-        button.layer.cornerRadius = 10
-        
+        button.layer.cornerRadius = 6.0
         return button
     }()
     
-    private let appleLoginButton: UIButton = {
-        let button = UIButton()
+    private let appleLoginButton: ASAuthorizationAppleIDButton = {
+        let button = ASAuthorizationAppleIDButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Apple 로그인", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .black
-        button.layer.cornerRadius = 10
-        
         return button
     }()
     
@@ -70,33 +65,19 @@ final class MemberLoginView: UIView {
         label.textColor = .systemGreen
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 14, weight: .semibold)
-        
         return label
     }()
     
-    private let startToEmailButton: UIButton = {
+    let startToEmailButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("이메일로 시작하기", for: .normal)
+        button.setTitle("Sign up with Email", for: .normal)
         button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.backgroundColor = .systemBackground
         button.layer.borderColor = UIColor.systemGreen.cgColor
         button.layer.borderWidth = 1
-        button.layer.cornerRadius = 10
-        
-        return button
-    }()
-    
-    private let startToAppleButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Apple로 시작하기", for: .normal)
-        button.setTitleColor(.label, for: .normal)
-        button.backgroundColor = .systemBackground
-        button.layer.borderColor = UIColor.black.cgColor
-        button.layer.borderWidth = 1
-        button.layer.cornerRadius = 10
-        
+        button.layer.cornerRadius = 6.0
         return button
     }()
     
@@ -120,8 +101,7 @@ extension MemberLoginView {
             loginButton,
             appleLoginButton,
             firstBookBuddyLabel,
-            startToEmailButton,
-            startToAppleButton
+            startToEmailButton
         ].forEach {
             self.addSubview($0)
         }
@@ -154,7 +134,7 @@ extension MemberLoginView {
             appleLoginButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
             appleLoginButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
 
-            firstBookBuddyLabel.topAnchor.constraint(equalTo: appleLoginButton.bottomAnchor, constant: 120),
+            firstBookBuddyLabel.topAnchor.constraint(equalTo: appleLoginButton.bottomAnchor, constant: 180),
             firstBookBuddyLabel.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
             firstBookBuddyLabel.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
             firstBookBuddyLabel.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
@@ -162,11 +142,6 @@ extension MemberLoginView {
             startToEmailButton.topAnchor.constraint(equalTo: firstBookBuddyLabel.bottomAnchor, constant: 14.0),
             startToEmailButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
             startToEmailButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
-            startToEmailButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
-
-            startToAppleButton.topAnchor.constraint(equalTo: startToEmailButton.bottomAnchor, constant: 14.0),
-            startToAppleButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
-            startToAppleButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
             startToEmailButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor)
         ])
     }
