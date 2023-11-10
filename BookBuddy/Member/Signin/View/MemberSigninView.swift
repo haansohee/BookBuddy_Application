@@ -8,7 +8,7 @@
 import UIKit
 import AuthenticationServices
 
-final class MemberLoginView: UIView {
+final class MemberSigninView: UIView {
     private let welcomeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -19,10 +19,10 @@ final class MemberLoginView: UIView {
         return label
     }()
     
-    private let emailTextField: UITextField = {
+    let idTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "이메일을 입력하세요."
+        textField.placeholder = "ID"
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
@@ -30,10 +30,10 @@ final class MemberLoginView: UIView {
         return textField
     }()
     
-    private let passwordTextField: UITextField = {
+    let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "비밀번호를 입력하세요."
+        textField.placeholder = "Password"
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
@@ -41,8 +41,8 @@ final class MemberLoginView: UIView {
         return textField
     }()
     
-    private let loginButton: UIButton = {
-        let button = UIButton()
+    private let signinButton: AnimationButton = {
+        let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sign in", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -68,8 +68,8 @@ final class MemberLoginView: UIView {
         return label
     }()
     
-    let startToEmailButton: UIButton = {
-        let button = UIButton()
+    let startToEmailButton: AnimationButton = {
+        let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sign up with Email", for: .normal)
         button.setTitleColor(.label, for: .normal)
@@ -92,13 +92,13 @@ final class MemberLoginView: UIView {
     }
 }
 
-extension MemberLoginView {
+extension MemberSigninView {
     private func addSubviews() {
         [
             welcomeLabel,
-            emailTextField,
+            idTextField,
             passwordTextField,
-            loginButton,
+            signinButton,
             appleLoginButton,
             firstBookBuddyLabel,
             startToEmailButton
@@ -114,35 +114,35 @@ extension MemberLoginView {
             welcomeLabel.heightAnchor.constraint(equalToConstant: 60.0),
             welcomeLabel.widthAnchor.constraint(equalToConstant: 180.0),
 
-            emailTextField.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 30.0),
-            emailTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
-            emailTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
-            emailTextField.heightAnchor.constraint(equalToConstant: 40.0),
+            idTextField.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 30.0),
+            idTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            idTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            idTextField.heightAnchor.constraint(equalToConstant: 40.0),
 
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 12.0),
+            passwordTextField.topAnchor.constraint(equalTo: idTextField.bottomAnchor, constant: 12.0),
             passwordTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
             passwordTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
-            passwordTextField.heightAnchor.constraint(equalTo: emailTextField.heightAnchor),
+            passwordTextField.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
             
-            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 12.0),
-            loginButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
-            loginButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
-            loginButton.heightAnchor.constraint(equalToConstant: 40.0),
+            signinButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 12.0),
+            signinButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            signinButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            signinButton.heightAnchor.constraint(equalToConstant: 40.0),
             
-            appleLoginButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 8.0),
-            appleLoginButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
-            appleLoginButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
-            appleLoginButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
+            appleLoginButton.topAnchor.constraint(equalTo: signinButton.bottomAnchor, constant: 8.0),
+            appleLoginButton.leadingAnchor.constraint(equalTo: signinButton.leadingAnchor),
+            appleLoginButton.trailingAnchor.constraint(equalTo: signinButton.trailingAnchor),
+            appleLoginButton.heightAnchor.constraint(equalTo: signinButton.heightAnchor),
 
             firstBookBuddyLabel.topAnchor.constraint(equalTo: appleLoginButton.bottomAnchor, constant: 180),
-            firstBookBuddyLabel.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
-            firstBookBuddyLabel.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
-            firstBookBuddyLabel.heightAnchor.constraint(equalTo: loginButton.heightAnchor),
+            firstBookBuddyLabel.leadingAnchor.constraint(equalTo: signinButton.leadingAnchor),
+            firstBookBuddyLabel.trailingAnchor.constraint(equalTo: signinButton.trailingAnchor),
+            firstBookBuddyLabel.heightAnchor.constraint(equalTo: signinButton.heightAnchor),
 
             startToEmailButton.topAnchor.constraint(equalTo: firstBookBuddyLabel.bottomAnchor, constant: 14.0),
-            startToEmailButton.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
-            startToEmailButton.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
-            startToEmailButton.heightAnchor.constraint(equalTo: loginButton.heightAnchor)
+            startToEmailButton.leadingAnchor.constraint(equalTo: signinButton.leadingAnchor),
+            startToEmailButton.trailingAnchor.constraint(equalTo: signinButton.trailingAnchor),
+            startToEmailButton.heightAnchor.constraint(equalTo: signinButton.heightAnchor)
         ])
     }
 }
