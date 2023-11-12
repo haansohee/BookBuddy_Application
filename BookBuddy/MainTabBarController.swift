@@ -20,7 +20,7 @@ final class MainTabBarController: UITabBarController {
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
         bookSeachTab.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let memberLoginTab = UINavigationController(rootViewController: MemberLoginViewController())
+        let memberLoginTab = UINavigationController(rootViewController: MemberSigninViewController())
         memberLoginTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
         
         let memberTab = UINavigationController(rootViewController: MemberViewController())
