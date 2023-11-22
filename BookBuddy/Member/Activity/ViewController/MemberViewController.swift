@@ -11,11 +11,20 @@ import UIKit
 final class MemberViewController: UIViewController {
     private let memberView = MemberView()
     
+    init(nickname: String, password: String, email: String) {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureMemberView()
         setLayoutConstraintsMemberView()
     }
+    
 }
 
 extension MemberViewController {

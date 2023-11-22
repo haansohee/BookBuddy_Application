@@ -7,11 +7,26 @@
 
 import UIKit
 
-final class MemberSignupWithEmailView: UIView {
-    let idTextField: UITextField = {
+final class MemberSignupWithEmailView: UIScrollView {
+//    let scrollView: UIScrollView = {
+//        let view = UIScrollView()
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        
+//        return view
+//    }()
+    
+    let containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
+    
+    let nickNameTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "아이디를 입력하세요."
+        textField.placeholder = "아이디 (영문, 숫자, _ 8~16자)"
+        textField.keyboardType = .asciiCapable
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
@@ -23,16 +38,29 @@ final class MemberSignupWithEmailView: UIView {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("중복확인", for: .normal)
+        button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         button.tintColor = .white
-        button.backgroundColor = .systemGreen
+        button.backgroundColor = .lightGray
         button.layer.cornerRadius = 6.0
         return button
+    }()
+    
+    let duplicateIdLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = ""
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.textColor = .label
+        label.font = .systemFont(ofSize: 15, weight: .bold)
+        return label
     }()
     
     let emailTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .asciiCapable
         textField.placeholder = "이메일을 입력하세요."
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
@@ -54,6 +82,7 @@ final class MemberSignupWithEmailView: UIView {
     let emailAddressTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .emailAddress
         textField.placeholder = "example.com"
         textField.isEnabled = false
         textField.font = .systemFont(ofSize: 15, weight: .medium)
@@ -132,9 +161,33 @@ final class MemberSignupWithEmailView: UIView {
         return label
     }()
     
+    let authCodeTextField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .numberPad
+        textField.placeholder = "인증번호를 입력하세요."
+        textField.font = .systemFont(ofSize: 15, weight: .medium)
+        textField.layer.borderColor = UIColor.systemGray6.cgColor
+        textField.layer.borderWidth = 0.5
+        textField.layer.cornerRadius = 6.0
+        return textField
+    }()
+    
+    let codeAuthenticationButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("인증하기", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
+        button.tintColor = .white
+        button.backgroundColor = .systemGreen
+        button.layer.cornerRadius = 6.0
+        return button
+    }()
+    
     let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .asciiCapable
         textField.placeholder = "비밀번호를 입력하세요."
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.isSecureTextEntry = true
@@ -147,6 +200,7 @@ final class MemberSignupWithEmailView: UIView {
     let passwordCheckTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .asciiCapable
         textField.placeholder = "비밀번호를 재입력하세요."
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.isSecureTextEntry = true
@@ -170,15 +224,15 @@ final class MemberSignupWithEmailView: UIView {
     let passwordCheckLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.isHidden = true
-        label.text = "비밀번호가 일치하지 않아요."
+        label.numberOfLines = 0
+        label.text = ""
         label.textAlignment = .center
         label.textColor = .systemRed
         label.font = .systemFont(ofSize: 15, weight: .bold)
         return label
     }()
     
-    let doneButton: AnimationButton = {
+    let signupButton: AnimationButton = {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("가입하기", for: .normal)
@@ -202,9 +256,11 @@ final class MemberSignupWithEmailView: UIView {
 
 extension MemberSignupWithEmailView {
     private func addSubviews() {
+        self.addSubview(containerView)
         [
-            idTextField,
+            nickNameTextField,
             duplicateIdCheckButton,
+            duplicateIdLabel,
             emailTextField,
             atSignLabel,
             emailAddressTextField,
@@ -214,97 +270,121 @@ extension MemberSignupWithEmailView {
             directInputButton,
             emailAuthenticationButton,
             checkEmailLabel,
+            authCodeTextField,
+            codeAuthenticationButton,
             passwordTextField,
             passwordCheckTextField,
             isSecureTextEntryButton,
             passwordCheckLabel,
-            doneButton
+            signupButton
         ].forEach {
-            self.addSubview($0)
+            containerView.addSubview($0)
         }
     }
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            idTextField.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 54.0),
-            idTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
-            idTextField.widthAnchor.constraint(equalToConstant: 250.0),
-            idTextField.heightAnchor.constraint(equalToConstant: 40.0),
+            containerView.topAnchor.constraint(equalTo: self.contentLayoutGuide.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: self.contentLayoutGuide.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: self.contentLayoutGuide.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: self.contentLayoutGuide.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: self.frameLayoutGuide.widthAnchor),
+            containerView.heightAnchor.constraint(equalTo: self.heightAnchor),
             
-            duplicateIdCheckButton.topAnchor.constraint(equalTo: idTextField.topAnchor),
-            duplicateIdCheckButton.leadingAnchor.constraint(equalTo: idTextField.trailingAnchor, constant: 14.0),
-            duplicateIdCheckButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
-            duplicateIdCheckButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            nickNameTextField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 54.0),
+            nickNameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24.0),
+            nickNameTextField.widthAnchor.constraint(equalToConstant: 250.0),
+            nickNameTextField.heightAnchor.constraint(equalToConstant: 40.0),
             
-            emailTextField.topAnchor.constraint(equalTo: idTextField.bottomAnchor, constant: 24.0),
-            emailTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            duplicateIdCheckButton.topAnchor.constraint(equalTo: nickNameTextField.topAnchor),
+            duplicateIdCheckButton.leadingAnchor.constraint(equalTo: nickNameTextField.trailingAnchor, constant: 14.0),
+            duplicateIdCheckButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24.0),
+            duplicateIdCheckButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
+            
+            duplicateIdLabel.topAnchor.constraint(equalTo: duplicateIdCheckButton.bottomAnchor, constant: 10.0),
+            duplicateIdLabel.leadingAnchor.constraint(equalTo: nickNameTextField.leadingAnchor),
+            duplicateIdLabel.trailingAnchor.constraint(equalTo: duplicateIdCheckButton.trailingAnchor),
+            duplicateIdLabel.heightAnchor.constraint(equalToConstant: 60.0),
+            
+            emailTextField.topAnchor.constraint(equalTo: duplicateIdLabel.bottomAnchor, constant: 24.0),
+            emailTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24.0),
             emailTextField.widthAnchor.constraint(equalToConstant: 140.0),
-            emailTextField.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            emailTextField.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             atSignLabel.topAnchor.constraint(equalTo: emailTextField.topAnchor),
             atSignLabel.leadingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
-            atSignLabel.widthAnchor.constraint(equalTo: idTextField.heightAnchor),
-            atSignLabel.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            atSignLabel.widthAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
+            atSignLabel.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             emailAddressTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor),
             emailAddressTextField.leadingAnchor.constraint(equalTo: atSignLabel.trailingAnchor),
-            emailAddressTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
-            emailAddressTextField.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            emailAddressTextField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24.0),
+            emailAddressTextField.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             naverEmailButton.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 14.0),
-            naverEmailButton.leadingAnchor.constraint(equalTo: idTextField.leadingAnchor),
+            naverEmailButton.leadingAnchor.constraint(equalTo: nickNameTextField.leadingAnchor),
             naverEmailButton.widthAnchor.constraint(equalToConstant: 75.0),
-            naverEmailButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            naverEmailButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             googleEmailButton.topAnchor.constraint(equalTo: naverEmailButton.topAnchor),
             googleEmailButton.leadingAnchor.constraint(equalTo: naverEmailButton.trailingAnchor, constant: 14.0),
             googleEmailButton.widthAnchor.constraint(equalTo: naverEmailButton.widthAnchor),
-            googleEmailButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            googleEmailButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             icloudEmailButton.topAnchor.constraint(equalTo: naverEmailButton.topAnchor),
             icloudEmailButton.leadingAnchor.constraint(equalTo: googleEmailButton.trailingAnchor, constant: 14.0),
             icloudEmailButton.widthAnchor.constraint(equalTo: naverEmailButton.widthAnchor),
-            icloudEmailButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            icloudEmailButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             directInputButton.topAnchor.constraint(equalTo: naverEmailButton.topAnchor),
             directInputButton.leadingAnchor.constraint(equalTo: icloudEmailButton.trailingAnchor, constant: 14.0),
             directInputButton.trailingAnchor.constraint(equalTo: emailAddressTextField.trailingAnchor),
-            directInputButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            directInputButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             emailAuthenticationButton.topAnchor.constraint(equalTo: naverEmailButton.bottomAnchor, constant: 14.0),
-            emailAuthenticationButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            emailAuthenticationButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            emailAuthenticationButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            emailAuthenticationButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             emailAuthenticationButton.widthAnchor.constraint(equalToConstant: 120.0),
             
             checkEmailLabel.topAnchor.constraint(equalTo: emailAuthenticationButton.bottomAnchor, constant: 12.0),
             checkEmailLabel.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
             checkEmailLabel.trailingAnchor.constraint(equalTo: emailAddressTextField.trailingAnchor),
-            checkEmailLabel.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            checkEmailLabel.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
-            passwordTextField.topAnchor.constraint(equalTo: checkEmailLabel.bottomAnchor, constant: 24.0),
+            authCodeTextField.topAnchor.constraint(equalTo: checkEmailLabel.bottomAnchor, constant: 12.0),
+            authCodeTextField.leadingAnchor.constraint(equalTo: nickNameTextField.leadingAnchor),
+            authCodeTextField.widthAnchor.constraint(equalTo:nickNameTextField.widthAnchor),
+            authCodeTextField.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
+            
+            codeAuthenticationButton.topAnchor.constraint(equalTo: authCodeTextField.topAnchor),
+            codeAuthenticationButton.leadingAnchor.constraint(equalTo: nickNameTextField.trailingAnchor, constant: 14.0),
+            codeAuthenticationButton.trailingAnchor.constraint(equalTo: duplicateIdCheckButton.trailingAnchor),
+            codeAuthenticationButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
+            
+            passwordTextField.topAnchor.constraint(equalTo: authCodeTextField.bottomAnchor, constant: 24.0),
             passwordTextField.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
-            passwordTextField.widthAnchor.constraint(equalTo: idTextField.widthAnchor),
-            passwordTextField.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            passwordTextField.widthAnchor.constraint(equalTo: nickNameTextField.widthAnchor),
+            passwordTextField.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             isSecureTextEntryButton.topAnchor.constraint(equalTo: passwordTextField.topAnchor),
             isSecureTextEntryButton.leadingAnchor.constraint(equalTo: passwordTextField.trailingAnchor, constant: 12.0),
             isSecureTextEntryButton.trailingAnchor.constraint(equalTo: emailAddressTextField.trailingAnchor),
-            isSecureTextEntryButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            isSecureTextEntryButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
             
             passwordCheckTextField.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 12.0),
             passwordCheckTextField.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
             passwordCheckTextField.trailingAnchor.constraint(equalTo: isSecureTextEntryButton.trailingAnchor),
-            passwordCheckTextField.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            passwordCheckTextField.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
 
             passwordCheckLabel.topAnchor.constraint(equalTo: passwordCheckTextField.bottomAnchor, constant: 10.0),
             passwordCheckLabel.leadingAnchor.constraint(equalTo: passwordCheckTextField.leadingAnchor),
             passwordCheckLabel.trailingAnchor.constraint(equalTo: passwordCheckTextField.trailingAnchor),
-            passwordCheckLabel.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
+            passwordCheckLabel.heightAnchor.constraint(equalTo: duplicateIdLabel.heightAnchor),
             
-            doneButton.topAnchor.constraint(equalTo: passwordCheckLabel.bottomAnchor, constant: 24.0),
-            doneButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            doneButton.heightAnchor.constraint(equalTo: idTextField.heightAnchor),
-            doneButton.widthAnchor.constraint(equalToConstant: 80.0)
+            signupButton.topAnchor.constraint(equalTo: passwordCheckLabel.bottomAnchor, constant: 24.0),
+            signupButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            signupButton.heightAnchor.constraint(equalTo: nickNameTextField.heightAnchor),
+            signupButton.widthAnchor.constraint(equalToConstant: 80.0),
         ])
     }
 }

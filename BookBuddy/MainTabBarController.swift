@@ -20,18 +20,28 @@ final class MainTabBarController: UITabBarController {
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
         bookSeachTab.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let memberLoginTab = UINavigationController(rootViewController: MemberSigninViewController())
-        memberLoginTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
+        let memberView = self.checkMemberInformationExistence()
         
-        let memberTab = UINavigationController(rootViewController: MemberViewController())
+        let memberTab = UINavigationController(rootViewController: memberView)
         memberTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
         
         viewControllers = [
             homeTab,
             bookSeachTab,
-            memberLoginTab
+            memberTab
         ]
-        
         tabBarController?.setViewControllers(viewControllers, animated: true)
+    }
+    
+    private func checkMemberInformationExistence() -> UIViewController {
+        if UserDefaults.standard.bool(forKey: "launchedBefore") == false {
+            UserDefaults.standard.set(true, forKey: "launchedBefore")
+            return MemberSigninViewController()
+        } else {
+            guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
+                  let password = UserDefaults.standard.string(forKey: "password"),
+                  let email = UserDefaults.standard.string(forKey: "email") else { return MemberSigninViewController() }
+            return MemberViewController(nickname: nickname, password: password, email: email)
+        }
     }
 }

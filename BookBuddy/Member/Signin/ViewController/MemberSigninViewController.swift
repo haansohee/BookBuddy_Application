@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import AuthenticationServices
+import UIKit
 import RxSwift
 import RxCocoa
 
@@ -44,7 +44,7 @@ extension MemberSigninViewController {
     }
     
     private func bindAll() {
-        bindSigninButton()
+        bindSignupButton()
     }
     
     private func addEditingTapGesture() {
@@ -58,12 +58,26 @@ extension MemberSigninViewController {
         self.view.endEditing(true)
     }
     
-    private func bindSigninButton() {
+    private func bindSignupButton() {
         memberLoginView.startToEmailButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                self?.present(MemberSignupWithEmailViewController(), animated: true)
+                self?.navigationController?.pushViewController(MemberSignupWithEmailViewController(), animated: true)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func bindAppleLoginButton() {
+        
+    }
+    
+    @objc private func handleAuthorizationAppleIDButtonPress() {
+        let request =  ASAuthorizationAppleIDProvider().createRequest()
+        request.requestedScopes = [.fullName, .email]
+        
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
     }
 }
 
@@ -80,4 +94,16 @@ extension MemberSigninViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+}
+
+extension MemberSigninViewController: ASAuthorizationControllerDelegate {
+    
+}
+
+extension MemberSigninViewController: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    
 }

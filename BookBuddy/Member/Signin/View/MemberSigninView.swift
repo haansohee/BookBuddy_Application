@@ -52,7 +52,7 @@ final class MemberSigninView: UIView {
         return button
     }()
     
-    private let appleLoginButton: ASAuthorizationAppleIDButton = {
+    let appleLoginButton: ASAuthorizationAppleIDButton = {
         let button = ASAuthorizationAppleIDButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
