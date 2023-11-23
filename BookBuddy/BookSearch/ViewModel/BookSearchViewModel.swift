@@ -12,7 +12,6 @@ import SwiftSoup
 final class BookSearchViewModel {
     private(set) var isParsed = PublishSubject<Bool>()
     private(set) var bookSearchResults: [BookSearchContents] = []
-    private var httpMethod: HTTPMethod = .GET
     private(set) var imageData: Data?
     private(set) var category: [String] = []
     private(set) var bookInformations: BookInformation?
@@ -37,7 +36,7 @@ final class BookSearchViewModel {
     
     private func startParsing(url: URL, clientID: String, clientSecret: String, completion: @escaping(([BookSearchContents]) -> Void)) {
         var request = URLRequest(url: url)
-        request.httpMethod = httpMethod.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
         request.addValue(clientID, forHTTPHeaderField: "X-Naver-Client-Id")
         request.addValue(clientSecret, forHTTPHeaderField: "X-Naver-Client-Secret")
         

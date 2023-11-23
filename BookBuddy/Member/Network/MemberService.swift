@@ -24,6 +24,7 @@ final class MemberService {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("ERROR: \(error.localizedDescription)")
+                return
             }
             
             guard let response = response as? HTTPURLResponse else { return }
@@ -54,6 +55,7 @@ final class MemberService {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("ERROR: \(error.localizedDescription)")
+                return
             }
             
             guard let response = response as? HTTPURLResponse else { return }
@@ -64,7 +66,7 @@ final class MemberService {
                       let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return}
                 print(json.email)
                 completion(json.email)
-
+                
                 return
             default:
                 print("ERROR: \(String(describing: error?.localizedDescription))")
@@ -87,13 +89,13 @@ final class MemberService {
             request.httpBody = try encoder.encode(member)
         } catch {
             print("ERROR: Encoding Reuqest Data: \(error)")
-            completion(false)
+            return
         }
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("ERROR: \(error)")
-                completion(false)
+                return
             } else if let data = data {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberDTO {
@@ -101,10 +103,10 @@ final class MemberService {
                     
                 } catch {
                     print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
+                    return
                 }
-                print("성공")
                 completion(true)
+                return
             }
         }
         task.resume()
