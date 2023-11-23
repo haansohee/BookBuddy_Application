@@ -2,14 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BookBuddy_Email</key>
+	<string>${BookBuddy_Email}</string>
+	<key>BookBuddy_Password</key>
+	<string>${BookBuddy_Password}</string>
 	<key>API_URL</key>
 	<string>${API_URL}</string>
 	<key>AUTH_URL</key>
 	<string>${AUTH_URL}</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array/>
+		</dict>
+		<dict/>
+	</array>
 	<key>Client_Id</key>
 	<string>${Client_Id}</string>
 	<key>Client_Secret</key>
 	<string>${Client_Secret}</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>Server_URL</key>
+	<string>${Server_URL}</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -27,5 +48,9 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>
