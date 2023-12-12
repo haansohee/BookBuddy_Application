@@ -12,20 +12,22 @@ final class MemberSignupCompleteionPopupView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "BookBuddy 📗"
+        label.numberOfLines = 0
         label.textAlignment = .center
-        label.font  = .systemFont(ofSize: 18, weight: .bold)
+        label.font  = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .label
         return label
     }()
     
-    private let messageLabel: UILabel = {
+    let messageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.text = "환영해요! 😀 \n 이제 로그인하러 가볼까요?"
         label.textAlignment = .center
-        label.font  = .systemFont(ofSize: 18, weight: .light)
+        label.font  = .systemFont(ofSize: 14, weight: .light)
         label.textColor = .label
+        label.isHidden = false
         return label
     }()
     
@@ -36,6 +38,12 @@ final class MemberSignupCompleteionPopupView: UIView {
         button.setTitleColor(.systemBlue, for: .normal)
         return button
     }()
+    
+    func setTitlLabel(_ text: String) {
+        DispatchQueue.main.async {
+            self.titleLabel.text = text
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,9 +69,9 @@ extension MemberSignupCompleteionPopupView {
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 10.0),
-            titleLabel.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            titleLabel.widthAnchor.constraint(equalToConstant: 140.0),
-            titleLabel.heightAnchor.constraint(equalToConstant: 40.0),
+            titleLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12.0),
+            titleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0),
+            titleLabel.heightAnchor.constraint(equalToConstant: 60.0),
             
             messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5.0),
             messageLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 10.0),

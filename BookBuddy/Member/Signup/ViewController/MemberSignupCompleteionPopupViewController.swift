@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class MemberSignupCompleteionPopupViewController: UIViewController {
     private let popupView = MemberSignupCompleteionPopupView()
@@ -21,9 +23,8 @@ final class MemberSignupCompleteionPopupViewController: UIViewController {
 extension MemberSignupCompleteionPopupViewController {
     private func configureMemberSignupCompleteionPopupView() {
         self.view.backgroundColor = UIColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
-        self.view.isOpaque = false
         self.view.addSubview(popupView)
-        popupView.doneButton.addTarget(self, action: #selector(doneButtonTap), for: .touchUpInside)
+        popupView.doneButton.addTarget(self, action: #selector(tapDoneButton), for: .touchUpInside)
         popupView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -37,8 +38,33 @@ extension MemberSignupCompleteionPopupViewController {
         
         popupView.layer.cornerRadius = 5.0
     }
+
     
-    @objc private func doneButtonTap(_ sender: UIButton) {
+    @objc private func tapDoneButton() {
         self.dismiss(animated: true)
     }
+            
+}
+
+extension MemberSignupCompleteionPopupViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let nickname = textField.text,
+              let newRange = Range(range, in: nickname) else { return true }
+        
+        let inputNickname = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        let newNickname = nickname.replacingCharacters(in: newRange, with: inputNickname)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if newNickname.isValidNickname {
+            popupView.doneButton.isEnabled = true
+            popupView.setTitlLabel("😄")
+            popupView.doneButton.backgroundColor = .systemBackground
+        } else {
+            popupView.doneButton.isEnabled = false
+            popupView.setTitlLabel("영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요.")
+            popupView.doneButton.backgroundColor = .lightGray
+        }
+        return true
+    }
+           
 }

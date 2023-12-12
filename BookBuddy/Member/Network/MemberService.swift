@@ -64,7 +64,6 @@ final class MemberService {
             case 200..<300:
                 guard let data = data,
                       let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return}
-                print(json.email)
                 completion(json.email)
                 
                 return
@@ -76,7 +75,108 @@ final class MemberService {
         task.resume()
     }
     
-    func setMembetInfo(with signupMemberInformation: SignupMemberInformation, completion: @escaping((Bool)) -> Void) {
+    func getMemberInfo(nickname: String, password: String, completion: @escaping((MemberDTO)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberInfo?nickname=\(nickname)?password=\(password)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = getMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else { return }
+            
+            switch response.statusCode {
+            case 200..<300:
+                guard let data = data,
+                      let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return }
+                completion(json)
+                return
+                
+            default:
+                print("ERROR: \(String(describing: error?.localizedDescription))")
+                return
+            }
+        }
+        task.resume()
+    }
+    
+    func getMemberAppleToken(appleToken: String, completion: @escaping((MemberAppleTokenDTO)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberAppleToken?token=\(appleToken)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = getMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else { return }
+            
+            switch response.statusCode {
+            case 200..<300:
+                guard let data = data,
+                      let json = try? JSONDecoder().decode(MemberAppleTokenDTO.self, from: data) else { return }
+                completion(json)
+                return
+                
+            default:
+                print("ERROR: \(String(describing: error?.localizedDescription))")
+                return
+            }
+        }
+        task.resume()
+    }
+    
+    func setAppleMemberInfo(with signinWithAppleInformation: SigninWithAppleInformation, completion: @escaping((Bool)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/setAppleMemberInfo/") else { return }
+        var request = URLRequest(url: url)
+        let encoder = JSONEncoder()
+        let member = MemberAppleTokenDTO(nickname: signinWithAppleInformation.nickname,
+                                         email: signinWithAppleInformation.email,
+                                         appleToken: signinWithAppleInformation.appleToken)
+        request.httpMethod = postMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try encoder.encode(member)
+        } catch {
+            print("ERROR: Encoding Reuqest Data: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error)")
+                return
+            } else if let data = data {
+                do {
+                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberAppleTokenDTO {
+                    }
+                    
+                } catch {
+                    print("ERROR Decoding Response Data: \(error)")
+                    return
+                }
+                completion(true)
+                return
+            }
+        }
+        task.resume()
+    }
+    
+    
+    func setMemberInfo(with signupMemberInformation: SignupMemberInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setMemberInfo/") else { return }
         var request = URLRequest(url: url)

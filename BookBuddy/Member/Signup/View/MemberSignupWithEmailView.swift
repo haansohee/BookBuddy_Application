@@ -7,14 +7,7 @@
 
 import UIKit
 
-final class MemberSignupWithEmailView: UIScrollView {
-//    let scrollView: UIScrollView = {
-//        let view = UIScrollView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        
-//        return view
-//    }()
-    
+final class MemberSignupWithEmailView: UIScrollView {    
     let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -39,8 +32,8 @@ final class MemberSignupWithEmailView: UIScrollView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("중복확인", for: .normal)
         button.isEnabled = false
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .bold)
-        button.tintColor = .white
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .bold)
+        button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .lightGray
         button.layer.cornerRadius = 6.0
         return button

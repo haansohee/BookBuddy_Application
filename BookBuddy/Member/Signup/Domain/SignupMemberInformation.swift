@@ -12,3 +12,9 @@ struct SignupMemberInformation {
     let email: String
     let password: String
 }
+
+struct AppleMemberInformation {
+    var nickname: String
+    var email: String
+    var password: String
+}
