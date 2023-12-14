@@ -106,9 +106,9 @@ final class MemberService {
         task.resume()
     }
     
-    func getMemberAppleToken(appleToken: String, completion: @escaping((MemberAppleTokenDTO)) -> Void) {
+    func getAppleMemberInfo(email: String, completion: @escaping((MemberAppleTokenDTO)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberAppleToken?token=\(appleToken)") else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getAppleMemberInfo?email=\(email)") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = getMethod.rawValue
@@ -121,7 +121,6 @@ final class MemberService {
             }
             
             guard let response = response as? HTTPURLResponse else { return }
-            
             switch response.statusCode {
             case 200..<300:
                 guard let data = data,
@@ -145,6 +144,7 @@ final class MemberService {
         let member = MemberAppleTokenDTO(nickname: signinWithAppleInformation.nickname,
                                          email: signinWithAppleInformation.email,
                                          appleToken: signinWithAppleInformation.appleToken)
+        
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -163,18 +163,17 @@ final class MemberService {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberAppleTokenDTO {
                     }
-                    
+                    completion(true)
+                    return
                 } catch {
                     print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
                     return
                 }
-                completion(true)
-                return
             }
         }
         task.resume()
     }
-    
     
     func setMemberInfo(with signupMemberInformation: SignupMemberInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
@@ -200,13 +199,14 @@ final class MemberService {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberDTO {
                     }
+                    completion(true)
+                    return
                     
                 } catch {
                     print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
                     return
                 }
-                completion(true)
-                return
             }
         }
         task.resume()

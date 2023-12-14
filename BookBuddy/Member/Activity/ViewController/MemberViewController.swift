@@ -15,17 +15,30 @@ final class MemberViewController: UIViewController {
     enum ViewType {
         case notMember
         case member
+        case appleMember
     }
     
     private let memberView = MemberView()
     private let notMemberView = NotMemberView()
     private var viewType: ViewType
-    private var memberInformation: SignupMemberInformation?
+    private let viewModel = MemberViewModel()
     private let disposeBag = DisposeBag()
     
-    init(memberInformation: SignupMemberInformation? = nil) {
-        viewType = memberInformation != nil ? .member : .notMember
-        self.memberInformation = memberInformation
+    init(memberInformation: SignupMemberInformation? = nil, appleMemberInformation: SigninWithAppleInformation? = nil) {
+        if memberInformation != nil && appleMemberInformation == nil {
+            viewType = .member
+        } else if memberInformation == nil && appleMemberInformation != nil {
+            viewType = .appleMember
+        } else {
+            viewType = .notMember
+        }
+
+        if let memberInformation = memberInformation,
+           let appleMemberInformation = appleMemberInformation {
+            self.viewModel.setMemberInformation(memberInformation)
+            self.viewModel.setAppleMemberInformation(appleMemberInformation)
+        }
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,7 +63,7 @@ final class MemberViewController: UIViewController {
 extension MemberViewController {
     private func configureMemberView() {
         switch viewType {
-        case .member:
+        case .member, .appleMember:
             memberView.translatesAutoresizingMaskIntoConstraints = false
             memberView.boardCollectionView.dataSource = self
             memberView.boardCollectionView.delegate = self
@@ -71,7 +84,21 @@ extension MemberViewController {
                 memberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
                 memberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
             ])
-            if let nickname = memberInformation?.nickname {
+            
+            if let nickname = viewModel.memberInformation?.nickname {
+                memberView.setNameLabel(nickname)
+            }
+            
+        case .appleMember:
+            self.view.addSubview(memberView)
+            notMemberView.removeFromSuperview()
+            NSLayoutConstraint.activate([
+                memberView.topAnchor.constraint(equalTo: self.view.topAnchor),
+                memberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                memberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                memberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            ])
+            if let nickname = viewModel.appleMemberInformation?.nickname {
                 memberView.setNameLabel(nickname)
             }
             
@@ -87,20 +114,22 @@ extension MemberViewController {
         }
     }
     
-    private func checkMember(){
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
-              let password = UserDefaults.standard.string(forKey: "password"),
-              let email = UserDefaults.standard.string(forKey: "email") else {
+    private func checkMember() {
+        if let email = UserDefaults.standard.string(forKey: "email"),
+           let nickname = UserDefaults.standard.string(forKey: "nickname") {
+            if let appleToken = UserDefaults.standard.string(forKey: "appleToken") {
+                let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
+                self.viewModel.setAppleMemberInformation(appleMemberInformation)
+                viewType = .appleMember
+            } else {
+                guard let password = UserDefaults.standard.string(forKey: "password") else { return }
+                let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
+                self.viewModel.setMemberInformation(memberInformation)
+                viewType = .member
+            }
+        } else {
             viewType = .notMember
-            return
         }
-        
-        guard self.memberInformation != nil else {
-            self.memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
-            viewType = .member
-            return
-        }
-        viewType = .member
     }
     
     private func bindAll() {

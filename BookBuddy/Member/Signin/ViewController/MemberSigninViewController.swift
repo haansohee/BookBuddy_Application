@@ -18,6 +18,11 @@ final class MemberSigninViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var endEditingGesture: UITapGestureRecognizer?
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkUserDefaults()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
@@ -46,10 +51,19 @@ extension MemberSigninViewController {
         ])
     }
     
+    private func checkUserDefaults() {
+        if (UserDefaults.standard.string(forKey: "appleToken") != nil) &&
+            (UserDefaults.standard.string(forKey: "email") != nil) &&
+            (UserDefaults.standard.string(forKey: "nickname") != nil) {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
     private func bindAll() {
         bindSignupButton()
         bindSinginButton()
         bindIsSigned()
+        bindIsExistence()
     }
     
     private func addEditingTapGesture() {
@@ -151,11 +165,9 @@ extension MemberSigninViewController: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
             let userIdentifier = credential.user
-            
             guard let identityToken = credential.identityToken,
                   let appleToken = String(data: identityToken, encoding: .utf8)
             else { return }
-
 
             let provider = ASAuthorizationAppleIDProvider()
             provider.getCredentialState(forUserID: userIdentifier) { credentialState, error in
@@ -179,7 +191,6 @@ extension MemberSigninViewController: ASAuthorizationControllerDelegate {
                     print("transferred")
 
                 default:
-                    print("default")
                     break
                 }
                 

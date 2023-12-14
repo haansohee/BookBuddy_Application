@@ -33,11 +33,16 @@ final class MainTabBarController: UITabBarController {
     
     private func checkMember() -> UIViewController {
         guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
-              let password = UserDefaults.standard.string(forKey: "password"),
-              let email = UserDefaults.standard.string(forKey: "email") else {
-                  return MemberViewController()
-              }
-        let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
-        return MemberViewController(memberInformation: memberInformation)
+              let email = UserDefaults.standard.string(forKey: "email") else { return MemberViewController() }
+        
+        if let password = UserDefaults.standard.string(forKey: "password") {
+            let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
+            return MemberViewController(memberInformation: memberInformation)
+        } else if let appleToken = UserDefaults.standard.string(forKey: "appleToken") {
+            let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
+            return MemberViewController(appleMemberInformation: appleMemberInformation)
+        }
+        
+        return MemberViewController()
     }
 }

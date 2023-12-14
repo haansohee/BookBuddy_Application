@@ -44,6 +44,7 @@ extension MemberEditViewController {
                 UserDefaults.standard.removeObject(forKey: "nickname")
                 UserDefaults.standard.removeObject(forKey: "password")
                 UserDefaults.standard.removeObject(forKey: "email")
+                UserDefaults.standard.removeObject(forKey: "appleToken")
                 
                 DispatchQueue.main.async {
                     self?.navigationController?.popViewController(animated: true)

@@ -31,6 +31,7 @@ final class MemberSigninWithAppleViewController: UIViewController {
         configureMemberSigninWithAppleView()
         setLayoutConstraintsMemberSigninWithAppleView()
         addEditingTapGesture()
+        bindAll()
     }
 }
 
@@ -63,7 +64,14 @@ extension MemberSigninWithAppleViewController {
         self.view.endEditing(true)
     }
     
-    private func bindDeonButton() {
+    private func bindAll() {
+        bindDoneButton()
+        bindNicknameDuplicateCheckButton()
+        bindIsCompleted()
+        bindIsChecked()
+    }
+    
+    private func bindDoneButton() {
         memberSigninWithAppleView.doneButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
                 guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text,
@@ -71,6 +79,52 @@ extension MemberSigninWithAppleViewController {
                       let appleToken = self?.viewModel.appleToken else { return }
                 if nickname == "" { return }
                 self?.viewModel.appleSignup(with: SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken))
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindNicknameDuplicateCheckButton() {
+        memberSigninWithAppleView.nicknameDuplicateCheckButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text else { return }
+                if nickname == "" { return }
+                self?.viewModel.nicknameDuplicateCheck(nickname: nickname)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsCompleted() {
+        viewModel.isCompleted
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isCompleted in
+                if isCompleted {
+                    guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text,
+                          let email = self?.viewModel.appleEmail,
+                          let appleToken = self?.viewModel.appleToken else { return }
+                    
+                    UserDefaults.standard.setValue(nickname, forKey: "nickname")
+                    UserDefaults.standard.setValue(email, forKey: "email")
+                    UserDefaults.standard.setValue(appleToken, forKey: "appleToken")
+                    
+                    self?.navigationController?.popViewController(animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsChecked() {
+        viewModel.isChecked
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isChecked in
+                if isChecked {
+                    self?.memberSigninWithAppleView.titleLabel.text = "사용 가능한 아이디입니다."
+                    self?.memberSigninWithAppleView.doneButton.isEnabled = true
+                    self?.memberSigninWithAppleView.doneButton.backgroundColor = .systemGreen
+                } else {
+                    self?.memberSigninWithAppleView.titleLabel.text = "중복된 아이디입니다."
+                    self?.memberSigninWithAppleView.doneButton.isEnabled = false
+                    self?.memberSigninWithAppleView.doneButton.backgroundColor = .lightGray
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -98,12 +152,12 @@ extension MemberSigninWithAppleViewController: UITextFieldDelegate {
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
         if newNickname.isValidNickname {
-            memberSigninWithAppleView.doneButton.isEnabled = true
-            memberSigninWithAppleView.doneButton.backgroundColor = .systemGreen
+            memberSigninWithAppleView.nicknameDuplicateCheckButton.isEnabled = true
+            memberSigninWithAppleView.nicknameDuplicateCheckButton.backgroundColor = .systemGreen
             memberSigninWithAppleView.titleLabel.text = "😀"
         } else {
-            memberSigninWithAppleView.doneButton.isEnabled = false
-            memberSigninWithAppleView.doneButton.backgroundColor = .lightGray
+            memberSigninWithAppleView.nicknameDuplicateCheckButton.isEnabled = false
+            memberSigninWithAppleView.nicknameDuplicateCheckButton.backgroundColor = .lightGray
             memberSigninWithAppleView.titleLabel.text = "영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
         }
         return true

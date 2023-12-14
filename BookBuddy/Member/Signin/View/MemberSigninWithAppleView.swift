@@ -31,6 +31,18 @@ final class MemberSigninWithAppleView: UIView {
         return textField
     }()
     
+    let nicknameDuplicateCheckButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("중복확인", for: .normal)
+        button.isEnabled = false
+        button.titleLabel?.font = .systemFont(ofSize: 15, weight: .light)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .lightGray
+        button.layer.cornerRadius = 5.0
+        return button
+    }()
+    
     let doneButton: AnimationButton = {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +71,7 @@ extension MemberSigninWithAppleView {
         [
             titleLabel,
             inputNicknameTextField,
+            nicknameDuplicateCheckButton,
             doneButton
         ].forEach { self.addSubview($0) }
     }
@@ -72,8 +85,13 @@ extension MemberSigninWithAppleView {
             
             inputNicknameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12.0),
             inputNicknameTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
-            inputNicknameTextField.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            inputNicknameTextField.trailingAnchor.constraint(equalTo: nicknameDuplicateCheckButton.leadingAnchor, constant: -10.0),
             inputNicknameTextField.heightAnchor.constraint(equalToConstant: 40.0),
+            
+            nicknameDuplicateCheckButton.topAnchor.constraint(equalTo: inputNicknameTextField.topAnchor),
+            nicknameDuplicateCheckButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            nicknameDuplicateCheckButton.widthAnchor.constraint(equalToConstant: 70.0),
+            nicknameDuplicateCheckButton.heightAnchor.constraint(equalToConstant: 40.0),
             
             doneButton.topAnchor.constraint(equalTo: inputNicknameTextField.bottomAnchor, constant: 70.0),
             doneButton.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
