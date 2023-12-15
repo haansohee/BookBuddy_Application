@@ -33,6 +33,7 @@ final class MemberSigninView: UIView {
     let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.isSecureTextEntry = true
         textField.placeholder = "Password"
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.layer.borderColor = UIColor.systemGray6.cgColor
@@ -41,20 +42,27 @@ final class MemberSigninView: UIView {
         return textField
     }()
     
-    private let signinButton: AnimationButton = {
+    let signinButton: AnimationButton = {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sign in", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemGreen
-        button.layer.cornerRadius = 6.0
+        button.layer.cornerRadius = 5.0
         return button
     }()
     
-    let appleLoginButton: ASAuthorizationAppleIDButton = {
-        let button = ASAuthorizationAppleIDButton()
+    let appleLoginButton: AnimationButton = {
+        let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "apple.logo"), for: .normal)
+        button.setTitle("Sign in with Apple", for: .normal)
+        button.setTitleColor(.systemBackground, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.tintColor = .systemBackground
+        button.backgroundColor = .label
+        button.layer.cornerRadius = 5.0
         return button
     }()
     

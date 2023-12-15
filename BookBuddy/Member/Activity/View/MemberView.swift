@@ -110,6 +110,20 @@ final class MemberView: UIView {
         return label
     }()
     
+    let editButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("정보 수정하기", for: .normal)
+        button.isHidden = false
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .lightGray
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .light)
+        button.titleLabel?.textAlignment = .center
+        button.layer.cornerRadius = 5.0
+        
+        return button
+    }()
+    
     let boardCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -125,6 +139,12 @@ final class MemberView: UIView {
         
         return collectionView
     }()
+    
+    func setNameLabel(_ text: String) {
+        DispatchQueue.main.async {
+            self.nameLabel.text = text
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -149,6 +169,7 @@ extension MemberView {
             boardLabel,
             followersLabel,
             followingLabel,
+            editButton,
             boardCollectionView
         ].forEach {
             self.addSubview($0)
@@ -194,6 +215,11 @@ extension MemberView {
             followingLabel.centerXAnchor.constraint(equalTo: followingCountLabel.centerXAnchor),
             followingLabel.heightAnchor.constraint(equalTo: boardLabel.heightAnchor),
             followingLabel.widthAnchor.constraint(equalTo: boardLabel.widthAnchor),
+            
+            editButton.topAnchor.constraint(equalTo: followingLabel.bottomAnchor, constant: 8.0),
+            editButton.leadingAnchor.constraint(equalTo: boardCountLabel.leadingAnchor),
+            editButton.trailingAnchor.constraint(equalTo: followingCountLabel.trailingAnchor),
+            editButton.heightAnchor.constraint(equalToConstant: 30.0),
             
             boardCollectionView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 24.0),
             boardCollectionView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),

@@ -91,7 +91,7 @@ final class MemberSignupWithEmailViewModel {
     }
     
     func signup(with signupMemberInformation: SignupMemberInformation) {
-        service.setMembetInfo(with: signupMemberInformation) { [weak self] isCompleted in
+        service.setMemberInfo(with: signupMemberInformation) { [weak self] isCompleted in
             if isCompleted {
                 self?.isCompleted.onNext(true)
             } else {
