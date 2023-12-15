@@ -211,4 +211,42 @@ final class MemberService {
         }
         task.resume()
     }
+    
+    func updateFavoriteBook(with favotireBookInformation: FavoriteBookInformation, completion: @escaping((Bool)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateFavoriteBook/") else { return }
+        var request = URLRequest(url: url)
+        let encoder = JSONEncoder()
+        let favorite = FavoriteBookDTO(favorite: favotireBookInformation.favorite, nickname: favotireBookInformation.nickname)
+        
+        request.httpMethod = postMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try encoder.encode(favorite)
+        } catch {
+            print("ERROR: Encoding Reuqest Data: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error)")
+                return
+            } else if let data = data {
+                do {
+                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FavoriteBookDTO {
+                    }
+                    completion(true)
+                    return
+                    
+                } catch {
+                    print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
+                    return
+                }
+            }
+        }
+        task.resume()
+    }
 }

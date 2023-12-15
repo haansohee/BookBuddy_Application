@@ -18,8 +18,8 @@ final class BookSearchView: UIView {
         return textField
     }()
     
-    let searchButton: UIButton = {
-        let button = UIButton()
+    let searchButton: AnimationButton = {
+        let button = AnimationButton()
         button.setTitle("검색", for: .normal)
         button.setTitleColor(.systemGreen, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
