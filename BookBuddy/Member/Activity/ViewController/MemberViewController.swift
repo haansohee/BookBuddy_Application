@@ -57,6 +57,7 @@ final class MemberViewController: UIViewController {
         checkMember()
         configureMemberView()
         setLayoutConstraintsMemberView()
+        settingFavoriteBook()
     }
 }
 
@@ -130,6 +131,12 @@ extension MemberViewController {
         } else {
             viewType = .notMember
         }
+    }
+    
+    private func settingFavoriteBook() {
+        guard let favoriteBook = UserDefaults.standard.string(forKey: "favorite"),
+              let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+        memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favoriteBook)"
     }
     
     private func bindAll() {

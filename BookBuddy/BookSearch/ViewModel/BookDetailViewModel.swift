@@ -13,18 +13,18 @@ final class BookDetailViewModel {
     private let service = MemberService()
     
     func settingFavoriteBook(bookTitle: String) {
-        if let nickname = UserDefaults.standard.string(forKey: "nickname") {
-            let favorite = FavoriteBookInformation(nickname: nickname, favorite: bookTitle)
-            service.updateFavoriteBook(with: favorite) { [weak self] isSet in
-                if isSet {
-                    self?.isSet.onNext(true)
-                    UserDefaults.standard.set(bookTitle, forKey: "favorite")
-                } else {
-                    self?.isSet.onNext(false)
-                }
-            }
-        } else {
+        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else {
             isSet.onNext(false)
+            return
+        }
+        let favoriteBookInformation = FavoriteBookInformation(nickname: nickname, favorite: bookTitle)
+        service.updateFavoriteBook(with: favoriteBookInformation) { [weak self] isSet in
+            guard isSet else {
+                self?.isSet.onNext(false)
+                return
+            }
+            UserDefaults.standard.set(bookTitle, forKey: "favorite")
+            self?.isSet.onNext(true)
         }
     }
 }

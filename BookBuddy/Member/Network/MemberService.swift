@@ -159,7 +159,9 @@ final class MemberService {
             if let error = error {
                 print("ERROR: \(error)")
                 return
-            } else if let data = data {
+            }
+            
+            if let data = data {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberAppleTokenDTO {
                     }
@@ -195,7 +197,8 @@ final class MemberService {
             if let error = error {
                 print("ERROR: \(error)")
                 return
-            } else if let data = data {
+            }
+            if let data = data {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberDTO {
                     }
@@ -233,7 +236,8 @@ final class MemberService {
             if let error = error {
                 print("ERROR: \(error)")
                 return
-            } else if let data = data {
+            }
+            if let data = data {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FavoriteBookDTO {
                     }

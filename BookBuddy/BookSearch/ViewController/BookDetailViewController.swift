@@ -51,12 +51,28 @@ extension BookDetailViewController {
     }
     
     private func configureBookDetailView(bookData: BookSearchContents, category: String) {
-        if let imageURL = URL(string: bookData.image) {
-            bookSearchViewModel.loadImageData(imageURL: imageURL) { [weak self] data in
-                self?.bookSearchViewModel.setBookInformationData(title: bookData.title, author: bookData.author, category: category, description: bookData.description, image: data)
-                guard let information = self?.bookSearchViewModel.bookInformations else { return }
-                self?.bookDetailView.setBookInformation(information)
-            }
+        guard let imageURL = URL(string: bookData.image) else {
+            bookSearchViewModel
+                .setBookInformationData(
+                    title: bookData.title,
+                    author: bookData.author,
+                    category: category,
+                    description: bookData.description,
+                    image: Data())
+            print("엥?")
+            return
+        }
+        
+        bookSearchViewModel.loadImageData(imageURL: imageURL) { [weak self] data in
+            self?.bookSearchViewModel
+                .setBookInformationData(
+                    title: bookData.title,
+                    author: bookData.author,
+                    category: category,
+                    description: bookData.description,
+                    image: data)
+            guard let information = self?.bookSearchViewModel.bookInformations else { return }
+            self?.bookDetailView.setBookInformation(information)
         }
     }
     
@@ -79,9 +95,11 @@ extension BookDetailViewController {
         bookDetailViewModel.isSet
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isSet in
-                if isSet {
-                    self?.bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                print(isSet)
+                guard isSet else {
+                    return
                 }
+                self?.bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             })
             .disposed(by: disposeBag)
     }
