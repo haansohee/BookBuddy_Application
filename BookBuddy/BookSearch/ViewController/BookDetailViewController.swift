@@ -7,10 +7,14 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 final class BookDetailViewController: UIViewController {
     private let bookDetailView = BookDetailView()
-    private let viewModel = BookSearchViewModel()
+    private let bookDetailViewModel = BookDetailViewModel()
+    private let bookSearchViewModel = BookSearchViewModel()
+    private let disposeBag = DisposeBag()
     
     init(data: BookSearchContents, category: String) {
         super.init(nibName: nil, bundle: nil)
@@ -25,6 +29,7 @@ final class BookDetailViewController: UIViewController {
         super.viewDidLoad()
         configureBookDetailView()
         setLayoutConstraintsBookDetailView()
+        bindAll()
     }
 }
 
@@ -46,12 +51,55 @@ extension BookDetailViewController {
     }
     
     private func configureBookDetailView(bookData: BookSearchContents, category: String) {
-        if let imageURL = URL(string: bookData.image) {
-            viewModel.loadImageData(imageURL: imageURL) { [weak self] data in
-                self?.viewModel.setBookInformationData(title: bookData.title, author: bookData.author, category: category, description: bookData.description, image: data)
-                guard let information = self?.viewModel.bookInformations else { return }
-                self?.bookDetailView.setBookInformation(information)
-            }
+        guard let imageURL = URL(string: bookData.image) else {
+            bookSearchViewModel
+                .setBookInformationData(
+                    title: bookData.title,
+                    author: bookData.author,
+                    category: category,
+                    description: bookData.description,
+                    image: Data())
+            print("엥?")
+            return
         }
+        
+        bookSearchViewModel.loadImageData(imageURL: imageURL) { [weak self] data in
+            self?.bookSearchViewModel
+                .setBookInformationData(
+                    title: bookData.title,
+                    author: bookData.author,
+                    category: category,
+                    description: bookData.description,
+                    image: data)
+            guard let information = self?.bookSearchViewModel.bookInformations else { return }
+            self?.bookDetailView.setBookInformation(information)
+        }
+    }
+    
+    private func bindAll() {
+        bindLikeButton()
+        bindIsSetFavorite()
+    }
+    
+    private func bindLikeButton() {
+        bookDetailView.likeButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let bookTitle = self?.bookDetailView.bookTitleLabel.text else { return }
+                if bookTitle == "" { return }
+                self?.bookDetailViewModel.settingFavoriteBook(bookTitle: bookTitle)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsSetFavorite() {
+        bookDetailViewModel.isSetFavorite
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isSetFavorite in
+                guard isSetFavorite else {
+                    return
+                }
+                self?.bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            })
+            .disposed(by: disposeBag)
     }
 }

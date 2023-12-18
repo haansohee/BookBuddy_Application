@@ -16,7 +16,7 @@ final class BookDetailView: UIView {
         return imageView
     }()
     
-    private let bookTitleLabel: UILabel = {
+    let bookTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.layer.borderColor = UIColor.black.cgColor
@@ -70,8 +70,8 @@ final class BookDetailView: UIView {
         return label
     }()
     
-    private let likeButton: UIButton = {
-        let button = UIButton()
+    let likeButton: AnimationButton = {
+        let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .systemRed

@@ -31,6 +31,18 @@ final class MemberView: UIView {
         return label
     }()
     
+    let favoriteBook: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "가장 좋아하는 책을 설정해 보세요."
+        label.numberOfLines = 0
+        label.textColor = .lightGray
+        label.textAlignment = .left
+        label.font = .systemFont(ofSize: 12, weight: .light)
+        return label
+    }()
+    
+    
     private let boardCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -163,6 +175,7 @@ extension MemberView {
         [
             profileImageView,
             nameLabel,
+            favoriteBook,
             boardCountLabel,
             followersCountLabel,
             followingCountLabel,
@@ -185,6 +198,11 @@ extension MemberView {
             
             nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 12.0),
             nameLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
+            
+            favoriteBook.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4.0),
+            favoriteBook.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
+            favoriteBook.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            favoriteBook.heightAnchor.constraint(equalToConstant: 40.0),
             
             boardCountLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 40.0),
             boardCountLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 24.0),
@@ -221,7 +239,7 @@ extension MemberView {
             editButton.trailingAnchor.constraint(equalTo: followingCountLabel.trailingAnchor),
             editButton.heightAnchor.constraint(equalToConstant: 30.0),
             
-            boardCollectionView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 24.0),
+            boardCollectionView.topAnchor.constraint(equalTo: favoriteBook.bottomAnchor, constant: 12.0),
             boardCollectionView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
             boardCollectionView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
             boardCollectionView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
