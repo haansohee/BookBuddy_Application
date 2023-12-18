@@ -78,7 +78,7 @@ extension BookDetailViewController {
     
     private func bindAll() {
         bindLikeButton()
-        bindIsSet()
+        bindIsSetFavorite()
     }
     
     private func bindLikeButton() {
@@ -91,12 +91,11 @@ extension BookDetailViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsSet() {
-        bookDetailViewModel.isSet
+    private func bindIsSetFavorite() {
+        bookDetailViewModel.isSetFavorite
             .asDriver(onErrorJustReturn: false)
-            .drive(onNext: { [weak self] isSet in
-                print(isSet)
-                guard isSet else {
+            .drive(onNext: { [weak self] isSetFavorite in
+                guard isSetFavorite else {
                     return
                 }
                 self?.bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)

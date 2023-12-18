@@ -9,22 +9,22 @@ import Foundation
 import RxSwift
 
 final class BookDetailViewModel {
-    private(set) var isSet = PublishSubject<Bool>()
+    private(set) var isSetFavorite = PublishSubject<Bool>()
     private let service = MemberService()
     
     func settingFavoriteBook(bookTitle: String) {
         guard let nickname = UserDefaults.standard.string(forKey: "nickname") else {
-            isSet.onNext(false)
+            isSetFavorite.onNext(false)
             return
         }
         let favoriteBookInformation = FavoriteBookInformation(nickname: nickname, favorite: bookTitle)
-        service.updateFavoriteBook(with: favoriteBookInformation) { [weak self] isSet in
-            guard isSet else {
-                self?.isSet.onNext(false)
+        service.updateFavoriteBook(with: favoriteBookInformation) { [weak self] isSetFavorite in
+            guard isSetFavorite else {
+                self?.isSetFavorite.onNext(false)
                 return
             }
             UserDefaults.standard.set(bookTitle, forKey: "favorite")
-            self?.isSet.onNext(true)
+            self?.isSetFavorite.onNext(true)
         }
     }
 }
