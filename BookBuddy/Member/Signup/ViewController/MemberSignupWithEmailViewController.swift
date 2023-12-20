@@ -20,7 +20,7 @@ final class MemberSignupWithEmailViewController: UIViewController {
         super.viewDidLoad()
         configureMemberSignupWithEmailView()
         setLayoutConstraintsMemberSignupWithEmailView()
-        setKeyboaardNotification()
+        setKeyboardNotification()
         addEditingTapGesture()
         changeEmailAddressTextField()
         bindAll()
@@ -51,7 +51,7 @@ extension MemberSignupWithEmailViewController {
         ])
     }
     
-    private func setKeyboaardNotification() {
+    private func setKeyboardNotification() {
         let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
         let keyboardWillHide = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
         

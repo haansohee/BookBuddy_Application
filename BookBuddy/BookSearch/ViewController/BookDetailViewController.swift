@@ -59,7 +59,6 @@ extension BookDetailViewController {
                     category: category,
                     description: bookData.description,
                     image: Data())
-            print("엥?")
             return
         }
         

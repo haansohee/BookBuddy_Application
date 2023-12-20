@@ -46,18 +46,18 @@ final class MemberViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.navigationItem.hidesBackButton = true
-        bindAll()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         checkMember()
         configureMemberView()
         setLayoutConstraintsMemberView()
         settingFavoriteBook()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationItem.hidesBackButton = true
+        bindAll()
     }
 }
 

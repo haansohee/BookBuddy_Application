@@ -145,7 +145,6 @@ final class MemberView: UIView {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "BoardCollectionViewCell")
         collectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        collectionView.backgroundColor = .systemBackground
         collectionView.isPagingEnabled = false
         collectionView.backgroundColor = .brown
         
