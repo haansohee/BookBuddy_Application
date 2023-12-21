@@ -141,9 +141,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setAppleMemberInfo/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let member = MemberAppleTokenDTO(nickname: signinWithAppleInformation.nickname,
-                                         email: signinWithAppleInformation.email,
-                                         appleToken: signinWithAppleInformation.appleToken)
+        let member = signinWithAppleInformation.toRequestDTO()
         
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -182,7 +180,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setMemberInfo/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let member = MemberDTO(nickname: signupMemberInformation.nickname, email: signupMemberInformation.email, password: signupMemberInformation.password)
+        let member = signupMemberInformation.toRequestDTO()
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -220,7 +218,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateFavoriteBook/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let favorite = FavoriteBookDTO(favorite: favotireBookInformation.favorite, nickname: favotireBookInformation.nickname)
+        let favorite = favotireBookInformation.toRequestDTO()
         
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

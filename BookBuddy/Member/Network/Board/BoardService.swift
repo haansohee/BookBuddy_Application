@@ -17,7 +17,7 @@ final class BoardService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setBoards/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let board = BoardDTO(nickname: boardWriteInformation.nickname, writeDate: boardWriteInformation.writeDate, contentTitle: boardWriteInformation.contentTitle, content: boardWriteInformation.content)
+        let board = boardWriteInformation.toRequestDTO()
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         do {

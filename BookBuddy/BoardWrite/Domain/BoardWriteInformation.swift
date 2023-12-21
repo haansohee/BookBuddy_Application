@@ -13,3 +13,9 @@ struct BoardWriteInformation {
     let contentTitle: String
     let content: String
 }
+
+extension BoardWriteInformation {
+    func toRequestDTO() -> BoardDTO {
+        return .init(nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content)
+    }
+}

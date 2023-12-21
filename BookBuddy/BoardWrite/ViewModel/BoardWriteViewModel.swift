@@ -14,11 +14,7 @@ final class BoardWriteViewModel {
     
     func uploadBoard(boardWriteInformation: BoardWriteInformation) {
         service.setBoardInfo(with: boardWriteInformation) { [weak self] isUpload in
-            guard isUpload else {
-                self?.isUpload.onNext(false)
-                return
-            }
-            self?.isUpload.onNext(true)
+            self?.isUpload.onNext(isUpload)
         }
     }
 }

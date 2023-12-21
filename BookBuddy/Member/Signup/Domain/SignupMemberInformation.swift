@@ -12,3 +12,9 @@ struct SignupMemberInformation {
     let email: String
     let password: String
 }
+
+extension SignupMemberInformation {
+    func toRequestDTO() -> MemberDTO {
+        return .init(nickname: nickname, email: email, password: password)
+    }
+}
