@@ -53,12 +53,10 @@ extension BoardWriteViewController {
         switch viewType {
         case .notMember:
             notMemberView.translatesAutoresizingMaskIntoConstraints = false
-            self.title = "글 작성하기"
         case .member:
             boardWriteView.translatesAutoresizingMaskIntoConstraints = false
             boardWriteView.titleTextField.delegate = self
             boardWriteView.contentTextView.delegate = self
-            self.title = "글 작성하기"
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardWriteView.uploadButton)
         }
     }

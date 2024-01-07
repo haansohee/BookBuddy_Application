@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 import RxSwift
 import RxCocoa
 
@@ -38,8 +39,8 @@ final class MemberViewController: UIViewController {
             self.viewModel.setMemberInformation(memberInformation)
             self.viewModel.setAppleMemberInformation(appleMemberInformation)
         }
-        
         super.init(nibName: nil, bundle: nil)
+        loadBoardInformaions()
     }
     
     required init?(coder: NSCoder) {
@@ -52,12 +53,14 @@ final class MemberViewController: UIViewController {
         configureMemberView()
         setLayoutConstraintsMemberView()
         settingFavoriteBook()
+        loadBoardInformaions()
+        settingMemberProfileImage()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.hidesBackButton = true
         bindAll()
+        self.navigationItem.hidesBackButton = true
     }
 }
 
@@ -139,6 +142,18 @@ extension MemberViewController {
         memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favoriteBook)"
     }
     
+    private func settingMemberProfileImage() {
+        guard let profileData = UserDefaults.standard.data(forKey: "profile") else {
+            DispatchQueue.main.async { [weak self] in
+                self?.memberView.profileImageView.image = UIImage(systemName: "person")
+            }
+            return
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.memberView.profileImageView.image = UIImage(data: profileData)
+        }
+    }
+    
     private func bindAll() {
         bindJoinButton()
         bindEditButton()
@@ -156,22 +171,37 @@ extension MemberViewController {
     private func bindEditButton() {
         memberView.editButton.rx.tap
             .asDriver()
-            .drive(onNext: {[weak self] _ in
+            .drive(onNext: { [weak self] _ in
                 self?.navigationController?.pushViewController(MemberEditViewController(), animated: true)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func loadBoardInformaions() {
+        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+        viewModel.getMemberBoardInformaion(nickname: nickname)
+        DispatchQueue.main.async {
+            self.memberView.boardCollectionView.reloadData()
+        }
     }
 }
 
 extension MemberViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 18
+        guard let boardCounts = viewModel.boardWrittenInformations?.count else { return 0 }
+        return boardCounts
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardCollectionViewCell", for: indexPath) as? BoardCollectionViewCell else { return UICollectionViewCell() }
+        cell.contentTitle.text = viewModel.boardWrittenInformations?[indexPath.row].contentTitle
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let boardWrittenInformation = viewModel.boardWrittenInformations?[indexPath.row] else { return }
+        navigationController?.pushViewController(BoardDetailViewController(boardWrittenInformation: boardWrittenInformation), animated: true)
     }
 }
 
