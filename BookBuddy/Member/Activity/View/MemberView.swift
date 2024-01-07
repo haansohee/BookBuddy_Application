@@ -8,14 +8,15 @@
 import UIKit
 
 final class MemberView: UIView {
-    private let profileImageView: UIImageView = {
+    let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = imageView.frame.height / 2
+        imageView.layer.cornerRadius = 50
         imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.systemGray6.cgColor
+        imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .systemPink
+        imageView.image = UIImage(systemName: "person")
+        imageView.tintColor = .systemGray3
         
         return imageView
     }()
@@ -35,8 +36,10 @@ final class MemberView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "가장 좋아하는 책을 설정해 보세요."
+        label.layer.cornerRadius = 20.0
+        label.backgroundColor = .systemGray6
         label.numberOfLines = 0
-        label.textColor = .lightGray
+        label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 12, weight: .light)
         return label
@@ -50,10 +53,6 @@ final class MemberView: UIView {
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
-        
         return label
     }()
     
@@ -64,9 +63,6 @@ final class MemberView: UIView {
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
         return label
     }()
     
@@ -77,9 +73,6 @@ final class MemberView: UIView {
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
         return label
     }()
     
@@ -90,9 +83,6 @@ final class MemberView: UIView {
         label.textColor = .systemGray2
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
         return label
     }()
     
@@ -103,9 +93,6 @@ final class MemberView: UIView {
         label.textColor = .systemGray2
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
         return label
     }()
     
@@ -116,9 +103,6 @@ final class MemberView: UIView {
         label.textColor = .systemGray2
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 1
-        
         return label
     }()
     
@@ -145,9 +129,8 @@ final class MemberView: UIView {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "BoardCollectionViewCell")
         collectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        collectionView.backgroundColor = .systemBackground
         collectionView.isPagingEnabled = false
-        collectionView.backgroundColor = .brown
+        collectionView.backgroundColor = .systemBackground
         
         return collectionView
     }()
@@ -201,11 +184,11 @@ extension MemberView {
             
             favoriteBook.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4.0),
             favoriteBook.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            favoriteBook.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            favoriteBook.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -40.0),
             favoriteBook.heightAnchor.constraint(equalToConstant: 40.0),
             
             boardCountLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 40.0),
-            boardCountLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 24.0),
+            boardCountLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 18.0),
             boardCountLabel.heightAnchor.constraint(equalToConstant: 30.0),
             boardCountLabel.widthAnchor.constraint(equalToConstant: 60.0),
             
@@ -219,17 +202,17 @@ extension MemberView {
             followingCountLabel.heightAnchor.constraint(equalTo: boardCountLabel.heightAnchor),
             followingCountLabel.widthAnchor.constraint(equalTo: boardCountLabel.widthAnchor),
             
-            boardLabel.topAnchor.constraint(equalTo: boardCountLabel.bottomAnchor, constant: 5.0),
+            boardLabel.topAnchor.constraint(equalTo: boardCountLabel.bottomAnchor, constant: 2.0),
             boardLabel.centerXAnchor.constraint(equalTo: boardCountLabel.centerXAnchor),
-            boardLabel.heightAnchor.constraint(equalToConstant: 20.0),
+            boardLabel.heightAnchor.constraint(equalToConstant: 10.0),
             boardLabel.widthAnchor.constraint(equalToConstant: 40.0),
             
-            followersLabel.topAnchor.constraint(equalTo: followersCountLabel.bottomAnchor, constant: 5.0),
+            followersLabel.topAnchor.constraint(equalTo: followersCountLabel.bottomAnchor, constant: 2.0),
             followersLabel.centerXAnchor.constraint(equalTo: followersCountLabel.centerXAnchor),
             followersLabel.heightAnchor.constraint(equalTo: boardLabel.heightAnchor),
             followersLabel.widthAnchor.constraint(equalTo: boardLabel.widthAnchor),
             
-            followingLabel.topAnchor.constraint(equalTo: followingCountLabel.bottomAnchor, constant: 5.0),
+            followingLabel.topAnchor.constraint(equalTo: followingCountLabel.bottomAnchor, constant: 2.0),
             followingLabel.centerXAnchor.constraint(equalTo: followingCountLabel.centerXAnchor),
             followingLabel.heightAnchor.constraint(equalTo: boardLabel.heightAnchor),
             followingLabel.widthAnchor.constraint(equalTo: boardLabel.widthAnchor),

@@ -11,3 +11,9 @@ struct FavoriteBookInformation {
     let nickname: String
     let favorite: String
 }
+
+extension FavoriteBookInformation {
+    func toRequestDTO() -> FavoriteBookDTO {
+        return .init(favorite: favorite, nickname: nickname)
+    }
+}

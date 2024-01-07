@@ -20,18 +20,22 @@ final class MainTabBarController: UITabBarController {
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
         bookSeachTab.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let memberTab = UINavigationController(rootViewController: checkMember())
-        memberTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 2)
+        let boardWriteTab = UINavigationController(rootViewController: checkBoardWriteView())
+        boardWriteTab.tabBarItem = UITabBarItem(title: "Write", image: UIImage(systemName: "square.and.pencil.circle"), tag: 2)
+        
+        let memberTab = UINavigationController(rootViewController: checkMemberView())
+        memberTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 3)
         
         viewControllers = [
             homeTab,
             bookSeachTab,
+            boardWriteTab,
             memberTab
         ]
         tabBarController?.setViewControllers(viewControllers, animated: true)
     }
     
-    private func checkMember() -> UIViewController {
+    private func checkMemberView() -> UIViewController {
         guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
               let email = UserDefaults.standard.string(forKey: "email") else { return MemberViewController() }
         
@@ -44,5 +48,10 @@ final class MainTabBarController: UITabBarController {
         }
         
         return MemberViewController()
+    }
+    
+    private func checkBoardWriteView() -> UIViewController {
+        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return BoardWriteViewController() }
+        return BoardWriteViewController(nickname: nickname)
     }
 }

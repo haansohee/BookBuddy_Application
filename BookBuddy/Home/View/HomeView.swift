@@ -4,17 +4,23 @@
 //
 //  Created by 한소희 on 10/6/23.
 //
-// 준혁이 바보
 
 import UIKit
 
 final class HomeView: UIView {
-    private let testLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트입니다. 홈홈홈홈"
+    let mainBoardCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
-        return label
+        layout.minimumLineSpacing = 5.0
+        layout.scrollDirection = .vertical
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.register(MainBoardCollectionViewCell.self, forCellWithReuseIdentifier: "MainBoardCollectionViewCell")
+        collectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        collectionView.backgroundColor = .yellow
+        collectionView.isPagingEnabled = false
+        
+        return collectionView
     }()
     
     override init(frame: CGRect) {
@@ -30,13 +36,17 @@ final class HomeView: UIView {
 
 extension HomeView {
     private func addSubviews() {
-        addSubview(testLabel)
+        [
+            mainBoardCollectionView
+        ].forEach{ self.addSubview($0) }
     }
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            testLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            testLabel.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            mainBoardCollectionView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            mainBoardCollectionView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            mainBoardCollectionView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            mainBoardCollectionView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }

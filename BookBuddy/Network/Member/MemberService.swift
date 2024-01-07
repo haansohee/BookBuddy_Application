@@ -34,7 +34,7 @@ final class MemberService {
                 guard let data = data,
                       let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return}
                 completion(json.nickname)
-
+                
                 return
             default:
                 print("ERROR: \(String(describing: error?.localizedDescription))")
@@ -141,9 +141,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setAppleMemberInfo/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let member = MemberAppleTokenDTO(nickname: signinWithAppleInformation.nickname,
-                                         email: signinWithAppleInformation.email,
-                                         appleToken: signinWithAppleInformation.appleToken)
+        let member = signinWithAppleInformation.toRequestDTO()
         
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -182,7 +180,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setMemberInfo/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let member = MemberDTO(nickname: signupMemberInformation.nickname, email: signupMemberInformation.email, password: signupMemberInformation.password)
+        let member = signupMemberInformation.toRequestDTO()
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -220,7 +218,7 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateFavoriteBook/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let favorite = FavoriteBookDTO(favorite: favotireBookInformation.favorite, nickname: favotireBookInformation.nickname)
+        let favorite = favotireBookInformation.toRequestDTO()
         
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -240,6 +238,45 @@ final class MemberService {
             if let data = data {
                 do {
                     if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FavoriteBookDTO {
+                    }
+                    completion(true)
+                    return
+                    
+                } catch {
+                    print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
+                    return
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func updateMemberProfile(with memberProfileInformation: MemberUpdateInformation, completion: @escaping((Bool)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberInfo/") else { return }
+        var request = URLRequest(url: url)
+        let encoder = JSONEncoder()
+        let favorite = memberProfileInformation.toRequestDTO()
+        
+        request.httpMethod = postMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try encoder.encode(favorite)
+        } catch {
+            print("ERROR: Encoding Reuqest Data: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error)")
+                return
+            }
+            if let data = data {
+                do {
+                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberUpdateDTO {
                     }
                     completion(true)
                     return
