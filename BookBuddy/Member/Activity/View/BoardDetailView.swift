@@ -10,7 +10,7 @@ import UIKit
 final class BoardDetailView: UIView {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .lightGray
+        imageView.backgroundColor = .systemBackground
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -120,6 +120,10 @@ final class BoardDetailView: UIView {
         self.contentLabel.text = information.content
         self.contentTitleLabel.text = information.contentTitle
         self.writeDateLabel.text = information.writeDate
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.imageView.image = UIImage(data: information.boardImage)
+        }
     }
 }
 
@@ -141,12 +145,12 @@ extension BoardDetailView {
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
-            imageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 5.0),
-            imageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -5.0),
-            imageView.heightAnchor.constraint(equalToConstant: 280.0),
+            imageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 330.0),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
             
             likeButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 5.0),
-            likeButton.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            likeButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 5.0),
             likeButton.widthAnchor.constraint(equalToConstant: 30.0),
             likeButton.heightAnchor.constraint(equalToConstant: 20.0),
             
@@ -166,24 +170,24 @@ extension BoardDetailView {
             commentCountLabel.heightAnchor.constraint(equalTo: likeButton.heightAnchor),
 
             nicknameLabel.topAnchor.constraint(equalTo: likeButton.bottomAnchor, constant: 8.0),
-            nicknameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            nicknameLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
             nicknameLabel.heightAnchor.constraint(equalToConstant: 20.0),
             nicknameLabel.widthAnchor.constraint(equalToConstant: 80.0),
 
             contentTitleLabel.topAnchor.constraint(equalTo: nicknameLabel.topAnchor),
             contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 5.0),
-            contentTitleLabel.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
+            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -5.0),
             contentTitleLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
 
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 5.0),
-            contentLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            contentLabel.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
-            contentLabel.heightAnchor.constraint(equalToConstant: 280.0),
+            contentLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
+            contentLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
+            contentLabel.heightAnchor.constraint(equalToConstant: 240.0),
 
             writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 5.0),
-            writeDateLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
-            writeDateLabel.trailingAnchor.constraint(equalTo: imageView.trailingAnchor),
-            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 8.0),
+            writeDateLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
+            writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
+            writeDateLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor)
         ])
     }
 }

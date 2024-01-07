@@ -8,6 +8,11 @@
 import UIKit
 
 final class BoardWriteView: UIView {
+    let imagePickerView: UIImagePickerController = {
+        let imagePickerView = UIImagePickerController()
+        return imagePickerView
+    }()
+    
     let titleTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "글의 제목을 입력하세요."
@@ -42,11 +47,12 @@ final class BoardWriteView: UIView {
         return label
     }()
     
-    private let imageView: UIImageView = {
+    let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .lightGray
+        imageView.backgroundColor = .systemBackground
         imageView.image = UIImage(systemName: "photo")
+        imageView.tintColor = .label
         return imageView
     }()
     
@@ -105,7 +111,7 @@ extension BoardWriteView {
             contentTextView.topAnchor.constraint(equalTo: titleLineView.bottomAnchor, constant: 4.0),
             contentTextView.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
             contentTextView.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
-            contentTextView.heightAnchor.constraint(equalToConstant: 330.0),
+            contentTextView.heightAnchor.constraint(equalToConstant: 280.0),
             
             imageLineView.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 4.0),
             imageLineView.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
@@ -117,9 +123,9 @@ extension BoardWriteView {
             descriptionLabel.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
             
             imageView.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4.0),
-            imageView.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 250.0)
+            imageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: 300.0),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor)
         ])
     }
 }
