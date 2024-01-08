@@ -15,7 +15,7 @@ final class BoardDetailViewController: UIViewController {
         super.viewDidLoad()
         configureBoardDetailView()
         setLayoutConstraintsBoardDetailView()
-        setBoardTitle()
+        setBoard()
     }
     
     init(boardWrittenInformation: BoardWrittenInformation) {
@@ -44,7 +44,7 @@ extension BoardDetailViewController {
         ])
     }
     
-    private func setBoardTitle() {
+    private func setBoard() {
         guard let information = viewModel.boardWrittenInformation else { return }
         self.title = information.nickname
         boardDetailView.setLabel(information)

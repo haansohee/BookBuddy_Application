@@ -10,11 +10,11 @@ import RxSwift
 
 final class BoardWriteViewModel {
     private let service = BoardService()
-    private(set) var isUpload = PublishSubject<Bool>()
+    private(set) var isBoardUploaded = PublishSubject<Bool>()
     
     func uploadBoard(boardWriteInformation: BoardWriteInformation) {
         service.setBoardInfo(with: boardWriteInformation) { [weak self] isUpload in
-            self?.isUpload.onNext(isUpload)
+            self?.isBoardUploaded.onNext(isUpload)
         }
     }
 }

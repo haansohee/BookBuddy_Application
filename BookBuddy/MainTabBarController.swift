@@ -18,7 +18,7 @@ final class MainTabBarController: UITabBarController {
         homeTab.tabBarItem = UITabBarItem(title: "Main", image: UIImage(systemName: "house"), tag: 0)
         
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
-        bookSeachTab.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
+        bookSeachTab.tabBarItem = UITabBarItem(title: "BookSearch", image: UIImage(systemName: "book"), tag: 1)
         
         let boardWriteTab = UINavigationController(rootViewController: checkBoardWriteView())
         boardWriteTab.tabBarItem = UITabBarItem(title: "Write", image: UIImage(systemName: "square.and.pencil.circle"), tag: 2)

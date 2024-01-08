@@ -14,4 +14,5 @@ struct BoardWrittenInformation {
     let contentTitle: String
     let content: String
     let likes: Int
+    let boardImage: Data
 }

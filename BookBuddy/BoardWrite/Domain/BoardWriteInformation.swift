@@ -12,10 +12,11 @@ struct BoardWriteInformation {
     let writeDate: String
     let contentTitle: String
     let content: String
+    let boardImage: Data
 }
 
 extension BoardWriteInformation {
     func toRequestDTO() -> BoardWriteDTO {
-        return .init(nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content)
+        return .init(nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, boardImage: boardImage)
     }
 }

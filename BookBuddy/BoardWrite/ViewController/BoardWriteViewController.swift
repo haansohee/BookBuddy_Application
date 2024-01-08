@@ -43,6 +43,7 @@ final class BoardWriteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         addEditingTapGesture()
+        imageUploadTapGesture()
         bindAll()
     }
 }
@@ -57,6 +58,8 @@ extension BoardWriteViewController {
             boardWriteView.translatesAutoresizingMaskIntoConstraints = false
             boardWriteView.titleTextField.delegate = self
             boardWriteView.contentTextView.delegate = self
+            boardWriteView.imagePickerView.delegate = self
+            boardWriteView.imagePickerView.sourceType = .photoLibrary
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardWriteView.uploadButton)
         }
     }
@@ -103,20 +106,56 @@ extension BoardWriteViewController {
         self.view.endEditing(true)
     }
     
+    private func imageUploadTapGesture() {
+        print("imageUploadTapGesture")
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTapGesture))
+        boardWriteView.imageView.isUserInteractionEnabled = true
+        boardWriteView.imageView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func imageViewTapGesture() {
+        print("imageViewTapGesture")
+        let actionSheetController = UIAlertController(title: "글 대표 이미지", message: "이미지를 업로드할까요?", preferredStyle: .actionSheet)
+        
+        let uploadAction = UIAlertAction(title: "앨범에서 선택하기", style: .default) { [weak self] _ in
+            guard let imagePickerViewController = self?.boardWriteView.imagePickerView else { return }
+            imagePickerViewController.allowsEditing = true
+            DispatchQueue.main.async {
+                self?.present(imagePickerViewController, animated: true)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        
+        actionSheetController.addAction(uploadAction)
+        actionSheetController.addAction(cancelAction)
+        
+        present(actionSheetController, animated: true)
+    }
+    
     private func uploadSuccessAlert(title: String, message: String? = nil) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let doneAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
             self?.boardWriteView.titleTextField.text = ""
             self?.boardWriteView.contentTextView.text = ""
+            self?.boardWriteView.imageView.image = UIImage(systemName: "photo")
+            UserDefaults.standard.removeObject(forKey: "boardImage")
         }
         alertController.addAction(doneAction)
         present(alertController, animated: true)
     }
     
+    private func boardBlankAlert(message: String) {
+        let alertActionController = UIAlertController(title: "모두 작성해 주세요.", message: message, preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "확인", style: .default)
+        alertActionController.addAction(doneAction)
+        present(alertActionController, animated: true)
+    }
+    
     private func bindAll() {
         bindJoinButton()
         bindUploadButton()
-        bindIsUpload()
+        bindIsBoardUploaded()
     }
     
     private func bindJoinButton() {
@@ -133,22 +172,35 @@ extension BoardWriteViewController {
             .subscribe(onNext: { [weak self] _ in
                 guard let contentTitle = self?.boardWriteView.titleTextField.text,
                       let content = self?.boardWriteView.contentTextView.text,
-                      let nickname = UserDefaults.standard.string(forKey: "nickname")
-                else { return }
+                      let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
                 
-                if (contentTitle == "") ||
-                    (content == "") { return }
+                if (contentTitle == "") {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "글 제목을 입력해 주세요.")
+                    }
+                } else if (content == "") {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "글 내용을 입력해 주세요.")
+                    }
+                }
+                
+                guard let boardImage = UserDefaults.standard.data(forKey: "boardImage") else {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "게시물을 대표할 이미지를 선택해 주세요.")
+                    }
+                    return
+                }
                 
                 self?.dateFormatter.dateFormat = "yyyy-MM-dd"
                 guard let date = self?.dateFormatter.string(from: Date()) else { return }
-                let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content)
+                let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage)
                 self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindIsUpload() {
-        viewModel.isUpload
+    private func bindIsBoardUploaded() {
+        viewModel.isBoardUploaded
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isUpload in
                 self?.uploadSuccessAlert(title: "업로드 완료", message: "성공적으로 업로드가 되었어요.")
@@ -184,4 +236,22 @@ extension BoardWriteViewController: UITextViewDelegate {
         textView.resignFirstResponder()
         return true
     }
+}
+
+extension BoardWriteViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            boardWriteView.imageView.image = editedImage
+            if let imageData = editedImage.pngData() {
+                UserDefaults.standard.set(imageData, forKey: "boardImage")
+            }
+        } else {
+            print("ERROR")
+        }
+        dismiss(animated: true)
+    }
+}
+
+extension BoardWriteViewController: UINavigationControllerDelegate {
+    
 }
