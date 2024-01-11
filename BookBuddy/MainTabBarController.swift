@@ -14,6 +14,9 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
+        self.tabBar.isTranslucent = false
+        self.tabBar.tintColor = .systemGreen
+        self.tabBar.backgroundColor = .systemBackground
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
         bookSeachTab.tabBarItem = UITabBarItem(title: "책 검색하기", image: UIImage(systemName: "book"), tag: 0)
         
