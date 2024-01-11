@@ -11,7 +11,6 @@ import RxSwift
 final class BoardSearchViewModel {
     private let service = BoardService()
     private(set) var isLoadedBoardSearchResults = PublishSubject<Bool>()
-    private(set) var isLoadedRecentSearchWords = PublishSubject<Bool>()
     private(set) var boardSearchResultsInformations: [BoardSearchResultsInformation]?
     private(set) var searchWords: [String]?
     
