@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MainBoardCollectionViewCell: UICollectionViewCell {
+final class MainBoardCollectionViewCell: UICollectionViewCell {    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .gray

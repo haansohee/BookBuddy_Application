@@ -11,16 +11,17 @@ import RxCocoa
 import UIKit
 
 final class BookSearchViewContoller: UIViewController {
+    private let searchController = SearchController()
     private let bookSearchView = BookSearchView()
     private let viewModel = BookSearchViewModel()
     private let disposeBag = DisposeBag()
-    
     private var endEditingGesture: UITapGestureRecognizer?
    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureBookSearchView()
         setLayoutConstraintsBookSearchView()
+        setupSearchController()
         bindAll()
         addEditingTapGesture()
     }
@@ -34,9 +35,6 @@ extension BookSearchViewContoller {
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
         bookSearchView.searchResultsCollectionView.dataSource = self
         bookSearchView.searchResultsCollectionView.delegate = self
-        
-        bookSearchView.searchTextField.delegate = self
-        bookSearchView.searchTextField.returnKeyType = .done
     }
     
     private func setLayoutConstraintsBookSearchView() {
@@ -48,6 +46,13 @@ extension BookSearchViewContoller {
         ])
     }
     
+    private func setupSearchController() {
+        searchController.setupSearchController()
+        searchController.searchBar.searchTextField.delegate = self
+        self.navigationItem.searchController = searchController
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
     private func addEditingTapGesture() {
         endEditingGesture = UITapGestureRecognizer(target: self, action: #selector(endEditing))
         self.endEditingGesture?.isEnabled = false
@@ -56,29 +61,23 @@ extension BookSearchViewContoller {
     }
     
     @objc private func endEditing() {
-        self.view.endEditing(true)
+        self.searchController.searchBar.endEditing(true)
     }
     
     private func bindAll() {
-        bindSearchButton()
         bindIsParsed()
-    }
-    
-    private func bindSearchButton() {
-        bookSearchView.searchButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
-                guard let bookTitle = self?.bookSearchView.searchTextField.text else { return }
-                self?.viewModel.parsing(bookTitle: bookTitle)
-            })
-            .disposed(by: disposeBag)
     }
     
     private func bindIsParsed() {
         viewModel.isParsed
             .subscribe(onNext: { [weak self] isParsed in
                 guard isParsed else { return }
+                
+                guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
+                
                 DispatchQueue.main.async {
                     self?.bookSearchView.searchResultsCollectionView.reloadData()
+                    self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
                 }
             })
             .disposed(by: disposeBag)
@@ -96,6 +95,13 @@ extension BookSearchViewContoller: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        guard let bookTitle = self.searchController.searchBar.searchTextField.text else { return false }
+        self.viewModel.parsing(bookTitle: bookTitle)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.bookSearchView.searchResultCountLabel.text = "검색 중...📗"
+        }
+        
         return true
     }
 }

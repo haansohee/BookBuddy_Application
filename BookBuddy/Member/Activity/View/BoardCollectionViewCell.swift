@@ -33,10 +33,10 @@ final class BoardCollectionViewCell: UICollectionViewCell {
 extension BoardCollectionViewCell {
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            boardImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 5.0),
-            boardImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 5.0),
-            boardImage.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -5.0),
-            boardImage.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -5.0)
+            boardImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            boardImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            boardImage.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            boardImage.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }
