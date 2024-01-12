@@ -29,7 +29,7 @@ final class BoardSearchViewController: UIViewController {
     
     private var viewType: ViewType
     private let searchController = SearchController()
-    private let boardSearchView = BoardSearchView()
+    private let boardSearchView = BoardSearchCollectionView()
     private let recentSearchView = RecentSearchView()
     private let boardSearchViewModel = BoardSearchViewModel()
     private let disposeBag = DisposeBag()
@@ -41,10 +41,6 @@ final class BoardSearchViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
     }
     
     override func viewDidLoad() {
@@ -120,13 +116,12 @@ final class BoardSearchViewController: UIViewController {
     
     private func bindIsLoadedBoardSearchResults() {
         boardSearchViewModel.isLoadedBoardSearchResults
-            .subscribe(onNext: {[weak self] isLoadedBoardSearchResults in
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isLoadedBoardSearchResults in
                 guard isLoadedBoardSearchResults else { return }
                 guard let resultsCount = self?.boardSearchViewModel.boardSearchResultsInformations?.count else { return }
-                DispatchQueue.main.async {
-                    self?.boardSearchView.reloadData()
-                    self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
-                }
+                self?.boardSearchView.reloadData()
+                self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
             })
             .disposed(by: disposeBag)
     }
@@ -146,7 +141,7 @@ final class BoardSearchViewController: UIViewController {
 extension BoardSearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard let searchWord = textField.text else { return true }
-        if searchWord == "" { return true }
+        if searchWord.isEmpty { return true }
         viewType = .boardSearch
         boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
         boardSearchViewModel.setRecentSearchWord(searchWord)

@@ -12,7 +12,7 @@ final class BoardSearchViewModel {
     private let service = BoardService()
     private(set) var isLoadedBoardSearchResults = PublishSubject<Bool>()
     private(set) var boardSearchResultsInformations: [BoardSearchResultsInformation]?
-    private(set) var searchWords: [String]?
+    private(set) var searchWords: [String] = []
     
     func getBoardSearchResultsInformation(searchWord: String) {
         service.getSearchBoards(searchWord: searchWord) { [weak self] results in
@@ -22,25 +22,25 @@ final class BoardSearchViewModel {
     }
     
     func setRecentSearchWord(_ searchWord: String) {
-        if self.searchWords == nil { self.searchWords = [] }
+        if searchWords.isEmpty { return }
         guard let searchWordList = UserDefaults.standard.array(forKey: "recentSearch") as? [String] else {
-            self.searchWords?.append(searchWord)
+            searchWords.append(searchWord)
             UserDefaults.standard.set(self.searchWords, forKey: "recentSearch")
             return
         }
-        self.searchWords = searchWordList
+        searchWords = searchWordList
         if searchWordList.count >= 20 {
-            self.searchWords?.removeLast()
+            searchWords.removeLast()
         }
-        self.searchWords?.append(searchWord)
-        self.searchWords?.reverse()
-        UserDefaults.standard.set(self.searchWords, forKey: "recentSearch")
+        searchWords.append(searchWord)
+        searchWords.reverse()
+        UserDefaults.standard.set(searchWords, forKey: "recentSearch")
     }
     
     func deleteRecentSearchWord(_ index: Int) {
         guard let searchWordList = UserDefaults.standard.array(forKey: "recentSearch") as? [String] else { return }
-        self.searchWords = searchWordList
-        self.searchWords?.remove(at: index)
-        UserDefaults.standard.set(self.searchWords, forKey: "recentSearch")
+        searchWords = searchWordList
+        searchWords.remove(at: index)
+        UserDefaults.standard.set(searchWords, forKey: "recentSearch")
     }
 }

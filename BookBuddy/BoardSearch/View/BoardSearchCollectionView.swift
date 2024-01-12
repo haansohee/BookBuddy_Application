@@ -1,5 +1,5 @@
 //
-//  BoardSearchView.swift
+//  BoardSearchCollectionView.swift
 //  BookBuddy
 //
 //  Created by 한소희 on 1/9/24.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class BoardSearchView: UICollectionView {
+final class BoardSearchCollectionView: UICollectionView {
     private var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 5.0
