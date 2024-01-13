@@ -13,10 +13,11 @@ struct BoardWriteDTO: Codable {
     let contentTitle: String
     let content: String
     let boardImage: Data
+    let profileImage: Data?
 }
 
 extension BoardWriteDTO {
     func toDomain() -> BoardWriteInformation {
-        return .init(nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, boardImage: boardImage)
+        return .init(nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
     }
 }

@@ -85,4 +85,42 @@ final class BoardService {
         }
         task.resume()
     }
+    
+    func getSearchBoards(searchWord: String, completion: @escaping([BoardSearchResultsInformation]) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = getMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let response = response as? HTTPURLResponse else { return }
+            
+            print("response Code : \(response.statusCode)")
+            
+            switch response.statusCode {
+            case 200..<300:
+                guard let data = data,
+                      let json = try? JSONDecoder().decode([BoardSearchResultsDTO].self, from: data) else {
+                    print("디코딩 실패")
+                    completion([])
+                    return }
+                let boardSearchResultsInformation = json.map { $0.toDomain() }
+                print("result: \(boardSearchResultsInformation)")
+                completion(boardSearchResultsInformation)
+                return
+                
+            default:
+                print("ERROR: \(String(describing: error?.localizedDescription))")
+                return
+            }
+        }
+        task.resume()
+    }
 }

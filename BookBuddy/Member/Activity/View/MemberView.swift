@@ -204,7 +204,7 @@ extension MemberView {
             
             boardLabel.topAnchor.constraint(equalTo: boardCountLabel.bottomAnchor, constant: 2.0),
             boardLabel.centerXAnchor.constraint(equalTo: boardCountLabel.centerXAnchor),
-            boardLabel.heightAnchor.constraint(equalToConstant: 10.0),
+            boardLabel.heightAnchor.constraint(equalToConstant: 15.0),
             boardLabel.widthAnchor.constraint(equalToConstant: 40.0),
             
             followersLabel.topAnchor.constraint(equalTo: followersCountLabel.bottomAnchor, constant: 2.0),

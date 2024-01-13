@@ -193,8 +193,14 @@ extension BoardWriteViewController {
                 
                 self?.dateFormatter.dateFormat = "yyyy-MM-dd"
                 guard let date = self?.dateFormatter.string(from: Date()) else { return }
-                let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage)
-                self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                
+                if let profileImage = UserDefaults.standard.data(forKey: "profile") {
+                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
+                    self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                } else {
+                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: nil)
+                    self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                }
             })
             .disposed(by: disposeBag)
     }

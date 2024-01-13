@@ -14,21 +14,28 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func setupTabBar() {
-        let homeTab = UINavigationController(rootViewController: HomeViewController())
-        homeTab.tabBarItem = UITabBarItem(title: "Main", image: UIImage(systemName: "house"), tag: 0)
-        
+        self.tabBar.isTranslucent = false
+        self.tabBar.tintColor = .systemGreen
+        self.tabBar.backgroundColor = .systemBackground
         let bookSeachTab = UINavigationController(rootViewController: BookSearchViewContoller())
-        bookSeachTab.tabBarItem = UITabBarItem(title: "BookSearch", image: UIImage(systemName: "book"), tag: 1)
+        bookSeachTab.tabBarItem = UITabBarItem(title: "책 검색하기", image: UIImage(systemName: "book"), tag: 0)
+        
+        let boardSearchTab = UINavigationController(rootViewController: BoardSearchViewController())
+        boardSearchTab.tabBarItem = UITabBarItem(title: "둘러보기", image: UIImage(systemName: "magnifyingglass"), tag: 1)
+        
+        let homeTab = UINavigationController(rootViewController: HomeViewController())
+        homeTab.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 2)
         
         let boardWriteTab = UINavigationController(rootViewController: checkBoardWriteView())
-        boardWriteTab.tabBarItem = UITabBarItem(title: "Write", image: UIImage(systemName: "square.and.pencil.circle"), tag: 2)
+        boardWriteTab.tabBarItem = UITabBarItem(title: "글 작성하기", image: UIImage(systemName: "square.and.pencil.circle"), tag: 3)
         
         let memberTab = UINavigationController(rootViewController: checkMemberView())
-        memberTab.tabBarItem = UITabBarItem(title: "Member", image: UIImage(systemName: "person"), tag: 3)
+        memberTab.tabBarItem = UITabBarItem(title: "내 계정", image: UIImage(systemName: "person"), tag: 4)
         
         viewControllers = [
-            homeTab,
             bookSeachTab,
+            boardSearchTab,
+            homeTab,
             boardWriteTab,
             memberTab
         ]
