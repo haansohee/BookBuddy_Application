@@ -14,7 +14,7 @@ struct SigninWithAppleInformation {
 }
 
 extension SigninWithAppleInformation {
-    func toRequestDTO() -> MemberAppleTokenDTO {
+    func toRequestDTO() -> SigninAppleMemberDTO {
         return .init(nickname: nickname, email: email, appleToken: appleToken)
     }
 }

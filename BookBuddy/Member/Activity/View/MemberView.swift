@@ -24,7 +24,7 @@ final class MemberView: UIView {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "name test"
+        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14, weight: .bold)
@@ -46,30 +46,30 @@ final class MemberView: UIView {
     }()
     
     
-    private let boardCountLabel: UILabel = {
+    let boardCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "123"
+        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
         return label
     }()
     
-    private let followersCountLabel: UILabel = {
+    let followersCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "123"
+        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
         return label
     }()
     
-    private let followingCountLabel: UILabel = {
+    let followingCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "123"
+        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
@@ -116,7 +116,6 @@ final class MemberView: UIView {
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .light)
         button.titleLabel?.textAlignment = .center
         button.layer.cornerRadius = 5.0
-        
         return button
     }()
     
@@ -124,14 +123,12 @@ final class MemberView: UIView {
         let layout = UICollectionViewFlowLayout()        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         layout.minimumLineSpacing = 5.0
-
         layout.scrollDirection = .vertical
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "BoardCollectionViewCell")
         collectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         collectionView.isPagingEnabled = false
         collectionView.backgroundColor = .systemBackground
-        
         return collectionView
     }()
     

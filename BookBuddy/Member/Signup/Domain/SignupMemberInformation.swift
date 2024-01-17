@@ -14,7 +14,7 @@ struct SignupMemberInformation {
 }
 
 extension SignupMemberInformation {
-    func toRequestDTO() -> MemberDTO {
+    func toRequestDTO() -> SigninMemberDTO {
         return .init(nickname: nickname, email: email, password: password)
     }
 }

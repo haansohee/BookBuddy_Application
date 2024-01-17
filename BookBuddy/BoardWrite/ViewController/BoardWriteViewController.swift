@@ -107,14 +107,12 @@ extension BoardWriteViewController {
     }
     
     private func imageUploadTapGesture() {
-        print("imageUploadTapGesture")
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTapGesture))
         boardWriteView.imageView.isUserInteractionEnabled = true
         boardWriteView.imageView.addGestureRecognizer(tapGesture)
     }
     
     @objc private func imageViewTapGesture() {
-        print("imageViewTapGesture")
         let actionSheetController = UIAlertController(title: "글 대표 이미지", message: "이미지를 업로드할까요?", preferredStyle: .actionSheet)
         
         let uploadAction = UIAlertAction(title: "앨범에서 선택하기", style: .default) { [weak self] _ in
@@ -198,7 +196,7 @@ extension BoardWriteViewController {
                     let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
                     self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
                 } else {
-                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: nil)
+                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: Data())
                     self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
                 }
             })

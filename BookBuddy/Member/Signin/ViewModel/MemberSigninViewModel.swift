@@ -19,6 +19,9 @@ final class MemberSigninViewModel {
                 UserDefaults.standard.set(memberDTO.nickname, forKey: "nickname")
                 UserDefaults.standard.set(memberDTO.password, forKey: "password")
                 UserDefaults.standard.set(memberDTO.email, forKey: "email")
+                UserDefaults.standard.set(memberDTO.userID, forKey: "userID")
+                UserDefaults.standard.set(memberDTO.profile, forKey: "profile")
+                if (memberDTO.favorite?.isEmpty) != nil { UserDefaults.standard.setValue(memberDTO.favorite, forKey: "favorite") }
                 self?.isSigned.onNext(true)
             } else {
                 self?.isSigned.onNext(false)
