@@ -119,15 +119,15 @@ extension MemberViewController {
     }
     
     private func checkMember() {
-        if let email = UserDefaults.standard.string(forKey: "email"),
-           let nickname = UserDefaults.standard.string(forKey: "nickname")
+        if let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue),
+           let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
         {
-            if let appleToken = UserDefaults.standard.string(forKey: "appleToken") {
+            if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
                 let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
                 self.viewModel.setAppleMemberInformation(appleMemberInformation)
                 viewType = .appleMember
             } else {
-                guard let password = UserDefaults.standard.string(forKey: "password") else { return }
+                guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
                 let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
                 self.viewModel.setMemberInformation(memberInformation)
                 viewType = .member
@@ -138,8 +138,8 @@ extension MemberViewController {
     }
     
     private func settingFavoriteBook() {
-        if let favoriteBook = UserDefaults.standard.string(forKey: "favorite"),
-           let nickname = UserDefaults.standard.string(forKey: "nickname") {
+        if let favoriteBook = UserDefaults.standard.string(forKey: UserDefaultsForkey.favorite.rawValue),
+           let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) {
             memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favoriteBook)"
         } else {
             memberView.favoriteBook.text = "가장 좋아하는 책을 설정해 보세요."
@@ -147,7 +147,7 @@ extension MemberViewController {
     }
     
     private func settingMemberProfileImage() {
-        guard let profileData = UserDefaults.standard.data(forKey: "profile") else {
+        guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
             DispatchQueue.main.async { [weak self] in
                 self?.memberView.profileImageView.image = UIImage(systemName: "person")
             }
@@ -219,12 +219,14 @@ extension MemberViewController {
     }
     
     private func loadBoardInformaions() {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+        print("loadBoard")
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        print("닉네임: \(nickname)")
         viewModel.getMemberBoardInformaion(nickname: nickname)
     }
     
     private func loadFollowListInformation() {
-        let userID = UserDefaults.standard.integer(forKey: "userID")
+        let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
         viewModel.getFollowingListInformation(userID: userID)
         viewModel.getFollowerListInformation(userID: userID)
     }

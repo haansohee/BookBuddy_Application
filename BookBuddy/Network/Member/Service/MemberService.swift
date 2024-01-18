@@ -16,101 +16,75 @@ final class MemberService {
     func getNicknameCheck(nickname: String, completion: @escaping((String)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getNicknameCheck?nickname=\(nickname)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = getMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else { return }
-            
-            switch response.statusCode {
-            case 200..<300:
-                guard let data = data,
-                      let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return}
-                completion(json.nickname)
-                
-                return
-            default:
-                print("ERROR: \(String(describing: error?.localizedDescription))")
-                return
+        urlGetMethod(url: url, requestDTO: SigninMemberDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO.nickname)
+
+            case .failure(let error):
+                print("ERROR: \(error)")
             }
         }
-        task.resume()
     }
     
     func getEmailCheck(email: String, completion: @escaping((String)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getEmailCheck?email=\(email)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = getMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else { return }
-            
-            switch response.statusCode {
-            case 200..<300:
-                guard let data = data,
-                      let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return}
-                completion(json.email)
+        urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO.email)
                 
-                return
-            default:
-                print("ERROR: \(String(describing: error?.localizedDescription))")
-                return
+            case .failure(let error):
+                print("ERROR: \(error)")
             }
         }
-        task.resume()
     }
     
     func getMemberInfo(nickname: String, password: String, completion: @escaping((MemberDTO)) -> Void) {
         print("nickname: \(nickname), password: \(password)")
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberInfo?nickname=\(nickname)&password=\(password)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = getMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else { return }
-            print("response status Code: \(response.statusCode)")
-            switch response.statusCode {
-            case 200..<300:
-                guard let data = data,
-                      let json = try? JSONDecoder().decode(MemberDTO.self, from: data) else { return }
-                completion(json)
-                return
+        urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO)
                 
-            default:
-                print("ERROR: \(String(describing: error?.localizedDescription))")
-                return
+            case .failure(let error):
+                print("ERROR: \(error)")
             }
         }
-        task.resume()
     }
     
     func getAppleMemberInfo(email: String, completion: @escaping((MemberAppleTokenDTO)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getAppleMemberInfo?email=\(email)") else { return }
-        
+        urlGetMethod(url: url, requestDTO: MemberAppleTokenDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO)
+                
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
+    func getSearchMemberInfo(nickname: String, completion: @escaping((SearchMemberInformation)) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchMemberInfo?nickname=\(nickname)") else { return }
+        urlGetMethod(url: url, requestDTO: SearchMemberDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO.toDomain())
+                
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
+    private func urlGetMethod<T: Codable>(url: URL, requestDTO: T.Type, completion: @escaping(Result<T, Error>)->Void) {
         var request = URLRequest(url: url)
         request.httpMethod = getMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -122,11 +96,12 @@ final class MemberService {
             }
             
             guard let response = response as? HTTPURLResponse else { return }
+            
             switch response.statusCode {
             case 200..<300:
                 guard let data = data,
-                      let json = try? JSONDecoder().decode(MemberAppleTokenDTO.self, from: data) else { return }
-                completion(json)
+                      let json = try? JSONDecoder().decode(requestDTO.self, from: data) else { return }
+                completion(.success(json))
                 return
                 
             default:
@@ -140,208 +115,64 @@ final class MemberService {
     func setAppleMemberInfo(with signinWithAppleInformation: SigninWithAppleInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setAppleMemberInfo/") else { return }
-        var request = URLRequest(url: url)
-        let encoder = JSONEncoder()
         let member = signinWithAppleInformation.toRequestDTO()
-        
-        request.httpMethod = postMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            request.httpBody = try encoder.encode(member)
-        } catch {
-            print("ERROR: Encoding Reuqest Data: \(error)")
-            return
+        urlPostMethod(url: url, encodeValue: member) { result in
+            completion(result)
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error)")
-                return
-            }
-            
-            if let data = data {
-                do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is SigninAppleMemberDTO {
-                    }
-                    completion(true)
-                    return
-                } catch {
-                    print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
-                    return
-                }
-            }
-        }
-        task.resume()
     }
     
     func setMemberInfo(with signupMemberInformation: SignupMemberInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/setMemberInfo/") else { return }
-        var request = URLRequest(url: url)
-        let encoder = JSONEncoder()
         let member = signupMemberInformation.toRequestDTO()
-        request.httpMethod = postMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            request.httpBody = try encoder.encode(member)
-        } catch {
-            print("ERROR: Encoding Reuqest Data: \(error)")
-            return
+        urlPostMethod(url: url, encodeValue: member) { result in
+            completion(result)
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error)")
-                return
-            }
-            if let data = data {
-                do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is SigninMemberDTO {
-                    }
-                    completion(true)
-                    return
-                    
-                } catch {
-                    print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
-                    return
-                }
-            }
-        }
-        task.resume()
     }
     
     func updateFavoriteBook(with favotireBookInformation: FavoriteBookInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateFavoriteBook/") else { return }
-        var request = URLRequest(url: url)
-        let encoder = JSONEncoder()
         let favorite = favotireBookInformation.toRequestDTO()
-        
-        request.httpMethod = postMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            request.httpBody = try encoder.encode(favorite)
-        } catch {
-            print("ERROR: Encoding Reuqest Data: \(error)")
-            return
+        urlPostMethod(url: url, encodeValue: favorite) { result in
+            completion(result)
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error)")
-                return
-            }
-            if let data = data {
-                do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FavoriteBookDTO {
-                    }
-                    completion(true)
-                    return
-                    
-                } catch {
-                    print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
-                    return
-                }
-            }
-        }
-        task.resume()
     }
     
     func updateMemberProfile(with memberProfileInformation: MemberUpdateInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberProfile/") else { return }
-        var request = URLRequest(url: url)
-        let encoder = JSONEncoder()
         let memberProfile = memberProfileInformation.toRequestDTO()
-        
-        request.httpMethod = postMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            request.httpBody = try encoder.encode(memberProfile)
-        } catch {
-            print("ERROR: Encoding Reuqest Data: \(error)")
-            return
+        urlPostMethod(url: url, encodeValue: memberProfile) { result in
+            completion(result)
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error)")
-                return
-            }
-            if let data = data {
-                do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberUpdateDTO {
-                    }
-                    completion(true)
-                    return
-                    
-                } catch {
-                    print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
-                    return
-                }
-            }
-        }
-        task.resume()
     }
     
     func updateMemberNickname(with memberNicknameInformation: MemberNicknameUpdateInformation, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberNickname/") else { return }
-        var request = URLRequest(url: url)
-        let encoder = JSONEncoder()
         let memberNickname = memberNicknameInformation.toRequestDTO()
-        
-        request.httpMethod = postMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        do {
-            request.httpBody = try encoder.encode(memberNickname)
-        } catch {
-            print("ERROR: Encoding Reuqest Data: \(error)")
-            return
+        urlPostMethod(url: url, encodeValue: memberNickname) { result in
+            completion(result)
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error)")
-                return
-            }
-            if let data = data {
-                do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is MemberUpdateDTO {
-                    }
-                    completion(true)
-                    return
-                    
-                } catch {
-                    print("ERROR Decoding Response Data: \(error)")
-                    completion(false)
-                    return
-                }
-            }
-        }
-        task.resume()
     }
     
     func deleteMemberProfile(with nickname: String, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteMemberProfile/") else { return }
+        urlPostMethod(url: url, encodeValue: nickname) { result in
+            completion(result)
+        }
+    }
+    
+    private func urlPostMethod<T: Codable>(url: URL, encodeValue: T, completion: @escaping(Bool)->Void) {
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         do {
-            request.httpBody = try encoder.encode(nickname)
+            request.httpBody = try encoder.encode(encodeValue)
         } catch {
             print("ERROR: Encoding Reuqest Data: \(error)")
             return
@@ -354,8 +185,7 @@ final class MemberService {
             }
             if let data = data {
                 do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is String {
-                    }
+                    _ = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                     completion(true)
                     return
                     
@@ -364,37 +194,6 @@ final class MemberService {
                     completion(false)
                     return
                 }
-            }
-        }
-        task.resume()
-    }
-    
-    func getSearchMemberInfo(nickname: String, completion: @escaping((SearchMemberInformation)) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchMemberInfo?nickname=\(nickname)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = getMethod.rawValue
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("ERROR: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let response = response as? HTTPURLResponse else { return }
-            
-            switch response.statusCode {
-            case 200..<300:
-                guard let data = data,
-                      let json = try? JSONDecoder().decode(SearchMemberDTO.self, from: data) else { return }
-                completion(json.toDomain())
-                return
-                
-            default:
-                print("ERROR: \(String(describing: error?.localizedDescription))")
-                return
             }
         }
         task.resume()

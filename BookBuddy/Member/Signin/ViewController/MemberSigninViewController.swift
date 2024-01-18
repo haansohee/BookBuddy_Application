@@ -52,9 +52,9 @@ extension MemberSigninViewController {
     }
     
     private func checkUserDefaults() {
-        if (UserDefaults.standard.string(forKey: "appleToken") != nil) &&
-            (UserDefaults.standard.string(forKey: "email") != nil) &&
-            (UserDefaults.standard.string(forKey: "nickname") != nil) {
+        if (UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil) &&
+            (UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue) != nil) &&
+            (UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) != nil) {
             self.navigationController?.popViewController(animated: true)
         }
     }

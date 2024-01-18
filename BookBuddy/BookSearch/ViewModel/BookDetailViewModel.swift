@@ -13,7 +13,7 @@ final class BookDetailViewModel {
     private let service = MemberService()
     
     func settingFavoriteBook(bookTitle: String) {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else {
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else {
             isSetFavorite.onNext(false)
             return
         }
@@ -23,7 +23,7 @@ final class BookDetailViewModel {
                 self?.isSetFavorite.onNext(false)
                 return
             }
-            UserDefaults.standard.set(bookTitle, forKey: "favorite")
+            UserDefaults.standard.set(bookTitle, forKey: UserDefaultsForkey.favorite.rawValue)
             self?.isSetFavorite.onNext(true)
         }
     }

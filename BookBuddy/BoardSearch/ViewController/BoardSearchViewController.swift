@@ -199,7 +199,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             }
             return boardSearchResults
         case .recentSearch:
-            guard let recentSearchCounts = UserDefaults.standard.array(forKey: "recentSearch")?.count else { return 5 }
+            guard let recentSearchCounts = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue)?.count else { return 5 }
             return recentSearchCounts
         }
     }
@@ -224,7 +224,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             
         case .recentSearch:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecentSearchViewCell", for: indexPath) as? RecentSearchViewCell else { return UICollectionViewCell() }
-            guard let recentSearchInformation = UserDefaults.standard.array(forKey: "recentSearch"),
+            guard let recentSearchInformation = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue),
                   let recentSearchWord = recentSearchInformation[indexPath.row] as? String else { return cell }
             let labelTapGesture = TapGestureRelayValue(target: self, action: #selector(searchWordLabelTapGesture(word:)))
             labelTapGesture.seachWord = recentSearchWord

@@ -88,7 +88,7 @@ extension BoardWriteViewController {
     }
     
     private func checkMember() {
-        guard UserDefaults.standard.string(forKey: "nickname") != nil else {
+        guard UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) != nil else {
             viewType = .notMember
             return
         }
@@ -137,7 +137,7 @@ extension BoardWriteViewController {
             self?.boardWriteView.titleTextField.text = ""
             self?.boardWriteView.contentTextView.text = ""
             self?.boardWriteView.imageView.image = UIImage(systemName: "photo")
-            UserDefaults.standard.removeObject(forKey: "boardImage")
+            UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.boardImage.rawValue)
         }
         alertController.addAction(doneAction)
         present(alertController, animated: true)
@@ -170,7 +170,7 @@ extension BoardWriteViewController {
             .subscribe(onNext: { [weak self] _ in
                 guard let contentTitle = self?.boardWriteView.titleTextField.text,
                       let content = self?.boardWriteView.contentTextView.text,
-                      let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+                      let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
                 
                 if (contentTitle == "") {
                     DispatchQueue.main.async {
@@ -182,7 +182,7 @@ extension BoardWriteViewController {
                     }
                 }
                 
-                guard let boardImage = UserDefaults.standard.data(forKey: "boardImage") else {
+                guard let boardImage = UserDefaults.standard.data(forKey: UserDefaultsForkey.boardImage.rawValue) else {
                     DispatchQueue.main.async {
                         self?.boardBlankAlert(message: "게시물을 대표할 이미지를 선택해 주세요.")
                     }
@@ -192,7 +192,7 @@ extension BoardWriteViewController {
                 self?.dateFormatter.dateFormat = "yyyy-MM-dd"
                 guard let date = self?.dateFormatter.string(from: Date()) else { return }
                 
-                if let profileImage = UserDefaults.standard.data(forKey: "profile") {
+                if let profileImage = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) {
                     let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
                     self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
                 } else {
@@ -247,7 +247,7 @@ extension BoardWriteViewController: UIImagePickerControllerDelegate {
         if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             boardWriteView.imageView.image = editedImage
             if let imageData = editedImage.pngData() {
-                UserDefaults.standard.set(imageData, forKey: "boardImage")
+                UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.boardImage.rawValue)
             }
         } else {
             print("ERROR")

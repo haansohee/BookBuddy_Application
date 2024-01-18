@@ -86,7 +86,7 @@ extension BookDetailViewController {
                 guard let bookTitle = self?.bookDetailView.bookTitleLabel.text else { return }
                 if bookTitle == "" { return }
                 self?.bookDetailViewModel.settingFavoriteBook(bookTitle: bookTitle)
-                UserDefaults.standard.set(bookTitle, forKey: "favorite")
+                UserDefaults.standard.set(bookTitle, forKey: UserDefaultsForkey.favorite.rawValue)
             })
             .disposed(by: disposeBag)
     }

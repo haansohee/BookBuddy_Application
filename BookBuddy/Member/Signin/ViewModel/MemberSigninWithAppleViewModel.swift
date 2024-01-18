@@ -36,12 +36,12 @@ final class MemberSigninWithAppleViewModel {
                 let appleToken = memberAppleTokenDTO.appleToken
                 let userID = memberAppleTokenDTO.userID
                 let profile = memberAppleTokenDTO.profile
-                UserDefaults.standard.set(appleToken, forKey: "appleToken")
-                UserDefaults.standard.set(nickname, forKey: "nickname")
-                UserDefaults.standard.set(email, forKey: "email")
-                UserDefaults.standard.set(userID, forKey: "userID")
-                UserDefaults.standard.set(profile, forKey: "profile")
-                if memberAppleTokenDTO.favorite?.isEmpty != nil { UserDefaults.standard.set(memberAppleTokenDTO.favorite, forKey: "favorite")}
+                UserDefaults.standard.set(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+                UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+                UserDefaults.standard.set(email, forKey: UserDefaultsForkey.email.rawValue)
+                UserDefaults.standard.set(userID, forKey: UserDefaultsForkey.userID.rawValue)
+                UserDefaults.standard.set(profile, forKey: UserDefaultsForkey.profile.rawValue)
+                if memberAppleTokenDTO.favorite?.isEmpty != nil { UserDefaults.standard.set(memberAppleTokenDTO.favorite, forKey: UserDefaultsForkey.favorite.rawValue)}
                 self?.isExistence.onNext(true)
             } else {
                 guard let appleToken = memberAppleTokenDTO.appleToken,

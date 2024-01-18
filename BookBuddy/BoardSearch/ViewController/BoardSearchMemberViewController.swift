@@ -60,7 +60,7 @@ extension BoardSearchMemberViewController {
     }
     
     private func checkFollowed() {
-        let userID = UserDefaults.standard.integer(forKey: "userID")
+        let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
         guard let searchUserID = viewModel.searchMemberInformation?.userID else { return }
         viewModel.checkFollowed(userID: userID, searchUserID: searchUserID)
     }
@@ -78,12 +78,11 @@ extension BoardSearchMemberViewController {
     
     private func bindIsLoadedSearchMember() {
         viewModel.isLoadedSearchMember
-            .subscribe(onNext: {[weak self] isLoadedSearchMember in
-                guard isLoadedSearchMember else { return }
+            .subscribe(onNext: {[weak self] _ in
                 guard let nickname = self?.viewModel.searchMemberInformation?.nickname,
                       let profile = self?.viewModel.searchMemberInformation?.profile,
                       let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
-                let userID = UserDefaults.standard.integer(forKey: "userID")
+                let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
                 DispatchQueue.main.async {
                     self?.memberView.setNameLabel(nickname)
                     if let favorite = self?.viewModel.searchMemberInformation?.favorite {
@@ -91,12 +90,7 @@ extension BoardSearchMemberViewController {
                     } else {
                         self?.memberView.favoriteBook.text = "\(nickname) 님은 아직 가장 좋아하는 책을 \n 설정하지 않았어요. 🥲"
                     }
-                    
-                    if profile.isEmpty {
-                        self?.memberView.profileImageView.image = UIImage(systemName: "person")
-                    } else {
-                        self?.memberView.profileImageView.image = UIImage(data: profile)
-                    }
+                    self?.memberView.profileImageView.image = profile.isEmpty ? UIImage(systemName: "person") : UIImage(data: profile)
                 }
                 self?.memberViewModel.getFollowingListInformation(userID: searchUserID)
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
@@ -109,7 +103,7 @@ extension BoardSearchMemberViewController {
         memberView.editButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
                 guard let followerUserID = self?.viewModel.searchMemberInformation?.userID else { return }
-                let followingUserID = UserDefaults.standard.integer(forKey: "userID")
+                let followingUserID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
                 let followingInformation = FollowingInformation(followingUserID: followingUserID, followerUserID: followerUserID)
                 switch self?.memberView.editButton.tag {
                 case 0:
@@ -139,30 +133,28 @@ extension BoardSearchMemberViewController {
     
     private func bindIsUpdatedFollow() {
         viewModel.isUpdatedFollow
-            .subscribe(onNext: {[weak self] isUpdatedFollow in
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isUpdatedFollow in
                 guard isUpdatedFollow else { return }
                 guard let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
-                DispatchQueue.main.async {
-                    self?.memberView.editButton.setTitle("팔로우 취소", for: .normal)
-                    self?.memberView.editButton.backgroundColor = .lightGray
-                    self?.memberView.editButton.tag = 1
-                }
+                self?.memberView.editButton.setTitle("팔로우 취소", for: .normal)
+                self?.memberView.editButton.backgroundColor = .lightGray
+                self?.memberView.editButton.tag = 1
             })
             .disposed(by: disposeBag)
     }
     
     private func bindIsDeletedFollow() {
         viewModel.isDeletedFollow
-            .subscribe(onNext: {[weak self] isDeletedFollow in
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isDeletedFollow in
                 guard isDeletedFollow else { return }
                 guard let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
-                DispatchQueue.main.async {
-                    self?.memberView.editButton.setTitle("팔로우", for: .normal)
-                    self?.memberView.editButton.backgroundColor = .systemGreen
-                    self?.memberView.editButton.tag = 0
-                }
+                self?.memberView.editButton.setTitle("팔로우", for: .normal)
+                self?.memberView.editButton.backgroundColor = .systemGreen
+                self?.memberView.editButton.tag = 0
             })
             .disposed(by: disposeBag)
     }

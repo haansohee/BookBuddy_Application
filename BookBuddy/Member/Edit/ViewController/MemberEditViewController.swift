@@ -56,7 +56,7 @@ extension MemberEditViewController {
     }
     
     private func settingMemberProfileImage() {
-        guard let profileData = UserDefaults.standard.data(forKey: "profile") else {
+        guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
             DispatchQueue.main.async { [weak self] in
                 self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
             }
@@ -78,7 +78,7 @@ extension MemberEditViewController {
             }
         }
         let deleteAction = UIAlertAction(title: "현재 사진 삭제하기", style: .default) { [weak self] _ in
-            guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+            guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
             DispatchQueue.main.async {
                 self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
             }
@@ -114,6 +114,7 @@ extension MemberEditViewController {
     private func bindNicknameDuplicateButton() {
         memberEditView.nicknameDuplicateButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
+                print("TAP")
                 guard let nickname = self?.memberEditView.nicknameTextField.text else { return }
                 if nickname.isEmpty { return }
                 self?.signupVieWModel.nicknameDuplicateCheck(nickname: nickname)
@@ -124,7 +125,7 @@ extension MemberEditViewController {
     private func bindNicknameEditButton() {
         memberEditView.nicknameEditButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
-                guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
+                guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
                       let newNickname = self?.memberEditView.nicknameTextField.text else { return }
                 if newNickname.isEmpty { return }
                 let memberNicknameUpdateInformation = MemberNicknameUpdateInformation(newNickname: newNickname, nickname: nickname)
@@ -136,14 +137,14 @@ extension MemberEditViewController {
     private func bindSignoutButton() {
         memberEditView.signoutButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                UserDefaults.standard.removeObject(forKey: "nickname")
-                UserDefaults.standard.removeObject(forKey: "password")
-                UserDefaults.standard.removeObject(forKey: "email")
-                UserDefaults.standard.removeObject(forKey: "profile")
-                UserDefaults.standard.removeObject(forKey: "appleToken")
-                UserDefaults.standard.removeObject(forKey: "favorite")
-                UserDefaults.standard.removeObject(forKey: "userID")
-                UserDefaults.standard.removeObject(forKey: "recentSearch")
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
                 DispatchQueue.main.async {
                     self?.navigationController?.popViewController(animated: true)
                 }
@@ -155,7 +156,7 @@ extension MemberEditViewController {
         viewModel.isProfileDeleted
             .subscribe(onNext: { isProfileDeleted in
                 guard isProfileDeleted else { return }
-                UserDefaults.standard.removeObject(forKey: "profile")
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
             })
             .disposed(by: disposeBag)
     }
@@ -168,7 +169,7 @@ extension MemberEditViewController {
                 guard let nickname = self?.memberEditView.nicknameTextField.text else { return }
                 if nickname.isEmpty { return }
                 self?.memberEditView.nicknameTextField.placeholder = nickname
-                UserDefaults.standard.set(nickname, forKey: "nickname")
+                UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
             })
             .disposed(by: disposeBag)
     }
@@ -177,6 +178,7 @@ extension MemberEditViewController {
         signupVieWModel.isChecked
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isChecked in
+                print("isChecked: \(isChecked)")
                 guard isChecked else { return }
                 self?.memberEditView.nicknameDuplicateIdLabel.text = "사용 가능한 닉네임이에요."
                 self?.memberEditView.nicknameEditButton.isEnabled = true
@@ -185,13 +187,13 @@ extension MemberEditViewController {
     }
     
     private func configurePasswordTextField() {
-        if UserDefaults.standard.string(forKey: "appleToken") != nil {
+        if UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil {
             DispatchQueue.main.async { [weak self] in
                 self?.memberEditView.passwordTextField.isHidden = true
                 self?.memberEditView.passwordEditButton.isHidden = true
             }
         } else {
-            guard let password = UserDefaults.standard.string(forKey: "password") else { return }
+            guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
             DispatchQueue.main.async { [weak self] in
                 self?.memberEditView.passwordTextField.placeholder = password
                 self?.memberEditView.passwordTextField.isHidden = false
@@ -201,7 +203,7 @@ extension MemberEditViewController {
     }
     
     private func configureNicknameTextField() {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
         DispatchQueue.main.async { [weak self] in
             self?.memberEditView.nicknameTextField.placeholder = nickname
         }
@@ -255,8 +257,8 @@ extension MemberEditViewController: UIImagePickerControllerDelegate {
         if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             memberEditView.profileImageView.image = editedImage
             if let imageData = editedImage.pngData(),
-               let nickname = UserDefaults.standard.string(forKey: "nickname") {
-                UserDefaults.standard.set(imageData, forKey: "profile")
+               let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) {
+                UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.profile.rawValue)
                 let profileInformation = MemberUpdateInformation(nickname: nickname, profile: imageData)
                 viewModel.updateMemberInformation(profileInformation)
             }

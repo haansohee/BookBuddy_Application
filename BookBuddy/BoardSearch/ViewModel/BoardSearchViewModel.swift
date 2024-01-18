@@ -13,7 +13,7 @@ final class BoardSearchViewModel {
     private let memberService = MemberService()
     private let followService = FollowService()
     private(set) var isLoadedBoardSearchResults = PublishSubject<Bool>()
-    private(set) var isLoadedSearchMember = PublishSubject<Bool>()
+    private(set) var isLoadedSearchMember = BehaviorSubject(value: "noValue")
     private(set) var isUpdatedFollow = PublishSubject<Bool>()
     private(set) var isDeletedFollow = PublishSubject<Bool>()
     private(set) var isCheckedFollowed = PublishSubject<Bool>()
@@ -29,9 +29,9 @@ final class BoardSearchViewModel {
     }
     
     func setRecentSearchWord(_ searchWord: String) {
-        guard let searchWordList = UserDefaults.standard.array(forKey: "recentSearch") as? [String] else {
+        guard let searchWordList = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue) as? [String] else {
             searchWords.append(searchWord)
-            UserDefaults.standard.set(self.searchWords, forKey: "recentSearch")
+            UserDefaults.standard.set(self.searchWords, forKey: UserDefaultsForkey.recentSearch.rawValue)
             return
         }
         searchWords = searchWordList
@@ -39,24 +39,24 @@ final class BoardSearchViewModel {
             searchWords.removeLast()
         }
         searchWords.insert(searchWord, at: 0)
-        UserDefaults.standard.set(searchWords, forKey: "recentSearch")
+        UserDefaults.standard.set(searchWords, forKey: UserDefaultsForkey.recentSearch.rawValue)
     }
     
     func deleteRecentSearchWord(_ index: Int) {
-        guard let searchWordList = UserDefaults.standard.array(forKey: "recentSearch") as? [String] else { return }
+        guard let searchWordList = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue) as? [String] else { return }
         searchWords = searchWordList
         searchWords.remove(at: index)
-        UserDefaults.standard.set(searchWords, forKey: "recentSearch")
+        UserDefaults.standard.set(searchWords, forKey: UserDefaultsForkey.recentSearch.rawValue)
     }
     
     func deleteAllRecentSearchWord() {
-        UserDefaults.standard.removeObject(forKey: "recentSearch")
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
     }
     
     func getBoardSearchMemberInformation(_ nickname: String) {
         memberService.getSearchMemberInfo(nickname: nickname) { [weak self] result in
             self?.searchMemberInformation = result
-            self?.isLoadedSearchMember.onNext(true)
+            self?.isLoadedSearchMember.onNext("valueSet")
         }
     }
     
