@@ -138,11 +138,9 @@ final class BoardSearchViewController: UIViewController {
         }
     }
     
-    @objc private func stackViewTapGesture(nickname: TapGestureRelayValue) {
+    @objc private func searchMemberNicknameTapGesture(nickname: TapGestureRelayValue) {
         guard let nickname = nickname.nickname else { return }
-        DispatchQueue.main.async { [weak self] in
-            self?.navigationController?.pushViewController(BoardSearchMemberViewController(nickname: nickname), animated: true)
-        }
+        navigationController?.pushViewController(BoardSearchMemberViewController(nickname: nickname), animated: true)
     }
     
     @objc private func searchWordLabelTapGesture(word: TapGestureRelayValue) {
@@ -199,7 +197,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             }
             return boardSearchResults
         case .recentSearch:
-            guard let recentSearchCounts = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue)?.count else { return 5 }
+            guard let recentSearchCounts = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue)?.count else { return 0 }
             return recentSearchCounts
         }
     }
@@ -216,7 +214,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 cell.profileImageView.image = UIImage(systemName: "person")
             }
             cell.setBoardSearchViewCell(boardSearchResultsInfo: boardSearchResultsInformation[indexPath.row])
-            let viewTapGesture = TapGestureRelayValue(target: self, action: #selector(stackViewTapGesture(nickname:)))
+            let viewTapGesture = TapGestureRelayValue(target: self, action: #selector(searchMemberNicknameTapGesture(nickname:)))
             viewTapGesture.nickname = boardSearchResultsInformation[indexPath.row].nickname
             cell.touchStackView.addGestureRecognizer(viewTapGesture)
             
