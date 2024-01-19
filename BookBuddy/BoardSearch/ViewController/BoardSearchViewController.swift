@@ -33,6 +33,7 @@ final class BoardSearchViewController: UIViewController {
     private let recentSearchView = RecentSearchView()
     private let boardSearchViewModel = BoardSearchViewModel()
     private let disposeBag = DisposeBag()
+    private var viewTapGesture: UITapGestureRecognizer?
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         self.viewType = .recentSearch
@@ -136,6 +137,25 @@ final class BoardSearchViewController: UIViewController {
             }
         }
     }
+    
+    @objc private func searchMemberNicknameTapGesture(nickname: TapGestureRelayValue) {
+        guard let nickname = nickname.nickname else { return }
+        navigationController?.pushViewController(BoardSearchMemberViewController(nickname: nickname), animated: true)
+    }
+    
+    @objc private func searchWordLabelTapGesture(word: TapGestureRelayValue) {
+        guard let searchWord = word.seachWord else { return }
+        viewType = .boardSearch
+        boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
+        boardSearchViewModel.setRecentSearchWord(searchWord)
+        DispatchQueue.main.async { [weak self] in
+            guard let viewType = self?.viewType else { return }
+            self?.changeBoardSearchView(viewType)
+            self?.setLayoutContraintsBoardSearchView()
+            self?.boardSearchLabel.text = "검색 중...🔎"
+            self?.searchController.searchBar.searchTextField.text = searchWord
+        }
+    }
 }
 
 extension BoardSearchViewController: UITextFieldDelegate {
@@ -177,7 +197,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             }
             return boardSearchResults
         case .recentSearch:
-            guard let recentSearchCounts = UserDefaults.standard.array(forKey: "recentSearch")?.count else { return 5 }
+            guard let recentSearchCounts = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue)?.count else { return 0 }
             return recentSearchCounts
         }
     }
@@ -193,23 +213,25 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             } else {
                 cell.profileImageView.image = UIImage(systemName: "person")
             }
-                
             cell.setBoardSearchViewCell(boardSearchResultsInfo: boardSearchResultsInformation[indexPath.row])
+            let viewTapGesture = TapGestureRelayValue(target: self, action: #selector(searchMemberNicknameTapGesture(nickname:)))
+            viewTapGesture.nickname = boardSearchResultsInformation[indexPath.row].nickname
+            cell.touchStackView.addGestureRecognizer(viewTapGesture)
+            
             return cell
             
         case .recentSearch:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecentSearchViewCell", for: indexPath) as? RecentSearchViewCell else { return UICollectionViewCell() }
-            guard let recentSearchInformation = UserDefaults.standard.array(forKey: "recentSearch"),
+            guard let recentSearchInformation = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue),
                   let recentSearchWord = recentSearchInformation[indexPath.row] as? String else { return cell }
-            cell.setSearchWordLabel(recentSearchWord)
+            let labelTapGesture = TapGestureRelayValue(target: self, action: #selector(searchWordLabelTapGesture(word:)))
+            labelTapGesture.seachWord = recentSearchWord
+            cell.addGestureRecognizer(labelTapGesture)
+            cell.searchWordLabel.text = recentSearchWord
             cell.deleteButton.tag = indexPath.row
             cell.deleteButton.addTarget(self, action: #selector(cellDeleteButtonTap(sender:)), for: .touchUpInside)
             return cell
         }
-    
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     }
 }
 

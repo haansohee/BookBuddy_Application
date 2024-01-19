@@ -15,6 +15,7 @@ final class MemberSigninWithAppleViewModel {
     private(set) var isCompleted = PublishSubject<Bool>()
     private(set) var appleToken: String?
     private(set) var appleEmail: String?
+    private(set) var appleUserID: Int?
     
     func nicknameDuplicateCheck(nickname: String) {
         service.getNicknameCheck(nickname: nickname) { [weak self] getNickname in
@@ -33,16 +34,23 @@ final class MemberSigninWithAppleViewModel {
             if let nickname = memberAppleTokenDTO.nickname {
                 let email = memberAppleTokenDTO.email
                 let appleToken = memberAppleTokenDTO.appleToken
-                UserDefaults.standard.set(appleToken, forKey: "appleToken")
-                UserDefaults.standard.set(nickname, forKey: "nickname")
-                UserDefaults.standard.set(email, forKey: "email")
+                let userID = memberAppleTokenDTO.userID
+                let profile = memberAppleTokenDTO.profile
+                UserDefaults.standard.set(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+                UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+                UserDefaults.standard.set(email, forKey: UserDefaultsForkey.email.rawValue)
+                UserDefaults.standard.set(userID, forKey: UserDefaultsForkey.userID.rawValue)
+                UserDefaults.standard.set(profile, forKey: UserDefaultsForkey.profile.rawValue)
+                if memberAppleTokenDTO.favorite?.isEmpty != nil { UserDefaults.standard.set(memberAppleTokenDTO.favorite, forKey: UserDefaultsForkey.favorite.rawValue)}
                 self?.isExistence.onNext(true)
             } else {
                 guard let appleToken = memberAppleTokenDTO.appleToken,
-                      let email = memberAppleTokenDTO.email else { return }
+                      let email = memberAppleTokenDTO.email,
+                      let userID = memberAppleTokenDTO.userID else { return }
                 
                 self?.setAppleEmail(email)
                 self?.setAppleToken(appleToken)
+                self?.setUserID(userID)
                 self?.isExistence.onNext(false)
             }
         }
@@ -83,6 +91,10 @@ final class MemberSigninWithAppleViewModel {
     
     func setAppleEmail(_ email: String) {
         self.appleEmail = email
+    }
+    
+    func setUserID(_ userID: Int) {
+        self.appleUserID = userID
     }
     
     func appleSignup(with signinWithAppleInformation: SigninWithAppleInformation) {

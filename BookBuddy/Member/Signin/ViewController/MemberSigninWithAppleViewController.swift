@@ -78,6 +78,7 @@ extension MemberSigninWithAppleViewController {
                       let email = self?.viewModel.appleEmail,
                       let appleToken = self?.viewModel.appleToken else { return }
                 if nickname == "" { return }
+
                 self?.viewModel.appleSignup(with: SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken))
             })
             .disposed(by: disposeBag)
@@ -100,11 +101,13 @@ extension MemberSigninWithAppleViewController {
                 if isCompleted {
                     guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text,
                           let email = self?.viewModel.appleEmail,
-                          let appleToken = self?.viewModel.appleToken else { return }
+                          let appleToken = self?.viewModel.appleToken,
+                          let userID = self?.viewModel.appleUserID else { return }
                     
-                    UserDefaults.standard.setValue(nickname, forKey: "nickname")
-                    UserDefaults.standard.setValue(email, forKey: "email")
-                    UserDefaults.standard.setValue(appleToken, forKey: "appleToken")
+                    UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+                    UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
+                    UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+                    UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
                     
                     self?.navigationController?.popViewController(animated: true)
                 }

@@ -51,7 +51,7 @@ final class BoardWriteView: UIView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .systemBackground
-        imageView.image = UIImage(systemName: "photo")
+        imageView.image = UIImage(systemName: "photo.circle")
         imageView.tintColor = .label
         return imageView
     }()

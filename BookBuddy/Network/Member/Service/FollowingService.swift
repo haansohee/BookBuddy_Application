@@ -1,28 +1,28 @@
 //
-//  BoardService.swift
+//  FollowService.swift
 //  BookBuddy
 //
-//  Created by 한소희 on 12/20/23.
+//  Created by 한소희 on 1/17/24.
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
 
-final class BoardService {
+final class FollowService {
     private let postMethod: HTTPMethod = .POST
     private let getMethod: HTTPMethod = .GET
     
-    func setBoardInfo(with boardWriteInformation: BoardWriteInformation, completion: @escaping((Bool)) -> Void) {
+    func setFollowingList(followingInformation: FollowingInformation, completion: @escaping(Bool) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/setBoards/") else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/setFollowingList/") else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
-        let board = boardWriteInformation.toRequestDTO()
+        let followingInformation = followingInformation.toRequestDTO()
+        
         request.httpMethod = postMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
         do {
-            request.httpBody = try encoder.encode(board)
+            request.httpBody = try encoder.encode(followingInformation)
         } catch {
             print("ERROR: Encoding Reuqest Data: \(error)")
             return
@@ -36,10 +36,8 @@ final class BoardService {
             
             if let data = data {
                 do {
-                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is BoardWriteDTO {
-                        print("성공성공")
+                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FollowingDTO {
                     }
-                    print("data: \(data)")
                     completion(true)
                     return
                 } catch {
@@ -52,9 +50,48 @@ final class BoardService {
         task.resume()
     }
     
-    func getMemberBoards(nickname: String, completion: @escaping([BoardWrittenInformation])->Void) {
+    func deleteFollowing(followingInformation: FollowingInformation, completion: @escaping(Bool) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberBoards?nickname=\(nickname)") else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteFollowing/") else { return }
+        var request = URLRequest(url: url)
+        let encoder = JSONEncoder()
+        let followingInformation = followingInformation.toRequestDTO()
+        
+        request.httpMethod = postMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try encoder.encode(followingInformation)
+        } catch {
+            print("ERROR: Encoding Reuqest Data: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error)")
+                return
+            }
+            
+            if let data = data {
+                do {
+                    if try JSONSerialization.jsonObject(with: data, options: .allowFragments) is FollowingDTO {
+                    }
+                    completion(true)
+                    return
+                } catch {
+                    print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
+                    return
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func getFollowingList(userID: Int, completion: @escaping(([FollowingListInformation])) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getFollowingList?userID=\(userID)") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = getMethod.rawValue
@@ -65,19 +102,13 @@ final class BoardService {
                 print("ERROR: \(error.localizedDescription)")
                 return
             }
-            
             guard let response = response as? HTTPURLResponse else { return }
-            
-            print("response Code : \(response.statusCode)")
-            
             switch response.statusCode {
             case 200..<300:
                 guard let data = data,
-                      let json = try? JSONDecoder().decode([BoardWrittenDTO].self, from: data) else {
-                    completion([])
-                    return }
-                let boardWrittenInformaitions = json.map { $0.toDomain() }
-                completion(boardWrittenInformaitions)
+                      let json = try? JSONDecoder().decode([FollowingListDTO].self, from: data) else { return }
+                let followingListInformations = json.map { $0.toDomain() }
+                completion(followingListInformations)
                 return
                 
             default:
@@ -88,9 +119,9 @@ final class BoardService {
         task.resume()
     }
     
-    func getSearchBoards(searchWord: String, completion: @escaping([BoardSearchResultsInformation]) -> Void) {
+    func getFollowerList(userID: Int, completion: @escaping(([FollowerListInformation])) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)") else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getFollowerList?userID=\(userID)") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = getMethod.rawValue
@@ -103,17 +134,12 @@ final class BoardService {
             }
             
             guard let response = response as? HTTPURLResponse else { return }
-            
-            print("response Code : \(response.statusCode)")
-            
             switch response.statusCode {
             case 200..<300:
                 guard let data = data,
-                      let json = try? JSONDecoder().decode([BoardSearchResultsDTO].self, from: data) else {
-                    completion([])
-                    return }
-                let boardSearchResultsInformation = json.map { $0.toDomain() }
-                completion(boardSearchResultsInformation)
+                      let json = try? JSONDecoder().decode([FollowerListDTO].self, from: data) else { return }
+                let followerListInformations = json.map { $0.toDomain() }
+                completion(followerListInformations)
                 return
                 
             default:

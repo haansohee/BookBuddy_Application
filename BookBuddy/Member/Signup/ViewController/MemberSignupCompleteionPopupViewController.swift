@@ -39,7 +39,6 @@ extension MemberSignupCompleteionPopupViewController {
         popupView.layer.cornerRadius = 5.0
     }
 
-    
     @objc private func tapDoneButton() {
         self.dismiss(animated: true)
     }

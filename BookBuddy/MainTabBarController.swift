@@ -43,13 +43,12 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func checkMemberView() -> UIViewController {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname"),
-              let email = UserDefaults.standard.string(forKey: "email") else { return MemberViewController() }
-        
-        if let password = UserDefaults.standard.string(forKey: "password") {
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
+              let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue) else { return MemberViewController() }
+        if let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) {
             let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
             return MemberViewController(memberInformation: memberInformation)
-        } else if let appleToken = UserDefaults.standard.string(forKey: "appleToken") {
+        } else if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
             let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
             return MemberViewController(appleMemberInformation: appleMemberInformation)
         }
@@ -58,7 +57,7 @@ final class MainTabBarController: UITabBarController {
     }
     
     private func checkBoardWriteView() -> UIViewController {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return BoardWriteViewController() }
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return BoardWriteViewController() }
         return BoardWriteViewController(nickname: nickname)
     }
 }

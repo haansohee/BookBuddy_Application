@@ -8,7 +8,10 @@
 import Foundation
 
 struct MemberDTO: Codable {
+    let userID: Int
     let nickname: String
     let email: String
     let password: String
+    let profile: Data
+    let favorite: String?
 }

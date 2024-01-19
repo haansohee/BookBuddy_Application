@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Kingfisher
 import RxSwift
 import RxCocoa
 
@@ -54,6 +53,7 @@ final class MemberViewController: UIViewController {
         setLayoutConstraintsMemberView()
         settingFavoriteBook()
         loadBoardInformaions()
+        loadFollowListInformation()
         settingMemberProfileImage()
     }
     
@@ -119,14 +119,15 @@ extension MemberViewController {
     }
     
     private func checkMember() {
-        if let email = UserDefaults.standard.string(forKey: "email"),
-           let nickname = UserDefaults.standard.string(forKey: "nickname") {
-            if let appleToken = UserDefaults.standard.string(forKey: "appleToken") {
+        if let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue),
+           let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
+        {
+            if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
                 let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
                 self.viewModel.setAppleMemberInformation(appleMemberInformation)
                 viewType = .appleMember
             } else {
-                guard let password = UserDefaults.standard.string(forKey: "password") else { return }
+                guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
                 let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
                 self.viewModel.setMemberInformation(memberInformation)
                 viewType = .member
@@ -137,13 +138,16 @@ extension MemberViewController {
     }
     
     private func settingFavoriteBook() {
-        guard let favoriteBook = UserDefaults.standard.string(forKey: "favorite"),
-              let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
-        memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favoriteBook)"
+        if let favoriteBook = UserDefaults.standard.string(forKey: UserDefaultsForkey.favorite.rawValue),
+           let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) {
+            memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favoriteBook)"
+        } else {
+            memberView.favoriteBook.text = "가장 좋아하는 책을 설정해 보세요."
+        }
     }
     
     private func settingMemberProfileImage() {
-        guard let profileData = UserDefaults.standard.data(forKey: "profile") else {
+        guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
             DispatchQueue.main.async { [weak self] in
                 self?.memberView.profileImageView.image = UIImage(systemName: "person")
             }
@@ -157,6 +161,9 @@ extension MemberViewController {
     private func bindAll() {
         bindJoinButton()
         bindEditButton()
+        bindIsLoadedBoardWrittenInfo()
+        bindIsLoadedFollowingListInfo()
+        bindIsLoadedFollowerListInfo()
     }
     
     private func bindJoinButton() {
@@ -177,12 +184,51 @@ extension MemberViewController {
             .disposed(by: disposeBag)
     }
     
+    private func bindIsLoadedBoardWrittenInfo() {
+        viewModel.isLoadedBoardWrittenInfo
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isLoadedBoardWritten in
+                guard isLoadedBoardWritten else { return }
+                guard let boardCount = self?.viewModel.boardWrittenInformations?.count else { return }
+                self?.memberView.boardCountLabel.text = "\(boardCount)"
+                self?.memberView.boardCollectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsLoadedFollowingListInfo() {
+        viewModel.isLoadedFollowingListInfo
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isLoadedFollowingListInfo in
+                guard isLoadedFollowingListInfo else { return }
+                guard let followingListInfoCount = self?.viewModel.followingListInformations?.count else { return }
+                self?.memberView.followingCountLabel.text = "\(followingListInfoCount)"
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsLoadedFollowerListInfo() {
+        viewModel.isLoadedFollowerListInfo
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isLoadedFollowerListInfo in
+                guard isLoadedFollowerListInfo else { return }
+                guard let followerListInfoCount = self?.viewModel.followerListInformations?.count else { return }
+                self?.memberView.followersCountLabel.text = "\(followerListInfoCount)"
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func loadBoardInformaions() {
-        guard let nickname = UserDefaults.standard.string(forKey: "nickname") else { return }
+        print("loadBoard")
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        print("닉네임: \(nickname)")
         viewModel.getMemberBoardInformaion(nickname: nickname)
-        DispatchQueue.main.async {
-            self.memberView.boardCollectionView.reloadData()
-        }
+    }
+    
+    private func loadFollowListInformation() {
+        let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+        viewModel.getFollowingListInformation(userID: userID)
+        viewModel.getFollowerListInformation(userID: userID)
     }
 }
 

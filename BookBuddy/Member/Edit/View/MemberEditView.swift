@@ -39,7 +39,6 @@ final class MemberEditView: UIView {
     let nicknameTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "테스트"
         textField.font = .systemFont(ofSize: 13.0, weight: .light)
         textField.keyboardType = .asciiCapable
         textField.layer.borderColor = UIColor.systemGray6.cgColor
@@ -60,20 +59,32 @@ final class MemberEditView: UIView {
         return textField
     }()
     
-    private let nicknameEditButton: AnimationButton = {
+    let nicknameDuplicateButton: AnimationButton = {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("아이디 변경하기", for: .normal)
-        button.backgroundColor = .systemGreen
+        button.setTitle("중복확인하기", for: .normal)
+        button.isEnabled = false
+        button.backgroundColor = .lightGray
         button.titleLabel?.textColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 14.0, weight: .medium)
         return button
     }()
     
-    private let nicknameDuplicateIdLabel: UILabel = {
+    let nicknameEditButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("아이디 변경하기", for: .normal)
+        button.isEnabled = false
+        button.backgroundColor = .lightGray
+        button.titleLabel?.textColor = .white
+        button.titleLabel?.font = .systemFont(ofSize: 14.0, weight: .medium)
+        return button
+    }()
+    
+    let nicknameDuplicateIdLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = ""
+        label.text = "영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
         label.numberOfLines = 0
         label.textAlignment = .center
         label.textColor = .systemRed
@@ -91,7 +102,7 @@ final class MemberEditView: UIView {
         return button
     }()
     
-    private let passwordCheckLabel: UILabel = {
+    let passwordCheckLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -140,6 +151,7 @@ extension MemberEditView {
             profileImageView,
             profileUpdateButton,
             nicknameTextField,
+            nicknameDuplicateButton,
             nicknameEditButton,
             nicknameDuplicateIdLabel,
             passwordTextField,
@@ -167,14 +179,19 @@ extension MemberEditView {
             nicknameTextField.widthAnchor.constraint(equalToConstant: 200),
             nicknameTextField.heightAnchor.constraint(equalToConstant: 30.0),
             
-            nicknameEditButton.topAnchor.constraint(equalTo: nicknameTextField.topAnchor),
-            nicknameEditButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            nicknameDuplicateButton.topAnchor.constraint(equalTo: nicknameTextField.topAnchor),
+            nicknameDuplicateButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            nicknameDuplicateButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
+            nicknameDuplicateButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),
+            
+            nicknameEditButton.topAnchor.constraint(equalTo: nicknameTextField.bottomAnchor, constant: 5.0),
+            nicknameEditButton.centerXAnchor.constraint(equalTo: profileImageView.centerXAnchor),
             nicknameEditButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
             nicknameEditButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),
             
-            nicknameDuplicateIdLabel.topAnchor.constraint(equalTo: nicknameTextField.bottomAnchor, constant: 12.0),
+            nicknameDuplicateIdLabel.topAnchor.constraint(equalTo: nicknameEditButton.bottomAnchor, constant: 8.0),
             nicknameDuplicateIdLabel.leadingAnchor.constraint(equalTo: nicknameTextField.leadingAnchor),
-            nicknameDuplicateIdLabel.trailingAnchor.constraint(equalTo: nicknameEditButton.trailingAnchor),
+            nicknameDuplicateIdLabel.trailingAnchor.constraint(equalTo: nicknameDuplicateButton.trailingAnchor),
             nicknameDuplicateIdLabel.heightAnchor.constraint(equalToConstant: 60.0),
             
             passwordTextField.topAnchor.constraint(equalTo: nicknameDuplicateIdLabel.bottomAnchor, constant: 10.0),
@@ -198,7 +215,7 @@ extension MemberEditView {
             withdrawalButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),
             
             signoutButton.bottomAnchor.constraint(equalTo: withdrawalButton.bottomAnchor),
-            signoutButton.trailingAnchor.constraint(equalTo: nicknameEditButton.trailingAnchor),
+            signoutButton.trailingAnchor.constraint(equalTo: nicknameDuplicateButton.trailingAnchor),
             signoutButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
             signoutButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor)
         ])

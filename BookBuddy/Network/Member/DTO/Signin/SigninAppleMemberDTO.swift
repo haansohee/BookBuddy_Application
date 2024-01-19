@@ -1,13 +1,13 @@
 //
-//  MemberAppleTokenDTO.swift
+//  SigninAppleMemberDTO.swift
 //  BookBuddy
 //
-//  Created by 한소희 on 11/24/23.
+//  Created by 한소희 on 1/17/24.
 //
 
 import Foundation
 
-struct MemberAppleTokenDTO: Codable {
+struct SigninAppleMemberDTO: Codable {
     let nickname: String?
     let email: String?
     let appleToken: String?

@@ -8,6 +8,16 @@
 import UIKit
 
 final class BoardSearchViewCell: UICollectionViewCell {
+    let touchStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 5.0
+        stackView.distribution = .fillProportionally
+        return stackView
+    }()
+    
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -144,7 +154,10 @@ extension BoardSearchViewCell {
     private func addSubviews() {
         [
             profileImageView,
-            titleNicknameLabel,
+            titleNicknameLabel
+        ].forEach { touchStackView.addSubview($0) }
+        [
+            touchStackView,
             boardImageView,
             likeButton,
             likeCountLabel,
@@ -159,14 +172,19 @@ extension BoardSearchViewCell {
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            profileImageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 3.0),
-            profileImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 3.0),
-            profileImageView.widthAnchor.constraint(equalToConstant: 30),
+            touchStackView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            touchStackView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            touchStackView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            touchStackView.heightAnchor.constraint(equalToConstant: 30.0),
+            
+            profileImageView.topAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.topAnchor, constant: 3.0),
+            profileImageView.leadingAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.leadingAnchor, constant: 3.0),
+            profileImageView.widthAnchor.constraint(equalTo: touchStackView.heightAnchor),
             profileImageView.heightAnchor.constraint(equalTo: profileImageView.widthAnchor),
             
             titleNicknameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 3.0),
-            titleNicknameLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -3.0),
+            titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.trailingAnchor, constant: -3.0),
             titleNicknameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
             boardImageView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 3.0),
