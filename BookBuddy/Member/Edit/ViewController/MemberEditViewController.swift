@@ -114,7 +114,6 @@ extension MemberEditViewController {
     private func bindNicknameDuplicateButton() {
         memberEditView.nicknameDuplicateButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
-                print("TAP")
                 guard let nickname = self?.memberEditView.nicknameTextField.text else { return }
                 if nickname.isEmpty { return }
                 self?.signupVieWModel.nicknameDuplicateCheck(nickname: nickname)
@@ -178,7 +177,6 @@ extension MemberEditViewController {
         signupVieWModel.isChecked
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isChecked in
-                print("isChecked: \(isChecked)")
                 guard isChecked else { return }
                 self?.memberEditView.nicknameDuplicateIdLabel.text = "사용 가능한 닉네임이에요."
                 self?.memberEditView.nicknameEditButton.isEnabled = true

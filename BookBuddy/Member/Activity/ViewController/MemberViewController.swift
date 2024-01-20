@@ -220,7 +220,6 @@ extension MemberViewController {
     
     private func loadBoardInformaions() {
         guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-        print("닉네임: \(nickname)")
         viewModel.getMemberBoardInformaion(nickname: nickname)
     }
     

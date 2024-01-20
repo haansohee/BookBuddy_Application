@@ -41,7 +41,6 @@ final class MemberService {
     }
     
     func getMemberInfo(nickname: String, password: String, completion: @escaping((MemberDTO)) -> Void) {
-        print("nickname: \(nickname), password: \(password)")
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberInfo?nickname=\(nickname)&password=\(password)") else { return }
         urlSessionMethod.urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
