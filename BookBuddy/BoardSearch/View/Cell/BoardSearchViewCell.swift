@@ -148,6 +148,18 @@ final class BoardSearchViewCell: UICollectionViewCell {
             self?.writeDateLabel.text = boardSearchResultsInfo.writeDate
         }
     }
+    
+    func setFollowingBoardViewCell(followingBoardInfo: FollowingBoardInformation) {
+        DispatchQueue.main.async { [weak self] in
+            self?.titleNicknameLabel.text = followingBoardInfo.nickname
+            self?.boardImageView.image = UIImage(data: followingBoardInfo.boardImage)
+            self?.nicknameLabel.text = followingBoardInfo.nickname
+            self?.contentTitleLabel.text = followingBoardInfo.contentTitle
+            self?.contentLabel.text = followingBoardInfo.content
+            self?.likeCountLabel.text = String(followingBoardInfo.likes)
+            self?.writeDateLabel.text = followingBoardInfo.writeDate
+        }
+    }
 }
 
 extension BoardSearchViewCell {
