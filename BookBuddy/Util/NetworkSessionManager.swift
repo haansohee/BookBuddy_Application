@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class URLSessionMethod {
+final class NetworkSessionManager {
     private let postMethod: HTTPMethod = .POST
     private let getMethod: HTTPMethod = .GET
     

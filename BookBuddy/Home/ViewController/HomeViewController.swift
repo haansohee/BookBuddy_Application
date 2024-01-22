@@ -101,6 +101,7 @@ extension HomeViewController: UICollectionViewDataSource {
         } else {
             cell.profileImageView.image = UIImage(systemName: "person")
         }
+
         cell.setFollowingBoardViewCell(followingBoardInfo: followingBoardInformation[indexPath.row])
         let nicknameTapGesture = TapGestureRelayValue(target: self, action: #selector(followingMemberNicknameTapGesture(nickname:)))
         nicknameTapGesture.nickname = followingBoardInformation[indexPath.row].nickname
