@@ -16,4 +16,5 @@ struct FollowingBoardInformation {
     let likes: Int
     let boardImage: Data
     let profileImage: Data?
+    let didLike: Bool
 }

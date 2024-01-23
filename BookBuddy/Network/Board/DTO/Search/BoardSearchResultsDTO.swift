@@ -16,10 +16,11 @@ struct BoardSearchResultsDTO: Codable {
     let likes: Int
     let boardImage: Data
     let profileImage: Data?
+    let didLike: Bool
 }
 
 extension BoardSearchResultsDTO {
     func toDomain() -> BoardSearchResultsInformation {
-        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage)
+        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage, didLike: didLike)
     }
 }
