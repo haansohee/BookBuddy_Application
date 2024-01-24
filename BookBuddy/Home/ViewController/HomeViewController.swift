@@ -75,11 +75,10 @@ extension HomeViewController {
     private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
         DispatchQueue.main.async {
             guard deleteLike else {
-                if let labelText = label.text {
-                    if var labelTextValue = Int(labelText) {
-                        labelTextValue += 1
-                        label.text = String(labelTextValue)
-                    }
+                if let labelText = label.text,
+                   var labelTextValue = Int(labelText) {
+                    labelTextValue += 1
+                    label.text = String(labelTextValue)
                 }
                 return
             }

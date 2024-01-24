@@ -24,8 +24,6 @@ final class NetworkSessionManager {
             
             guard let response = response as? HTTPURLResponse else { return }
             
-            print(response.statusCode)
-            
             switch response.statusCode {
             case 200..<300:
                 guard let data = data,
