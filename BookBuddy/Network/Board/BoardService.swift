@@ -21,6 +21,24 @@ final class BoardService {
         }
     }
     
+    func setBoardLike(with boardLikeInformation: BoardLikeInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/setBoardLike/") else { return }
+        let boardLikeDTO = boardLikeInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: boardLikeDTO) { result in
+            completion(result)
+        }
+    }
+    
+    func deleteBoardLike(with boardLikeInformation: BoardLikeInformation, completion: @escaping(Bool) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteBoardLike/") else { return }
+        let boardLikeDTO = boardLikeInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: boardLikeDTO) { result in
+            completion(result)
+        }
+    }
+    
     func getMemberBoards(nickname: String, completion: @escaping([BoardWrittenInformation])->Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberBoards?nickname=\(nickname)") else { return }
@@ -36,9 +54,9 @@ final class BoardService {
         }
     }
     
-    func getSearchBoards(searchWord: String, completion: @escaping([BoardSearchResultsInformation]) -> Void) {
+    func getSearchBoards(searchWord: String, userID: Int, completion: @escaping([BoardSearchResultsInformation]) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)") else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)&userID=\(userID)") else { return }
         networkSessionManager.urlGetMethod(url: url, requestDTO: [BoardSearchResultsDTO].self) { result in
             switch result {
             case .success(let responseDTO):
@@ -64,4 +82,18 @@ final class BoardService {
             }
         }
     }
+    
+    func getBoardLikedPostID(userID: Int, completion: @escaping([Int]) -> Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getBoardLikedPostID?userID=\(userID)") else { return }
+        networkSessionManager.urlGetMethod(url: url, requestDTO: [Int].self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO)
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
 }

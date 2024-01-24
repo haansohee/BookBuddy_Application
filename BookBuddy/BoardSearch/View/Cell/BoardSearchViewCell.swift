@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import RxSwift
 
 final class BoardSearchViewCell: UICollectionViewCell {
+    var disposeBag = DisposeBag()
+    
     let touchStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -46,7 +49,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private let likeButton: AnimationButton = {
+    let likeButton: AnimationButton = {
         let button = AnimationButton()
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .systemRed
@@ -54,7 +57,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
         return button
     }()
     
-    private let commentButton: AnimationButton = {
+    let commentButton: AnimationButton = {
         let button = AnimationButton()
         button.setImage(UIImage(systemName: "bubble"), for: .normal)
         button.tintColor = .systemGray3
@@ -62,7 +65,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
         return button
     }()
     
-    private let likeCountLabel: UILabel = {
+    let likeCountLabel: UILabel = {
         let label = UILabel()
         label.text = "0"
         label.textColor = .systemGray
@@ -72,7 +75,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let commentCountLabel: UILabel = {
+    let commentCountLabel: UILabel = {
         let label = UILabel()
         label.text = "0"
         label.textColor = .systemGray
@@ -122,6 +125,11 @@ final class BoardSearchViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 12.0, weight: .light)
         return label
     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)

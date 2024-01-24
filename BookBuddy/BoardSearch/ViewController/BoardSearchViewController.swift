@@ -32,6 +32,7 @@ final class BoardSearchViewController: UIViewController {
     private let boardSearchView = BoardSearchCollectionView()
     private let recentSearchView = RecentSearchView()
     private let boardSearchViewModel = BoardSearchViewModel()
+    private let homeViewModel = HomeViewModel()
     private let disposeBag = DisposeBag()
     private var viewTapGesture: UITapGestureRecognizer?
     
@@ -156,6 +157,23 @@ final class BoardSearchViewController: UIViewController {
             self?.searchController.searchBar.searchTextField.text = searchWord
         }
     }
+    private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
+        guard deleteLike else {
+            if let labelText = label.text {
+                if var labelTextValue = Int(labelText) {
+                    labelTextValue += 1
+                    label.text = String(labelTextValue)
+                }
+            }
+            return
+        }
+        if let labelText = label.text {
+            if var labelTextValue = Int(labelText) {
+                labelTextValue -= 1
+                label.text = String(labelTextValue)
+            }
+        }
+    }
 }
 
 extension BoardSearchViewController: UITextFieldDelegate {
@@ -214,9 +232,47 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 cell.profileImageView.image = UIImage(systemName: "person")
             }
             cell.setBoardSearchViewCell(boardSearchResultsInfo: boardSearchResultsInformation[indexPath.row])
+            if boardSearchResultsInformation[indexPath.row].didLike {
+                cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                cell.likeButton.tag = 1
+            } else {
+                cell.likeButton.tag = 0
+            }
+            
             let viewTapGesture = TapGestureRelayValue(target: self, action: #selector(searchMemberNicknameTapGesture(nickname:)))
             viewTapGesture.nickname = boardSearchResultsInformation[indexPath.row].nickname
             cell.touchStackView.addGestureRecognizer(viewTapGesture)
+            
+            cell.rx.likeButtonTapped
+                .asDriver()
+                .drive(onNext: {[weak self] _ in
+                    guard let likedUserID = self?.boardSearchViewModel.userID else { return }
+                    let boardLikeInformation = BoardLikeInformation(likedUserID: likedUserID, postUserNickname: boardSearchResultsInformation[indexPath.row].nickname, postID: boardSearchResultsInformation[indexPath.row].postID)
+                    
+                    switch cell.likeButton.tag {
+                    case 1:
+                        self?.homeViewModel.deleteBoardLikeInformation(boardLikeInformation) { result in
+                            guard result else { return }
+                            DispatchQueue.main.async {
+                                cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                                cell.likeButton.tag = 0
+                                self?.changeLikeCountLabelValue(label: cell.likeCountLabel, deleteLike: true)
+                            }
+                        }
+                    case 0:
+                        self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
+                            guard result else { return }
+                            DispatchQueue.main.async {
+                                cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                                cell.likeButton.tag = 1
+                                self?.changeLikeCountLabelValue(label: cell.likeCountLabel, deleteLike: false)
+                            }
+                        }
+                    default:
+                        return
+                    }
+                })
+                .disposed(by: cell.disposeBag)
             
             return cell
             

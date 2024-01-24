@@ -20,9 +20,10 @@ final class BoardSearchViewModel {
     private(set) var boardSearchResultsInformations: [BoardSearchResultsInformation]?
     private(set) var searchWords: [String] = []
     private(set) var searchMemberInformation: SearchMemberInformation?
+    private(set) var userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
     
     func getBoardSearchResultsInformation(searchWord: String) {
-        boardService.getSearchBoards(searchWord: searchWord) { [weak self] results in
+        boardService.getSearchBoards(searchWord: searchWord, userID: userID) { [weak self] results in
             self?.boardSearchResultsInformations = results
             self?.isLoadedBoardSearchResults.onNext(true)
         }

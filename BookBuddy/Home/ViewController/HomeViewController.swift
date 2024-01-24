@@ -12,6 +12,7 @@ import RxCocoa
 
 final class HomeViewController: UIViewController {
     private let homeViewCollectionView = BoardSearchCollectionView()
+    private let homewViewCollectionViewCell = BoardSearchViewCell()
     private let homeViewModel = HomeViewModel()
     private let disposeBag = DisposeBag()
     
@@ -71,6 +72,25 @@ extension HomeViewController {
         homeViewModel.getFollowingBoards()
     }
     
+    private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
+        DispatchQueue.main.async {
+            guard deleteLike else {
+                if let labelText = label.text,
+                   var labelTextValue = Int(labelText) {
+                    labelTextValue += 1
+                    label.text = String(labelTextValue)
+                }
+                return
+            }
+            if let labelText = label.text {
+                if var labelTextValue = Int(labelText) {
+                    labelTextValue -= 1
+                    label.text = String(labelTextValue)
+                }
+            }
+        }
+    }
+    
     private func bindIsLoadedFollowingBoardInfo() {
         homeViewModel.isUploadedFollowingBoardInfo
             .asDriver(onErrorJustReturn: "noValue")
@@ -95,17 +115,53 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
         guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return UICollectionViewCell() }
+        if followingBoardInformation[indexPath.row].didLike {
+            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            cell.likeButton.tag = 1
+        } else {
+            cell.likeButton.tag = 0
+        }
         
         if let profileImage = followingBoardInformation[indexPath.row].profileImage {
             cell.profileImageView.image = UIImage(data: profileImage)
         } else {
             cell.profileImageView.image = UIImage(systemName: "person")
         }
-
         cell.setFollowingBoardViewCell(followingBoardInfo: followingBoardInformation[indexPath.row])
+        
         let nicknameTapGesture = TapGestureRelayValue(target: self, action: #selector(followingMemberNicknameTapGesture(nickname:)))
         nicknameTapGesture.nickname = followingBoardInformation[indexPath.row].nickname
         cell.touchStackView.addGestureRecognizer(nicknameTapGesture)
+        
+        cell.rx.likeButtonTapped
+            .asDriver()
+            .drive(onNext: {[weak self] _ in
+                guard let likedUserID = self?.homeViewModel.userID else { return }
+                let boardLikeInformation = BoardLikeInformation(likedUserID: likedUserID, postUserNickname: followingBoardInformation[indexPath.row].nickname, postID: followingBoardInformation[indexPath.row].postID)
+                switch cell.likeButton.tag {
+                case 1:
+                    self?.homeViewModel.deleteBoardLikeInformation(boardLikeInformation) { result in
+                        guard result else { return }
+                        DispatchQueue.main.async {
+                            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                            cell.likeButton.tag = 0
+                        }
+                        self?.changeLikeCountLabelValue(label: cell.likeCountLabel, deleteLike: true)
+                    }
+                case 0:
+                    self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
+                        guard result else { return }
+                        DispatchQueue.main.async {
+                            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                            cell.likeButton.tag = 1
+                        }
+                        self?.changeLikeCountLabelValue(label: cell.likeCountLabel, deleteLike: false)
+                    }
+                default:
+                    return
+                }
+            })
+            .disposed(by: cell.disposeBag)
         
         return cell
     }

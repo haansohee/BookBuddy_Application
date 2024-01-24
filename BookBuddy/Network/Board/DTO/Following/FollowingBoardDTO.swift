@@ -16,10 +16,11 @@ struct FollowingBoardDTO: Codable {
     let likes: Int
     let boardImage: Data
     let profileImage: Data?
+    let didLike: Bool
 }
 
 extension FollowingBoardDTO {
     func toDomain() -> FollowingBoardInformation {
-        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage)
+        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage, didLike: didLike)
     }
 }

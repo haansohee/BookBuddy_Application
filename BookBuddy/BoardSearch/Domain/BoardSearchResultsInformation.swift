@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BoardSearchResultsInformation: Codable {
+struct BoardSearchResultsInformation {
     let postID: Int
     let nickname: String
     let writeDate: String
@@ -16,4 +16,5 @@ struct BoardSearchResultsInformation: Codable {
     let likes: Int
     let boardImage: Data
     let profileImage: Data?
+    let didLike: Bool
 }
