@@ -17,6 +17,7 @@ final class HomeViewModel {
     private(set) var boardLikedPostIDList: [BoardLikeInformation]?
     
     func getFollowingBoards() {
+        userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
         boardService.getFollowingBoards(userID: userID) { [weak self] followingBoardInformation in
             self?.followingBoardInformations = followingBoardInformation
             self?.isUploadedFollowingBoardInfo.onNext("setValue")

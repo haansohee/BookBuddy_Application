@@ -224,8 +224,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
         switch viewType {
         case .boardSearch:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-            guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return UICollectionViewCell() }
-            
+            guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return cell }
             if let profileImage = boardSearchResultsInformation[indexPath.row].profileImage {
                 cell.profileImageView.image = UIImage(data: profileImage)
             } else {
@@ -271,6 +270,12 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                     default:
                         return
                     }
+                })
+                .disposed(by: cell.disposeBag)
+            
+            cell.rx.commentButtonTapped
+                .subscribe(onNext: {[weak self] _ in
+                    self?.present(UINavigationController(rootViewController: CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID)), animated: true)
                 })
                 .disposed(by: cell.disposeBag)
             
