@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 
 final class CommentViewController: UIViewController {
+    private let commentTitelView = CommentTitleView()
     private let commentCollectionView = CommentCollectionView()
     private let commentPostView = CommentPostView()
     private let commentViewModel = CommentViewModel()
@@ -28,6 +29,11 @@ final class CommentViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override var childForStatusBarStyle: UIViewController? {
+        let viewController = HomeViewController()
+        return viewController
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,19 +48,17 @@ final class CommentViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         commentViewModel.loadCommentInformation()
-        navigationController?.present(activityIndicatorViewController, animated: false)
+        self.present(activityIndicatorViewController, animated: false)
     }
 }
 
 extension CommentViewController {
     private func configureCommentView() {
-        self.providesPresentationContextTransitionStyle = true
-        self.definesPresentationContext = true
-        self.modalPresentationStyle = .currentContext
         view.backgroundColor = .systemBackground
-        self.title = "댓글 달기"
-        self.navigationController?.navigationBar.backgroundColor = .systemBackground
+        self.modalPresentationCapturesStatusBarAppearance = true
+        self.sheetPresentationController?.prefersGrabberVisible = true
         activityIndicatorViewController.modalPresentationStyle = .overFullScreen
+        commentTitelView.translatesAutoresizingMaskIntoConstraints = false
         commentCollectionView.translatesAutoresizingMaskIntoConstraints = false
         commentPostView.translatesAutoresizingMaskIntoConstraints = false
         commentCollectionView.dataSource = self
@@ -64,6 +68,7 @@ extension CommentViewController {
     
     private func addSubviews() {
         [
+            commentTitelView,
             commentCollectionView,
             commentPostView
         ].forEach { view.addSubview($0) }
@@ -71,13 +76,18 @@ extension CommentViewController {
     
     private func setLayoutConstraintsComment() {
         NSLayoutConstraint.activate([
-            commentCollectionView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            commentCollectionView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            commentCollectionView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            commentTitelView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            commentTitelView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            commentTitelView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            commentTitelView.heightAnchor.constraint(equalToConstant: 60.0),
+            
+            commentCollectionView.topAnchor.constraint(equalTo: commentTitelView.bottomAnchor),
+            commentCollectionView.leadingAnchor.constraint(equalTo: commentTitelView.leadingAnchor),
+            commentCollectionView.trailingAnchor.constraint(equalTo: commentTitelView.trailingAnchor),
             
             commentPostView.topAnchor.constraint(equalTo: commentCollectionView.bottomAnchor),
-            commentPostView.leadingAnchor.constraint(equalTo: commentCollectionView.leadingAnchor),
-            commentPostView.trailingAnchor.constraint(equalTo: commentCollectionView.trailingAnchor),
+            commentPostView.leadingAnchor.constraint(equalTo: commentTitelView.leadingAnchor),
+            commentPostView.trailingAnchor.constraint(equalTo: commentTitelView.trailingAnchor),
             commentPostView.heightAnchor.constraint(equalToConstant: 60.0),
             commentPostView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
         ])

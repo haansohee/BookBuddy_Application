@@ -34,6 +34,7 @@ final class HomeViewController: UIViewController {
 extension HomeViewController {
     private func configureHomeView() {
         view.backgroundColor = .systemBackground
+        self.title = "홈"
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
         homeViewCollectionView.delegate = self
@@ -162,7 +163,7 @@ extension HomeViewController: UICollectionViewDataSource {
         cell.rx.commentButtonTapped
             .asDriver()
             .drive(onNext: {[weak self] _ in
-                self?.present(UINavigationController(rootViewController: CommentViewController(postID: followingBoardInformation[indexPath.row].postID)), animated: true)
+                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID), animated: true)
             })
             .disposed(by: cell.disposeBag)
         return cell
