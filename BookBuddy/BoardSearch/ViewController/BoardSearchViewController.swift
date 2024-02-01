@@ -153,13 +153,6 @@ final class BoardSearchViewController: UIViewController {
         setLayoutContraintsBoardSearchView()
         boardSearchLabel.text = "검색 중...🔎"
         searchController.searchBar.searchTextField.text = searchWord
-//        DispatchQueue.main.async { [weak self] in
-//            guard let viewType = self?.viewType else { return }
-//            self?.changeBoardSearchView(viewType)
-//            self?.setLayoutContraintsBoardSearchView()
-//            self?.boardSearchLabel.text = "검색 중...🔎"
-//            self?.searchController.searchBar.searchTextField.text = searchWord
-//        }
     }
     private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
         guard deleteLike else {
