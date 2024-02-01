@@ -20,11 +20,9 @@ final class CommentViewController: UIViewController {
     private var endEditingGesture: UITapGestureRecognizer?
     private let textViewPlaceholder = "댓글을 작성해 보세요. 😀"
     
-    init(postID: Int? = nil) {
+    init(postID: Int) {
         super.init(nibName: nil, bundle: nil)
-        if let postID {
-            commentViewModel.setPostID(postID)
-        }
+        commentViewModel.setPostID(postID)
     }
     
     required init?(coder: NSCoder) {
@@ -50,6 +48,9 @@ final class CommentViewController: UIViewController {
 
 extension CommentViewController {
     private func configureCommentView() {
+        self.providesPresentationContextTransitionStyle = true
+        self.definesPresentationContext = true
+        self.modalPresentationStyle = .currentContext
         view.backgroundColor = .systemBackground
         self.title = "댓글 달기"
         self.navigationController?.navigationBar.backgroundColor = .systemBackground

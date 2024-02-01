@@ -13,7 +13,6 @@ import RxCocoa
 final class HomeViewController: UIViewController {
     private let homeViewCollectionView = BoardSearchCollectionView()
     private let homewViewCollectionViewCell = BoardSearchViewCell()
-    private let commentViewController = CommentViewController()
     private let homeViewModel = HomeViewModel()
     private let disposeBag = DisposeBag()
     
@@ -38,9 +37,6 @@ extension HomeViewController {
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
         homeViewCollectionView.delegate = self
-        commentViewController.providesPresentationContextTransitionStyle = true
-        commentViewController.definesPresentationContext = true
-        commentViewController.modalPresentationStyle = .currentContext
     }
     
     private func addSubviews() {
@@ -164,7 +160,8 @@ extension HomeViewController: UICollectionViewDataSource {
             .disposed(by: cell.disposeBag)
         
         cell.rx.commentButtonTapped
-            .subscribe(onNext: {[weak self] _ in
+            .asDriver()
+            .drive(onNext: {[weak self] _ in
                 self?.present(UINavigationController(rootViewController: CommentViewController(postID: followingBoardInformation[indexPath.row].postID)), animated: true)
             })
             .disposed(by: cell.disposeBag)

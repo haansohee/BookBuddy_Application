@@ -149,13 +149,17 @@ final class BoardSearchViewController: UIViewController {
         viewType = .boardSearch
         boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
         boardSearchViewModel.setRecentSearchWord(searchWord)
-        DispatchQueue.main.async { [weak self] in
-            guard let viewType = self?.viewType else { return }
-            self?.changeBoardSearchView(viewType)
-            self?.setLayoutContraintsBoardSearchView()
-            self?.boardSearchLabel.text = "검색 중...🔎"
-            self?.searchController.searchBar.searchTextField.text = searchWord
-        }
+        changeBoardSearchView(viewType)
+        setLayoutContraintsBoardSearchView()
+        boardSearchLabel.text = "검색 중...🔎"
+        searchController.searchBar.searchTextField.text = searchWord
+//        DispatchQueue.main.async { [weak self] in
+//            guard let viewType = self?.viewType else { return }
+//            self?.changeBoardSearchView(viewType)
+//            self?.setLayoutContraintsBoardSearchView()
+//            self?.boardSearchLabel.text = "검색 중...🔎"
+//            self?.searchController.searchBar.searchTextField.text = searchWord
+//        }
     }
     private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
         guard deleteLike else {
@@ -274,7 +278,8 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 .disposed(by: cell.disposeBag)
             
             cell.rx.commentButtonTapped
-                .subscribe(onNext: {[weak self] _ in
+                .asDriver()
+                .drive(onNext: {[weak self] _ in
                     self?.present(UINavigationController(rootViewController: CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID)), animated: true)
                 })
                 .disposed(by: cell.disposeBag)
