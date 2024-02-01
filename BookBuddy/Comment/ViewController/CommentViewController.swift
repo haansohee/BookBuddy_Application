@@ -18,12 +18,14 @@ final class CommentViewController: UIViewController {
     private let homeViewmodel = HomeViewModel()
     private let disposeBag = DisposeBag()
     private let activityIndicatorViewController = ActivityIndicatorViewController()
+    private let keyboardNotification = KeyboardNotification()
     private var endEditingGesture: UITapGestureRecognizer?
     private let textViewPlaceholder = "댓글을 작성해 보세요. 😀"
     
-    init(postID: Int) {
+    init(postID: Int, commentInformation: [CommentInformation]) {
         super.init(nibName: nil, bundle: nil)
         commentViewModel.setPostID(postID)
+        commentViewModel.setCommentInformations(commentInformation)
     }
     
     required init?(coder: NSCoder) {
@@ -41,14 +43,12 @@ final class CommentViewController: UIViewController {
         addSubviews()
         setLayoutConstraintsComment()
         addEditingTapGesture()
-        setKeyboardNotification()
+        keyboardNotification.setKeyboardNotification(self.view)
         bindAll()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        commentViewModel.loadCommentInformation()
-        self.present(activityIndicatorViewController, animated: false)
     }
 }
 
@@ -57,7 +57,6 @@ extension CommentViewController {
         view.backgroundColor = .systemBackground
         self.modalPresentationCapturesStatusBarAppearance = true
         self.sheetPresentationController?.prefersGrabberVisible = true
-        activityIndicatorViewController.modalPresentationStyle = .overFullScreen
         commentTitelView.translatesAutoresizingMaskIntoConstraints = false
         commentCollectionView.translatesAutoresizingMaskIntoConstraints = false
         commentPostView.translatesAutoresizingMaskIntoConstraints = false
@@ -102,39 +101,6 @@ extension CommentViewController {
     
     @objc private func endEditing() {
         self.view.endEditing(true)
-    }
-    
-    private func setKeyboardNotification() {
-        let keyboardWillShow = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-        let keyboardWillHide = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
-        
-        keyboardWillShow
-            .asDriver(onErrorRecover: { _ in .never() })
-            .drive(onNext: {[weak self] notification in
-                self?.handleKeyboardWillShow(notification)
-            })
-            .disposed(by: disposeBag)
-        
-        keyboardWillHide
-            .asDriver(onErrorRecover: { _ in . never() })
-            .drive(onNext: {[weak self] notification in
-                self?.handleKeyboardWillHide(notification)
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func handleKeyboardWillShow(_ notification: Notification) {
-        guard let userInfo = notification.userInfo,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
-        if self.view.frame.origin.y == 0 {
-            self.view.frame.origin.y -= keyboardFrame.height
-        }
-    }
-    
-    private func handleKeyboardWillHide(_ notification: Notification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
     }
     
     private func calculateCellHeight(textString: String) -> CGFloat {
@@ -189,7 +155,6 @@ extension CommentViewController {
                 button.backgroundColor = .systemGreen
                 button.isEnabled = true
                 self?.activityIndicatorViewController.stopButtonTapped(button)
-                self?.activityIndicatorViewController.dismiss(animated: false)
                 self?.commentCollectionView.reloadData()
             })
             .disposed(by: disposeBag)
@@ -221,28 +186,39 @@ extension CommentViewController: UITextViewDelegate {
 
 extension CommentViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let commentInformationCount = commentViewModel.commentInformation?.count else { return 0 }
+        guard let commentInformationCount = commentViewModel.commentInformations?.count else { return 0 }
+        if commentInformationCount == 0 { return 1 }
         return commentInformationCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CommentViewCell", for: indexPath) as? CommentViewCell else { return UICollectionViewCell() }
-        guard let commentInformation = commentViewModel.commentInformation else { return cell }
-        if let profileImage = commentInformation[indexPath.row].profile {
-            cell.profileImage.image = UIImage(data: profileImage)
+        guard let commentInformation = commentViewModel.commentInformations else { return cell }
+        if commentInformation.isEmpty {
+            cell.isHiddenOption(true)
         } else {
-            cell.profileImage.image = UIImage(systemName: "person")
+            cell.isHiddenOption(false)
+            if let profileImage = commentInformation[indexPath.row].profile {
+                cell.profileImage.image = UIImage(data: profileImage)
+            } else {
+                cell.profileImage.image = UIImage(systemName: "person")
+            }
+            cell.setupCommentViewCell(commentInformation[indexPath.row])
         }
-        cell.setupCommentViewCell(commentInformation[indexPath.row])
         return cell
     }
 }
 
 extension CommentViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        guard let commentInformation = commentViewModel.commentInformation else { return .zero }
+        guard let commentInformation = commentViewModel.commentInformations else { return .zero }
         let width = collectionView.bounds.width - 20
-        let height = calculateCellHeight(textString: commentInformation[indexPath.row].commentContent)
-        return CGSize(width: width, height: height)
+        if commentInformation.isEmpty {
+            let height = 300.0
+            return CGSize(width: width, height: height)
+        } else {
+            let height = calculateCellHeight(textString: commentInformation[indexPath.row].commentContent)
+            return CGSize(width: width, height: height)
+        }
     }
 }

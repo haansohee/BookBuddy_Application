@@ -14,6 +14,8 @@ final class HomeViewController: UIViewController {
     private let homeViewCollectionView = BoardSearchCollectionView()
     private let homewViewCollectionViewCell = BoardSearchViewCell()
     private let homeViewModel = HomeViewModel()
+    private let commentViewModel = CommentViewModel()
+    private let activityIndicatorViewController = ActivityIndicatorViewController()
     private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -23,10 +25,6 @@ final class HomeViewController: UIViewController {
         configureHomeView()
         configureRefreshControl()
         bindIsLoadedFollowingBoardInfo()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         loadFollowingBoardInformations()
     }
 }
@@ -38,6 +36,7 @@ extension HomeViewController {
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
         homeViewCollectionView.delegate = self
+        activityIndicatorViewController.modalPresentationStyle = .overFullScreen
     }
     
     private func addSubviews() {
@@ -60,12 +59,10 @@ extension HomeViewController {
     
     @objc private func handleRefreshControl() {
         homeViewModel.getFollowingBoards()
-        DispatchQueue.main.async { [weak self] in
-            self?.homeViewCollectionView.refreshControl?.endRefreshing()
-        }
     }
     
     private func loadFollowingBoardInformations() {
+        navigationController?.present(activityIndicatorViewController, animated: false)
         homeViewModel.getFollowingBoards()
     }
     
@@ -92,7 +89,9 @@ extension HomeViewController {
         homeViewModel.isUploadedFollowingBoardInfo
             .asDriver(onErrorJustReturn: "noValue")
             .drive(onNext: { [weak self] _ in
+                self?.activityIndicatorViewController.dismiss(animated: false)
                 self?.homeViewCollectionView.reloadData()
+                self?.homeViewCollectionView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
     }
@@ -111,7 +110,8 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return UICollectionViewCell() }
+        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
+        cell.commentCountLabel.text = String(followingBoardInformation[indexPath.row].comments.count)
         if followingBoardInformation[indexPath.row].didLike {
             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             cell.likeButton.tag = 1
@@ -163,7 +163,7 @@ extension HomeViewController: UICollectionViewDataSource {
         cell.rx.commentButtonTapped
             .asDriver()
             .drive(onNext: {[weak self] _ in
-                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID), animated: true)
+                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID, commentInformation: followingBoardInformation[indexPath.row].comments), animated: true)
             })
             .disposed(by: cell.disposeBag)
         return cell

@@ -17,4 +17,5 @@ struct BoardSearchResultsInformation {
     let boardImage: Data
     let profileImage: Data?
     let didLike: Bool
+    var comments: [CommentInformation]
 }

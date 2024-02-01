@@ -8,10 +8,9 @@
 import UIKit
 
 final class MemberSignupWithEmailView: UIScrollView {    
-    let containerView: UIView = {
+    private let containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        
         return view
     }()
     

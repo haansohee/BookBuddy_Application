@@ -27,8 +27,7 @@ final class CommentPostView: UIView {
         button.setTitle("게시", for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 12.0)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .lightGray
-        button.isEnabled = false
+        button.backgroundColor = .systemGreen
         button.layer.cornerRadius = 6.0
         return button
     }()

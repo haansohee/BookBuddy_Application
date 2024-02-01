@@ -33,6 +33,7 @@ final class BoardSearchViewController: UIViewController {
     private let recentSearchView = RecentSearchView()
     private let boardSearchViewModel = BoardSearchViewModel()
     private let homeViewModel = HomeViewModel()
+    private let commentViewModel = CommentViewModel()
     private let disposeBag = DisposeBag()
     private var viewTapGesture: UITapGestureRecognizer?
     
@@ -50,6 +51,7 @@ final class BoardSearchViewController: UIViewController {
         setupSearchController()
         setupBoardSearchViewController()
         setLayoutContraintsBoardSearchView()
+        configureRefreshControl()
         bindIsLoadedBoardSearchResults()
     }
     
@@ -63,6 +65,7 @@ final class BoardSearchViewController: UIViewController {
     
     private func setupBoardSearchViewController() {
         self.view.backgroundColor = .systemBackground
+        self.title = "둘러보기"
         [
             boardSearchLabel,
             recentSearchView
@@ -116,6 +119,16 @@ final class BoardSearchViewController: UIViewController {
         }
     }
     
+    private func configureRefreshControl() {
+        boardSearchView.refreshControl = UIRefreshControl()
+        boardSearchView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+    }
+    
+    @objc private func handleRefreshControl() {
+        guard let searchWord = searchController.searchBar.searchTextField.text else { return }
+        boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
+    }
+    
     private func bindIsLoadedBoardSearchResults() {
         boardSearchViewModel.isLoadedBoardSearchResults
             .asDriver(onErrorJustReturn: false)
@@ -124,6 +137,7 @@ final class BoardSearchViewController: UIViewController {
                 guard let resultsCount = self?.boardSearchViewModel.boardSearchResultsInformations?.count else { return }
                 self?.boardSearchView.reloadData()
                 self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
+                self?.boardSearchView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
     }
@@ -227,6 +241,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             } else {
                 cell.profileImageView.image = UIImage(systemName: "person")
             }
+            cell.commentCountLabel.text = String(boardSearchResultsInformation[indexPath.row].comments.count)
             cell.setBoardSearchViewCell(boardSearchResultsInfo: boardSearchResultsInformation[indexPath.row])
             if boardSearchResultsInformation[indexPath.row].didLike {
                 cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
@@ -273,7 +288,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             cell.rx.commentButtonTapped
                 .asDriver()
                 .drive(onNext: {[weak self] _ in
-                    self?.present(UINavigationController(rootViewController: CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID)), animated: true)
+                    self?.present(CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID, commentInformation: boardSearchResultsInformation[indexPath.row].comments), animated: true)
                 })
                 .disposed(by: cell.disposeBag)
             

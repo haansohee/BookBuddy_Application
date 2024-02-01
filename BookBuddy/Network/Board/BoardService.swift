@@ -62,7 +62,6 @@ final class BoardService {
             case .success(let responseDTO):
                 let boardSearchResultsInformation = responseDTO.map { $0.toDomain() }
                 completion(boardSearchResultsInformation)
-                
             case .failure(let error):
                 print("ERROR: \(error)")
             }

@@ -8,6 +8,17 @@
 import UIKit
 
 final class CommentViewCell: UICollectionViewCell {
+    private let isEmptyLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        label.text = "아직 댓글이 없어요. 댓글을 작성해 보세요."
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.textColor = .label
+        return label
+    }()
+    
     let profileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -68,11 +79,32 @@ final class CommentViewCell: UICollectionViewCell {
         writeDateLabel.text = commentInformation.writeDate
         commentLabel.text = commentInformation.commentContent
     }
+    
+    func isHiddenOption(_ checkIsEmpty: Bool) {
+        if checkIsEmpty {
+            isEmptyLabel.isHidden = false
+            [
+                profileImage,
+                nicknameLabel,
+                writeDateLabel,
+                commentLabel
+            ].forEach { $0.isHidden = true}
+        } else {
+            isEmptyLabel.isHidden = true
+            [
+                profileImage,
+                nicknameLabel,
+                writeDateLabel,
+                commentLabel
+            ].forEach { $0.isHidden = false}
+        }
+    }
 }
 
 extension CommentViewCell {
     private func addSubviews() {
         [
+            isEmptyLabel,
             profileImage,
             nicknameLabel,
             writeDateLabel,
@@ -82,6 +114,11 @@ extension CommentViewCell {
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
+            isEmptyLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
+            isEmptyLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+            isEmptyLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: 8.0),
+            isEmptyLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: 8.0),
+            
             profileImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
             profileImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
             profileImage.widthAnchor.constraint(equalToConstant: 30.0),

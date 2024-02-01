@@ -127,6 +127,15 @@ final class MemberService {
         }
     }
     
+    func updateMemberPassword(with memberPasswordInformation: MemberPasswordUpdateInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberPassword/") else { return }
+        let memberPassword = memberPasswordInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: memberPassword) { result in
+            completion(result)
+        }
+    }
+    
     func deleteMemberProfile(with nickname: String, completion: @escaping((Bool)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteMemberProfile/") else { return }

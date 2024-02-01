@@ -13,6 +13,7 @@ final class MemberEditViewModel {
     private var isProfileUpdated = PublishSubject<Bool>()
     private(set) var isProfileDeleted = PublishSubject<Bool>()
     private(set) var isNicknameUpdated = PublishSubject<Bool>()
+    private(set) var isPasswordUpdated = PublishSubject<Bool>()
     private(set) var memberUpdateInformation: MemberUpdateInformation?
     
     func setMemberUpdateInformation(_ memberProfileInformation: MemberUpdateInformation) {
@@ -25,9 +26,19 @@ final class MemberEditViewModel {
         }
     }
     
-    func udpateMemberNickname(_ memberNicknameInformation: MemberNicknameUpdateInformation) {
+    func updateMemberNickname(_ memberNicknameInformation: MemberNicknameUpdateInformation) {
         service.updateMemberNickname(with: memberNicknameInformation) { [weak self] isNicknameUpdated in
             self?.isNicknameUpdated.onNext(isNicknameUpdated)
+            guard isNicknameUpdated else { return }
+            UserDefaults.standard.set(memberNicknameInformation.newNickname, forKey: UserDefaultsForkey.nickname.rawValue)
+        }
+    }
+    
+    func updateMemberPassword(_ memberPasswordInformation: MemberPasswordUpdateInformation) {
+        service.updateMemberPassword(with: memberPasswordInformation) { [weak self] isPasswordUpdated in
+            self?.isPasswordUpdated.onNext(isPasswordUpdated)
+            guard isPasswordUpdated else { return }
+            UserDefaults.standard.set(memberPasswordInformation.newPassword, forKey: UserDefaultsForkey.password.rawValue)
         }
     }
     

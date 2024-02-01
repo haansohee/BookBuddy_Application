@@ -13,12 +13,16 @@ final class CommentViewModel {
     private let dateFormatter = DateFormatter()
     private(set) var isCommentUploaded = PublishSubject<Bool>()
     private(set) var isCommentLoaded = PublishSubject<Bool>()
-    private(set) var commentInformation: [CommentInformation]?
+    private(set) var commentInformations: [CommentInformation]?
     private var uploadProfile: Data?
     private(set) var postID: Int?
     
     func setPostID(_ postID: Int) {
         self.postID = postID
+    }
+    
+    func setCommentInformations(_ commentInformations: [CommentInformation]) {
+        self.commentInformations = commentInformations
     }
     
     func commentUpload(userID: Int, commentContent: String) {
@@ -39,9 +43,10 @@ final class CommentViewModel {
     }
     
     func loadCommentInformation() {
+        print("loadCommentInformation Method Start")
         guard let postID = postID else { return }
         commentService.getCommentInfo(postID: postID) { [weak self] result in
-            self?.commentInformation = result
+            self?.commentInformations = result
             self?.isCommentLoaded.onNext(!result.isEmpty)
         }
     }

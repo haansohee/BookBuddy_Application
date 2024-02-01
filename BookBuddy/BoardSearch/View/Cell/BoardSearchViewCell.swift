@@ -35,7 +35,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let titleNicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트닉네임"
+        label.text = "로딩 중"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 13.0, weight: .bold)
@@ -67,7 +67,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     
     let likeCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
+        label.text = "로딩 중"
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .center
@@ -77,7 +77,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     
     let commentCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
+        label.text = "로딩 중"
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .center
@@ -89,7 +89,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let nicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트닉네임"
+        label.text = "로딩 중"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12, weight: .bold)
@@ -99,7 +99,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let contentTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트제목"
+        label.text = "로딩 중"
         label.textAlignment = .left
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 13.0, weight: .bold)
@@ -109,7 +109,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트내용"
+        label.text = "로딩 중"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12.0, weight: .light)
@@ -119,7 +119,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let writeDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트날짜"
+        label.text = "로딩 중"
         label.textAlignment = .left
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 12.0, weight: .light)

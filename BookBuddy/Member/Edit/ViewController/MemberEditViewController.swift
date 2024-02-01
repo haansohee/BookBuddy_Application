@@ -16,12 +16,16 @@ final class MemberEditViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let signupVieWModel = MemberSignupWithEmailViewModel()
     private let viewModel = MemberEditViewModel()
+    private let keyboardNotification = KeyboardNotification()
+    private var endEditingGesture: UITapGestureRecognizer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubview()
         configureMemberEditView()
         setLayoutConstraints()
+        addEditingTapGesture()
+        keyboardNotification.scrollViewSetKeyboardNotification(memberEditView)
         bindAll()
     }
     
@@ -42,6 +46,7 @@ extension MemberEditViewController {
         self.view.backgroundColor = .systemBackground
         memberEditView.translatesAutoresizingMaskIntoConstraints = false
         memberEditView.nicknameTextField.delegate = self
+        memberEditView.passwordTextField.delegate = self
         memberEditView.imagePickerView.delegate = self
         memberEditView.imagePickerView.sourceType = .photoLibrary
     }
@@ -93,6 +98,24 @@ extension MemberEditViewController {
         present(actionSheetController, animated: true)
     }
     
+    private func addEditingTapGesture() {
+        endEditingGesture = UITapGestureRecognizer(target: self, action: #selector(endEditing))
+        self.endEditingGesture?.isEnabled = false
+        guard let endEditingGesture = endEditingGesture else { return }
+        self.view.addGestureRecognizer(endEditingGesture)
+    }
+    
+    @objc private func endEditing() {
+        self.view.endEditing(true)
+    }
+    
+    private func successEdit(message: String) {
+        let alertActionController = UIAlertController(title: "변경 완료!", message: "\(message)가 변경되었어요!", preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "확인", style: .default)
+        alertActionController.addAction(doneAction)
+        present(alertActionController, animated: true)
+    }
+    
     private func bindAll() {
         bindSignoutButton()
         bindProfileUpdateButton()
@@ -101,6 +124,8 @@ extension MemberEditViewController {
         bindIsProfileDeleted()
         bindIsNickanmeUpdated()
         bindIsChecked()
+        bindPasswordEditButton()
+        bindIsPasswordUpdated()
     }
     
     private func bindProfileUpdateButton() {
@@ -128,7 +153,19 @@ extension MemberEditViewController {
                       let newNickname = self?.memberEditView.nicknameTextField.text else { return }
                 if newNickname.isEmpty { return }
                 let memberNicknameUpdateInformation = MemberNicknameUpdateInformation(newNickname: newNickname, nickname: nickname)
-                self?.viewModel.udpateMemberNickname(memberNicknameUpdateInformation)
+                self?.viewModel.updateMemberNickname(memberNicknameUpdateInformation)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindPasswordEditButton() {
+        memberEditView.passwordEditButton.rx.tap
+            .subscribe(onNext: {[weak self] _ in
+                guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
+                      let newPassword = self?.memberEditView.passwordTextField.text else { return }
+                if newPassword.isEmpty { return }
+                let memberPasswordUpdateInformation = MemberPasswordUpdateInformation(newPassword: newPassword, nickname: nickname)
+                self?.viewModel.updateMemberPassword(memberPasswordUpdateInformation)
             })
             .disposed(by: disposeBag)
     }
@@ -168,7 +205,30 @@ extension MemberEditViewController {
                 guard let nickname = self?.memberEditView.nicknameTextField.text else { return }
                 if nickname.isEmpty { return }
                 self?.memberEditView.nicknameTextField.placeholder = nickname
-                UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+                self?.memberEditView.nicknameTextField.text = nil
+                self?.memberEditView.nicknameDuplicateIdLabel.text = "아이디는 영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
+                [
+                    self?.memberEditView.nicknameDuplicateButton,
+                    self?.memberEditView.nicknameEditButton
+                ].forEach {
+                    $0?.backgroundColor = .lightGray
+                    $0?.isEnabled = false
+                }
+                self?.successEdit(message: "아이디")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsPasswordUpdated() {
+        viewModel.isPasswordUpdated
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isPasswordUpdated in
+                guard isPasswordUpdated else { return }
+                self?.memberEditView.passwordTextField.text = nil
+                self?.memberEditView.passwordCheckLabel.text = "비밀번호는 영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요"
+                self?.memberEditView.passwordEditButton.backgroundColor = .lightGray
+                self?.memberEditView.passwordEditButton.isEnabled = false
+                self?.successEdit(message: "비밀번호")
             })
             .disposed(by: disposeBag)
     }
@@ -186,29 +246,31 @@ extension MemberEditViewController {
     
     private func configurePasswordTextField() {
         if UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil {
-            DispatchQueue.main.async { [weak self] in
-                self?.memberEditView.passwordTextField.isHidden = true
-                self?.memberEditView.passwordEditButton.isHidden = true
-            }
+            memberEditView.passwordTextField.isHidden = true
+            memberEditView.passwordEditButton.isHidden = true
         } else {
-            guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
-            DispatchQueue.main.async { [weak self] in
-                self?.memberEditView.passwordTextField.placeholder = password
-                self?.memberEditView.passwordTextField.isHidden = false
-                self?.memberEditView.passwordEditButton.isHidden = false
-            }
+            memberEditView.passwordTextField.isHidden = false
+            memberEditView.passwordEditButton.isHidden = false
         }
     }
     
     private func configureNicknameTextField() {
         guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-        DispatchQueue.main.async { [weak self] in
-            self?.memberEditView.nicknameTextField.placeholder = nickname
-        }
+        memberEditView.nicknameTextField.placeholder = nickname
     }
 }
 
 extension MemberEditViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.endEditingGesture?.isEnabled = true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.endEditingGesture?.isEnabled = false
+    }
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+    }
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         switch textField {
         case memberEditView.nicknameTextField:
@@ -224,7 +286,7 @@ extension MemberEditViewController: UITextFieldDelegate {
             } else {
                 memberEditView.nicknameDuplicateButton.isEnabled = false
                 memberEditView.nicknameDuplicateButton.backgroundColor = .lightGray
-                memberEditView.nicknameDuplicateIdLabel.text = "영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
+                memberEditView.nicknameDuplicateIdLabel.text = "아이디는 영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
             }
             return true
                   
@@ -233,7 +295,6 @@ extension MemberEditViewController: UITextFieldDelegate {
                   let newRange = Range(range, in: password) else { return true }
             let inputPassword = string.trimmingCharacters(in: .whitespacesAndNewlines)
             let newPassword = password.replacingCharacters(in: newRange, with: inputPassword).trimmingCharacters(in: .whitespacesAndNewlines)
-            
             if newPassword.isValidPassword {
                 memberEditView.passwordEditButton.isEnabled = true
                 memberEditView.passwordEditButton.backgroundColor = .systemGreen
@@ -241,7 +302,7 @@ extension MemberEditViewController: UITextFieldDelegate {
             } else {
                 memberEditView.passwordEditButton.isEnabled = false
                 memberEditView.passwordEditButton.backgroundColor = .lightGray
-                memberEditView.passwordCheckLabel.text = "영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요"
+                memberEditView.passwordCheckLabel.text = "비밀번호는 영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요"
             }
             return true
             
