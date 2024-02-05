@@ -135,6 +135,7 @@ final class BoardSearchViewController: UIViewController {
             .drive(onNext: {[weak self] isLoadedBoardSearchResults in
                 guard isLoadedBoardSearchResults else { return }
                 guard let resultsCount = self?.boardSearchViewModel.boardSearchResultsInformations?.count else { return }
+                self?.boardSearchView.hideSkeleton()
                 self?.boardSearchView.reloadData()
                 self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
                 self?.boardSearchView.refreshControl?.endRefreshing()

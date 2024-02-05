@@ -27,6 +27,11 @@ final class HomeViewController: UIViewController {
         bindIsLoadedFollowingBoardInfo()
         loadFollowingBoardInformations()
     }
+    
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        present(activityIndicatorViewController, animated: true)
+//    }
 }
 
 extension HomeViewController {
@@ -62,7 +67,10 @@ extension HomeViewController {
     }
     
     private func loadFollowingBoardInformations() {
-        navigationController?.present(activityIndicatorViewController, animated: false)
+        DispatchQueue.main.async { [weak self] in
+            guard let activityIndicatorViewController = self?.activityIndicatorViewController else { return }
+            self?.present(activityIndicatorViewController, animated: false)
+        }
         homeViewModel.getFollowingBoards()
     }
     

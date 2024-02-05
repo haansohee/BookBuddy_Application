@@ -29,7 +29,7 @@ final class MemberService {
     func getEmailCheck(email: String, completion: @escaping((String)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getEmailCheck?email=\(email)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
+        networkSessionManager.urlGetMethod(url: url, requestDTO: SigninMemberDTO.self) { result in
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO.email)
@@ -46,6 +46,7 @@ final class MemberService {
         networkSessionManager.urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
             switch result {
             case .success(let responseDTO):
+                print("responseDTO: \(responseDTO)")
                 completion(responseDTO)
                 
             case .failure(let error):

@@ -9,9 +9,11 @@ import Foundation
 import RxSwift
 import RxCocoa
 import UIKit
+import SkeletonView
 
 final class BookSearchViewContoller: UIViewController {
     private let searchController = SearchController()
+    private let testCell = SearchResultCell()
     private let bookSearchView = BookSearchView()
     private let viewModel = BookSearchViewModel()
     private let disposeBag = DisposeBag()
@@ -70,15 +72,12 @@ extension BookSearchViewContoller {
     
     private func bindIsParsed() {
         viewModel.isParsed
-            .subscribe(onNext: { [weak self] isParsed in
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isParsed in
                 guard isParsed else { return }
-                
                 guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
-                
-                DispatchQueue.main.async {
-                    self?.bookSearchView.searchResultsCollectionView.reloadData()
-                    self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
-                }
+                self?.bookSearchView.searchResultsCollectionView.reloadData()
+                self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
             })
             .disposed(by: disposeBag)
     }
@@ -97,11 +96,9 @@ extension BookSearchViewContoller: UITextFieldDelegate {
         textField.resignFirstResponder()
         guard let bookTitle = self.searchController.searchBar.searchTextField.text else { return false }
         self.viewModel.parsing(bookTitle: bookTitle)
-        
         DispatchQueue.main.async { [weak self] in
             self?.bookSearchView.searchResultCountLabel.text = "검색 중...📗"
         }
-        
         return true
     }
 }
@@ -113,7 +110,7 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchResultCell", for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
-        
+        cell.hideSkeletonView()
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
         let category = viewModel.category[indexPath.row]

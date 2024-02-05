@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 import RxSwift
 import RxCocoa
 
@@ -71,6 +72,9 @@ extension BookDetailViewController {
                     description: bookData.description,
                     image: data)
             guard let information = self?.bookSearchViewModel.bookInformations else { return }
+            DispatchQueue.main.async {
+                self?.bookDetailView.hideSkeletonView()
+            }
             self?.bookDetailView.setBookInformation(information)
         }
     }

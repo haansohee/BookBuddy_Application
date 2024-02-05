@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 import RxSwift
 import RxCocoa
 
@@ -190,6 +191,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedBoardWritten in
                 guard isLoadedBoardWritten else { return }
                 guard let boardCount = self?.viewModel.boardWrittenInformations?.count else { return }
+                self?.memberView.boardCountLabel.hideSkeleton()
                 self?.memberView.boardCountLabel.text = "\(boardCount)"
                 self?.memberView.boardCollectionView.reloadData()
             })
@@ -202,6 +204,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowingListInfo in
                 guard isLoadedFollowingListInfo else { return }
                 guard let followingListInfoCount = self?.viewModel.followingListInformations?.count else { return }
+                self?.memberView.followingCountLabel.hideSkeleton()
                 self?.memberView.followingCountLabel.text = "\(followingListInfoCount)"
             })
             .disposed(by: disposeBag)
@@ -213,6 +216,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowerListInfo in
                 guard isLoadedFollowerListInfo else { return }
                 guard let followerListInfoCount = self?.viewModel.followerListInformations?.count else { return }
+                self?.memberView.followersCountLabel.hideSkeleton()
                 self?.memberView.followersCountLabel.text = "\(followerListInfoCount)"
             })
             .disposed(by: disposeBag)

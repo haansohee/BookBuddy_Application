@@ -28,14 +28,9 @@ final class CommentViewModel {
     func commentUpload(userID: Int, commentContent: String) {
         guard let uploadPostID = postID,
               let uploadNickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        uploadProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) ?? Data()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let wrtieDate = dateFormatter.string(from: Date())
-        
-        if let uploadProfileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) {
-            uploadProfile = uploadProfileData
-        } else {
-            uploadProfile = Data()
-        }
        let uploadCommentInformation = CommentUploadInformation(postID: uploadPostID, userID: userID, writeDate: wrtieDate, commentContent: commentContent, nickname: uploadNickname, profile: uploadProfile)
         commentService.setCommentInfo(with: uploadCommentInformation) { [weak self] result in
             self?.isCommentUploaded.onNext(result)

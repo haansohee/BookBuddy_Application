@@ -150,8 +150,8 @@ extension CommentViewController {
         commentViewModel.isCommentLoaded
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentLoaded in
-                guard isCommentLoaded else { return }
-                guard let button = self?.commentPostView.commentPostButton else { return }
+                guard isCommentLoaded,
+                      let button = self?.commentPostView.commentPostButton else { return }
                 button.backgroundColor = .systemGreen
                 button.isEnabled = true
                 self?.activityIndicatorViewController.stopButtonTapped(button)
@@ -172,10 +172,9 @@ extension CommentViewController: UITextViewDelegate {
     
     func textViewDidEndEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = false
-        if textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            textView.text = textViewPlaceholder
-            textView.textColor = .lightGray
-        }
+        guard  textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        textView.text = textViewPlaceholder
+        textView.textColor = .lightGray
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
@@ -194,17 +193,18 @@ extension CommentViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CommentViewCell", for: indexPath) as? CommentViewCell else { return UICollectionViewCell() }
         guard let commentInformation = commentViewModel.commentInformations else { return cell }
-        if commentInformation.isEmpty {
+        guard !commentInformation.isEmpty else {
             cell.isHiddenOption(true)
-        } else {
-            cell.isHiddenOption(false)
-            if let profileImage = commentInformation[indexPath.row].profile {
-                cell.profileImage.image = UIImage(data: profileImage)
-            } else {
-                cell.profileImage.image = UIImage(systemName: "person")
-            }
-            cell.setupCommentViewCell(commentInformation[indexPath.row])
+            return cell
         }
+        cell.isHiddenOption(false)
+        if let profileImage = commentInformation[indexPath.row].profile {
+            cell.profileImage.image = UIImage(data: profileImage)
+        } else {
+            cell.profileImage.image = UIImage(systemName: "person")
+        }
+        cell.setupCommentViewCell(commentInformation[indexPath.row])
+        
         return cell
     }
 }

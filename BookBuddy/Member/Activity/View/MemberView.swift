@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 final class MemberView: UIView {
     let profileImageView: UIImageView = {
@@ -17,18 +18,15 @@ final class MemberView: UIView {
         imageView.clipsToBounds = true
         imageView.image = UIImage(systemName: "person")
         imageView.tintColor = .systemGray3
-        
         return imageView
     }()
     
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 14, weight: .bold)
-        
         return label
     }()
     
@@ -49,30 +47,33 @@ final class MemberView: UIView {
     let boardCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.skeletonCornerRadius = 5.0
+        label.isSkeletonable = true
         return label
     }()
     
     let followersCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.skeletonCornerRadius = 5.0
+        label.isSkeletonable = true
         return label
     }()
     
     let followingCountLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중"
         label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.skeletonCornerRadius = 5.0
+        label.isSkeletonable = true
         return label
     }()
     
@@ -142,6 +143,7 @@ final class MemberView: UIView {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
+        skeletonViewConfigure()
     }
     
     required init?(coder: NSCoder) {
@@ -167,6 +169,14 @@ extension MemberView {
         ].forEach {
             self.addSubview($0)
         }
+    }
+    
+    private func skeletonViewConfigure() {
+        [
+            boardCountLabel,
+            followersCountLabel,
+            followingCountLabel
+        ].forEach { $0.showAnimatedSkeleton() }
     }
     
     private func setLayoutConstraints() {

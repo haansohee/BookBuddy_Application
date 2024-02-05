@@ -10,5 +10,5 @@ import Foundation
 struct FollowerListInformation {
     let userID: Int
     let nickname: String
-    let profile: Data
+    let profile: Data?
 }
