@@ -14,7 +14,6 @@ final class CommentViewModel {
     private(set) var isCommentUploaded = PublishSubject<Bool>()
     private(set) var isCommentLoaded = PublishSubject<Bool>()
     private(set) var commentInformations: [CommentInformation]?
-    private var uploadProfile: Data?
     private(set) var postID: Int?
     
     func setPostID(_ postID: Int) {
@@ -28,17 +27,16 @@ final class CommentViewModel {
     func commentUpload(userID: Int, commentContent: String) {
         guard let uploadPostID = postID,
               let uploadNickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-        uploadProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) ?? Data()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let wrtieDate = dateFormatter.string(from: Date())
-       let uploadCommentInformation = CommentUploadInformation(postID: uploadPostID, userID: userID, writeDate: wrtieDate, commentContent: commentContent, nickname: uploadNickname, profile: uploadProfile)
+        let uploadProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) ?? Data()
+        let uploadCommentInformation = CommentUploadInformation(postID: uploadPostID, userID: userID, writeDate: wrtieDate, commentContent: commentContent, nickname: uploadNickname, profile: uploadProfile)
         commentService.setCommentInfo(with: uploadCommentInformation) { [weak self] result in
             self?.isCommentUploaded.onNext(result)
         }
     }
     
     func loadCommentInformation() {
-        print("loadCommentInformation Method Start")
         guard let postID = postID else { return }
         commentService.getCommentInfo(postID: postID) { [weak self] result in
             self?.commentInformations = result

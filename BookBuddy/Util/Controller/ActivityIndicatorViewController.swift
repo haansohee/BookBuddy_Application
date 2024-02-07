@@ -105,10 +105,10 @@ extension ActivityIndicatorViewController {
         button.addSubview(buttonActivityIndicator)
     }
     
-    func stopButtonTapped(_ sender: Any) {
+    func stopButtonTapped(_ sender: Any, buttonTitle: String) {
         guard let button = sender as? AnimationButton else { return }
         buttonActivityIndicator.stopAnimating()
         buttonActivityIndicator.removeFromSuperview()
-        button.setTitle("게시", for: .normal)
+        button.setTitle(buttonTitle, for: .normal)
     }
 }

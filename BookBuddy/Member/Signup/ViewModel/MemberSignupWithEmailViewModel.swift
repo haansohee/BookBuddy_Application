@@ -60,7 +60,6 @@ final class MemberSignupWithEmailViewModel {
                 if let error = error {
                     print("ERROR: \(error)")
                 } else {
-                    print("email send success")
                     self?.isDone = true
                     self?.isAuthed.onNext(true)
                 }

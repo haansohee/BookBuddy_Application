@@ -154,7 +154,7 @@ extension CommentViewController {
                       let button = self?.commentPostView.commentPostButton else { return }
                 button.backgroundColor = .systemGreen
                 button.isEnabled = true
-                self?.activityIndicatorViewController.stopButtonTapped(button)
+                self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "게시")
                 self?.commentCollectionView.reloadData()
             })
             .disposed(by: disposeBag)

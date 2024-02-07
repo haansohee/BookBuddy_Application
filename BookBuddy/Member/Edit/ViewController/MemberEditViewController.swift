@@ -62,15 +62,9 @@ extension MemberEditViewController {
     
     private func settingMemberProfileImage() {
         guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
-//            DispatchQueue.main.async { [weak self] in
-//                self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
-//            }
             memberEditView.profileImageView.image = UIImage(systemName: "person")
             return
         }
-//        DispatchQueue.main.async { [weak self] in
-//            self?.memberEditView.profileImageView.image = UIImage(data: profileData)
-//        }
         memberEditView.profileImageView.image = UIImage(data: profileData)
     }
     
@@ -80,16 +74,10 @@ extension MemberEditViewController {
         let updateAction = UIAlertAction(title: "앨범에서 선택하기", style: .default) { [weak self] _ in
             guard let imagePickerViewController = self?.memberEditView.imagePickerView else { return }
             imagePickerViewController.allowsEditing = true
-//            DispatchQueue.main.async {
-//                self?.present(imagePickerViewController, animated: true)
-//            }
             self?.present(imagePickerViewController, animated: true)
         }
         let deleteAction = UIAlertAction(title: "현재 사진 삭제하기", style: .default) { [weak self] _ in
             guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-//            DispatchQueue.main.async {
-//                self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
-//            }
             self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
             self?.viewModel.deleteMemberProfile(nickname)
         }

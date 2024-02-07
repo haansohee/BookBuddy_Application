@@ -20,7 +20,6 @@ final class MemberViewModel {
     private(set) var isLoadedBoardWrittenInfo = PublishSubject<Bool>()
     private(set) var isLoadedFollowingListInfo = PublishSubject<Bool>()
     private(set) var isLoadedFollowerListInfo = PublishSubject<Bool>()
-    private(set) var switchSkeleton = false
     
     func setMemberInformation(_ memberInformation: SignupMemberInformation) {
         self.memberInformation = memberInformation

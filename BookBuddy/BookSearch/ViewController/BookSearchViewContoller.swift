@@ -35,6 +35,7 @@ extension BookSearchViewContoller {
         self.view.addSubview(bookSearchView)
         
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
+        bookSearchView.searchResultsCollectionView.showAnimatedSkeleton()
         bookSearchView.searchResultsCollectionView.dataSource = self
         bookSearchView.searchResultsCollectionView.delegate = self
     }
@@ -76,6 +77,7 @@ extension BookSearchViewContoller {
             .drive(onNext: { [weak self] isParsed in
                 guard isParsed else { return }
                 guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
+                self?.bookSearchView.searchResultsCollectionView.hideSkeleton()
                 self?.bookSearchView.searchResultsCollectionView.reloadData()
                 self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
             })
@@ -110,7 +112,6 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchResultCell", for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
-        cell.hideSkeletonView()
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
         let category = viewModel.category[indexPath.row]

@@ -38,10 +38,6 @@ final class RecentSearchViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-//    func setSearchWordLabel(_ text: String) {
-//        searchWordLabel.text = text
-//    }
 }
 
 extension RecentSearchViewCell {

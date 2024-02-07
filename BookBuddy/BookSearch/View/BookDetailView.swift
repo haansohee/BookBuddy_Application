@@ -104,7 +104,6 @@ final class BookDetailView: UIView {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
-        skeletonViewConfigure()
     }
     
     required init?(coder: NSCoder) {
@@ -123,25 +122,6 @@ extension BookDetailView {
             likeButton,
             buyButton
         ].forEach { self.addSubview($0)}
-    }
-    
-    private func skeletonViewConfigure() {
-        [
-            bookTitleLabel,
-            bookAuthorLabel,
-            bookCategoryLabel,
-            bookDescriptionLabel
-        ].forEach { $0.showAnimatedSkeleton() }
-    }
-    
-    func hideSkeletonView() {
-        [
-            bookTitleLabel,
-            bookAuthorLabel,
-            bookCategoryLabel,
-            bookDescriptionLabel
-        ].forEach { $0.hideSkeleton() }
-
     }
     
     private func setLayoutConstraints() {

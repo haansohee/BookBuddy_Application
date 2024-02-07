@@ -16,7 +16,6 @@ final class MemberView: UIView {
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
-        imageView.image = UIImage(systemName: "person")
         imageView.tintColor = .systemGray3
         return imageView
     }()
@@ -143,7 +142,6 @@ final class MemberView: UIView {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
-        skeletonViewConfigure()
     }
     
     required init?(coder: NSCoder) {
@@ -169,14 +167,6 @@ extension MemberView {
         ].forEach {
             self.addSubview($0)
         }
-    }
-    
-    private func skeletonViewConfigure() {
-        [
-            boardCountLabel,
-            followersCountLabel,
-            followingCountLabel
-        ].forEach { $0.showAnimatedSkeleton() }
     }
     
     private func setLayoutConstraints() {

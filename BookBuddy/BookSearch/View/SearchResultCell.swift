@@ -64,7 +64,6 @@ final class SearchResultCell: UICollectionViewCell {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
-        skeletonViewConfigure()
     }
     
     required init?(coder: NSCoder) {
@@ -80,23 +79,6 @@ extension SearchResultCell {
             bookAuthorLabel,
             bookCategoryLabel
         ].forEach { self.addSubview($0)}
-    }
-    
-    private func skeletonViewConfigure() {
-        [
-            bookTitleLabel,
-            bookAuthorLabel,
-            bookCategoryLabel
-        ].forEach { $0.showAnimatedSkeleton() }
-    }
-    
-    func hideSkeletonView() {
-        [
-            bookTitleLabel,
-            bookAuthorLabel,
-            bookCategoryLabel
-        ].forEach { $0.hideSkeleton() }
-
     }
     
     private func setLayoutConstraints() {

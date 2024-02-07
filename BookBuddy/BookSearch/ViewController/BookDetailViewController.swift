@@ -39,6 +39,7 @@ extension BookDetailViewController {
     private func configureBookDetailView() {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(bookDetailView)
+        bookDetailView.showAnimatedSkeleton()
         bookDetailView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -73,7 +74,7 @@ extension BookDetailViewController {
                     image: data)
             guard let information = self?.bookSearchViewModel.bookInformations else { return }
             DispatchQueue.main.async {
-                self?.bookDetailView.hideSkeletonView()
+                self?.bookDetailView.hideSkeleton()
             }
             self?.bookDetailView.setBookInformation(information)
         }

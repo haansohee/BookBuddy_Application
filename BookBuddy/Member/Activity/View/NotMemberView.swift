@@ -42,6 +42,7 @@ final class NotMemberView: UIView {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
+        backgroundColor = .brown
     }
 
     required init?(coder: NSCoder) {

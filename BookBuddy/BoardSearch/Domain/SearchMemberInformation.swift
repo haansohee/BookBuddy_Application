@@ -10,6 +10,6 @@ import Foundation
 struct SearchMemberInformation {
     let userID: Int
     let nickname: String
-    let profile: Data
+    let profile: Data?
     let favorite: String?
 }

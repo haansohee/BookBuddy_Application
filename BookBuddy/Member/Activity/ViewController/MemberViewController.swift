@@ -69,7 +69,9 @@ extension MemberViewController {
     private func configureMemberView() {
         switch viewType {
         case .member, .appleMember:
+            navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
             memberView.translatesAutoresizingMaskIntoConstraints = false
+            memberView.startSkeletonAnimation()
             memberView.boardCollectionView.dataSource = self
             memberView.boardCollectionView.delegate = self
             
@@ -149,14 +151,10 @@ extension MemberViewController {
     
     private func settingMemberProfileImage() {
         guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
-            DispatchQueue.main.async { [weak self] in
-                self?.memberView.profileImageView.image = UIImage(systemName: "person")
-            }
+            memberView.profileImageView.image = UIImage(systemName: "person")
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            self?.memberView.profileImageView.image = UIImage(data: profileData)
-        }
+        memberView.profileImageView.image = UIImage(data: profileData)
     }
     
     private func bindAll() {

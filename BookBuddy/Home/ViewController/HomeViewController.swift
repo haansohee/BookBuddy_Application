@@ -12,11 +12,19 @@ import RxCocoa
 
 final class HomeViewController: UIViewController {
     private let homeViewCollectionView = BoardSearchCollectionView()
-    private let homewViewCollectionViewCell = BoardSearchViewCell()
     private let homeViewModel = HomeViewModel()
     private let commentViewModel = CommentViewModel()
     private let activityIndicatorViewController = ActivityIndicatorViewController()
     private let disposeBag = DisposeBag()
+    
+    init(nickname: String? = nil) {
+        super.init(nibName: nil, bundle: nil)
+        loadFollowingBoardInformations()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,23 +33,21 @@ final class HomeViewController: UIViewController {
         configureHomeView()
         configureRefreshControl()
         bindIsLoadedFollowingBoardInfo()
-        loadFollowingBoardInformations()
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        present(activityIndicatorViewController, animated: true)
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadFollowingBoardInformations()
+    }
 }
 
 extension HomeViewController {
     private func configureHomeView() {
         view.backgroundColor = .systemBackground
-        self.title = "홈"
+        navigationItem.title = "홈"
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
         homeViewCollectionView.delegate = self
-        activityIndicatorViewController.modalPresentationStyle = .overFullScreen
     }
     
     private func addSubviews() {
@@ -59,18 +65,10 @@ extension HomeViewController {
     
     private func configureRefreshControl() {
         homeViewCollectionView.refreshControl = UIRefreshControl()
-        homeViewCollectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        homeViewCollectionView.refreshControl?.addTarget(self, action: #selector(loadFollowingBoardInformations), for: .valueChanged)
     }
     
-    @objc private func handleRefreshControl() {
-        homeViewModel.getFollowingBoards()
-    }
-    
-    private func loadFollowingBoardInformations() {
-        DispatchQueue.main.async { [weak self] in
-            guard let activityIndicatorViewController = self?.activityIndicatorViewController else { return }
-            self?.present(activityIndicatorViewController, animated: false)
-        }
+    @objc private func loadFollowingBoardInformations() {
         homeViewModel.getFollowingBoards()
     }
     
@@ -97,7 +95,6 @@ extension HomeViewController {
         homeViewModel.isUploadedFollowingBoardInfo
             .asDriver(onErrorJustReturn: "noValue")
             .drive(onNext: { [weak self] _ in
-                self?.activityIndicatorViewController.dismiss(animated: false)
                 self?.homeViewCollectionView.reloadData()
                 self?.homeViewCollectionView.refreshControl?.endRefreshing()
             })
@@ -124,6 +121,7 @@ extension HomeViewController: UICollectionViewDataSource {
             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             cell.likeButton.tag = 1
         } else {
+            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
             cell.likeButton.tag = 0
         }
         
@@ -181,7 +179,7 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width - 20
-        let height = collectionView.bounds.height - 140
+        let height = collectionView.bounds.height - 130
         return CGSize(width: width, height: height)
     }
 }

@@ -10,7 +10,7 @@ import Foundation
 struct FollowingListDTO: Codable {
     let userID: Int
     let nickname: String
-    let profile: Data
+    let profile: Data?
 }
 
 extension FollowingListDTO {

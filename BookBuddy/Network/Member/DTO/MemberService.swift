@@ -40,13 +40,27 @@ final class MemberService {
         }
     }
     
+    func getMemberSignin(nickname: String, password: String, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberSignin?nickname=\(nickname)&password=\(password)") else { return }
+        networkSessionManager.urlGetMethod(url: url, requestDTO: Bool.self) { result in
+            print("result: \(result)")
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO)
+                
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
     func getMemberInfo(nickname: String, password: String, completion: @escaping((MemberDTO)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberInfo?nickname=\(nickname)&password=\(password)") else { return }
         networkSessionManager.urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
             switch result {
             case .success(let responseDTO):
-                print("responseDTO: \(responseDTO)")
                 completion(responseDTO)
                 
             case .failure(let error):
