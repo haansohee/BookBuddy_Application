@@ -164,10 +164,9 @@ extension CommentViewController {
 extension CommentViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = true
-        if textView.text == textViewPlaceholder {
-            textView.text = nil
-            textView.textColor = .label
-        }
+        guard textView.text == textViewPlaceholder else { return }
+        textView.text = nil
+        textView.textColor = .label
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
