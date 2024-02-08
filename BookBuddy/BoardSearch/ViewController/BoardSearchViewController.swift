@@ -29,14 +29,16 @@ final class BoardSearchViewController: UIViewController {
     
     private var viewType: ViewType
     private let searchController = SearchController()
-    private let boardSearchView = BoardSearchCollectionView()
+    private let boardSearchCollectionView = BoardSearchCollectionView()
     private let recentSearchView = RecentSearchView()
     private let boardSearchViewModel = BoardSearchViewModel()
     private let homeViewModel = HomeViewModel()
+    private let commentViewModel = CommentViewModel()
     private let disposeBag = DisposeBag()
+    private var endEditingGesture: UITapGestureRecognizer?
     private var viewTapGesture: UITapGestureRecognizer?
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    init() {
         self.viewType = .recentSearch
         super.init(nibName: nil, bundle: nil)
     }
@@ -50,7 +52,9 @@ final class BoardSearchViewController: UIViewController {
         setupSearchController()
         setupBoardSearchViewController()
         setLayoutContraintsBoardSearchView()
+        configureRefreshControl()
         bindIsLoadedBoardSearchResults()
+        addEditingTapGesture()
     }
     
     private func setupSearchController() {
@@ -63,15 +67,16 @@ final class BoardSearchViewController: UIViewController {
     
     private func setupBoardSearchViewController() {
         self.view.backgroundColor = .systemBackground
+        navigationItem.title = "둘러보기"
         [
             boardSearchLabel,
             recentSearchView
         ].forEach { self.view.addSubview($0) }
         boardSearchLabel.translatesAutoresizingMaskIntoConstraints = false
-        boardSearchView.translatesAutoresizingMaskIntoConstraints = false
+        boardSearchCollectionView.translatesAutoresizingMaskIntoConstraints = false
         recentSearchView.translatesAutoresizingMaskIntoConstraints = false
-        boardSearchView.delegate = self
-        boardSearchView.dataSource = self
+        boardSearchCollectionView.delegate = self
+        boardSearchCollectionView.dataSource = self
         recentSearchView.recentSearchCollectionView.delegate = self
         recentSearchView.recentSearchCollectionView.dataSource = self
     }
@@ -79,11 +84,11 @@ final class BoardSearchViewController: UIViewController {
     private func changeBoardSearchView(_ type: ViewType) {
         switch type {
         case .boardSearch:
-            self.view.addSubview(boardSearchView)
+            self.view.addSubview(boardSearchCollectionView)
             recentSearchView.removeFromSuperview()
         case .recentSearch:
             self.view.addSubview(recentSearchView)
-            boardSearchView.removeFromSuperview()
+            boardSearchCollectionView.removeFromSuperview()
         }
     }
     
@@ -96,10 +101,10 @@ final class BoardSearchViewController: UIViewController {
                 boardSearchLabel.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
                 boardSearchLabel.heightAnchor.constraint(equalToConstant: 30.0),
                 
-                boardSearchView.topAnchor.constraint(equalTo: boardSearchLabel.bottomAnchor, constant: 2.0),
-                boardSearchView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                boardSearchView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                boardSearchView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+                boardSearchCollectionView.topAnchor.constraint(equalTo: boardSearchLabel.bottomAnchor, constant: 2.0),
+                boardSearchCollectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                boardSearchCollectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                boardSearchCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
             ])
         case .recentSearch:
             NSLayoutConstraint.activate([
@@ -116,14 +121,36 @@ final class BoardSearchViewController: UIViewController {
         }
     }
     
+    private func addEditingTapGesture() {
+        endEditingGesture = UITapGestureRecognizer(target: self, action: #selector(endEditing))
+        self.endEditingGesture?.isEnabled = false
+        guard let endEditingGesture = endEditingGesture else { return }
+        self.view.addGestureRecognizer(endEditingGesture)
+    }
+    
+    @objc private func endEditing() {
+        self.view.endEditing(true)
+    }
+    
+    private func configureRefreshControl() {
+        boardSearchCollectionView.refreshControl = UIRefreshControl()
+        boardSearchCollectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+    }
+    
+    @objc private func handleRefreshControl() {
+        guard let searchWord = searchController.searchBar.searchTextField.text else { return }
+        boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
+    }
+    
     private func bindIsLoadedBoardSearchResults() {
         boardSearchViewModel.isLoadedBoardSearchResults
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isLoadedBoardSearchResults in
                 guard isLoadedBoardSearchResults else { return }
                 guard let resultsCount = self?.boardSearchViewModel.boardSearchResultsInformations?.count else { return }
-                self?.boardSearchView.reloadData()
+                self?.boardSearchCollectionView.reloadData()
                 self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
+                self?.boardSearchCollectionView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
     }
@@ -149,13 +176,10 @@ final class BoardSearchViewController: UIViewController {
         viewType = .boardSearch
         boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
         boardSearchViewModel.setRecentSearchWord(searchWord)
-        DispatchQueue.main.async { [weak self] in
-            guard let viewType = self?.viewType else { return }
-            self?.changeBoardSearchView(viewType)
-            self?.setLayoutContraintsBoardSearchView()
-            self?.boardSearchLabel.text = "검색 중...🔎"
-            self?.searchController.searchBar.searchTextField.text = searchWord
-        }
+        changeBoardSearchView(viewType)
+        setLayoutContraintsBoardSearchView()
+        boardSearchLabel.text = "검색 중...🔎"
+        searchController.searchBar.searchTextField.text = searchWord
     }
     private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
         guard deleteLike else {
@@ -176,19 +200,28 @@ final class BoardSearchViewController: UIViewController {
     }
 }
 
-extension BoardSearchViewController: UITextFieldDelegate {
+extension BoardSearchViewController: UISearchTextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        viewType = .recentSearch
+        changeBoardSearchView(viewType)
+        setLayoutContraintsBoardSearchView()
+        self.endEditingGesture?.isEnabled = true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.endEditingGesture?.isEnabled = false
+    }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard let searchWord = textField.text else { return true }
         if searchWord.isEmpty { return true }
         viewType = .boardSearch
         boardSearchViewModel.getBoardSearchResultsInformation(searchWord: searchWord)
         boardSearchViewModel.setRecentSearchWord(searchWord)
-        DispatchQueue.main.async { [weak self] in
-            guard let viewType = self?.viewType else { return }
-            self?.changeBoardSearchView(viewType)
-            self?.setLayoutContraintsBoardSearchView()
-            self?.boardSearchLabel.text = "검색 중...🔎"
-        }
+        changeBoardSearchView(viewType)
+        setLayoutContraintsBoardSearchView()
+        boardSearchLabel.text = "검색 중...🔎"
+        self.endEditingGesture?.isEnabled = false
         return true
     }
 }
@@ -196,13 +229,10 @@ extension BoardSearchViewController: UITextFieldDelegate {
 extension BoardSearchViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         viewType = .recentSearch
-        DispatchQueue.main.async { [weak self] in
-            guard let viewType = self?.viewType else { return }
-            self?.changeBoardSearchView(viewType)
-            self?.setLayoutContraintsBoardSearchView()
-            self?.boardSearchLabel.text = "사용자 혹은 게시물을 검색할 수 있어요."
-            self?.recentSearchView.recentSearchCollectionView.reloadData()
-        }
+        changeBoardSearchView(viewType)
+        setLayoutContraintsBoardSearchView()
+        boardSearchLabel.text = "사용자 혹은 게시물을 검색할 수 있어요."
+        recentSearchView.recentSearchCollectionView.reloadData()
     }
 }
 
@@ -224,18 +254,19 @@ extension BoardSearchViewController: UICollectionViewDataSource {
         switch viewType {
         case .boardSearch:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-            guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return UICollectionViewCell() }
-            
+            guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return cell }
             if let profileImage = boardSearchResultsInformation[indexPath.row].profileImage {
                 cell.profileImageView.image = UIImage(data: profileImage)
             } else {
                 cell.profileImageView.image = UIImage(systemName: "person")
             }
+            cell.commentCountLabel.text = String(boardSearchResultsInformation[indexPath.row].comments.count)
             cell.setBoardSearchViewCell(boardSearchResultsInfo: boardSearchResultsInformation[indexPath.row])
             if boardSearchResultsInformation[indexPath.row].didLike {
                 cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
                 cell.likeButton.tag = 1
             } else {
+                cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
                 cell.likeButton.tag = 0
             }
             
@@ -274,6 +305,13 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 })
                 .disposed(by: cell.disposeBag)
             
+            cell.rx.commentButtonTapped
+                .asDriver()
+                .drive(onNext: {[weak self] _ in
+                    self?.present(CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID, commentInformation: boardSearchResultsInformation[indexPath.row].comments), animated: true)
+                })
+                .disposed(by: cell.disposeBag)
+            
             return cell
             
         case .recentSearch:
@@ -294,9 +332,9 @@ extension BoardSearchViewController: UICollectionViewDataSource {
 extension BoardSearchViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView {
-        case self.boardSearchView:
+        case self.boardSearchCollectionView:
             let width = collectionView.bounds.width - 20
-            let height = collectionView.bounds.height + 20
+            let height = collectionView.bounds.height + 25
             return CGSize(width: width, height: height)
         case self.recentSearchView.recentSearchCollectionView:
             let width = collectionView.bounds.width - 10

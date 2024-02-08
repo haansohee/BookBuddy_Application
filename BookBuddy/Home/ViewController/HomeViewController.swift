@@ -12,11 +12,12 @@ import RxCocoa
 
 final class HomeViewController: UIViewController {
     private let homeViewCollectionView = BoardSearchCollectionView()
-    private let homewViewCollectionViewCell = BoardSearchViewCell()
     private let homeViewModel = HomeViewModel()
+    private let commentViewModel = CommentViewModel()
+    private let activityIndicatorViewController = ActivityIndicatorViewController()
     private let disposeBag = DisposeBag()
     
-    init() {
+    init(nickname: String? = nil) {
         super.init(nibName: nil, bundle: nil)
         loadFollowingBoardInformations()
     }
@@ -33,11 +34,17 @@ final class HomeViewController: UIViewController {
         configureRefreshControl()
         bindIsLoadedFollowingBoardInfo()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadFollowingBoardInformations()
+    }
 }
 
 extension HomeViewController {
     private func configureHomeView() {
         view.backgroundColor = .systemBackground
+        navigationItem.title = "홈"
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
         homeViewCollectionView.delegate = self
@@ -58,17 +65,10 @@ extension HomeViewController {
     
     private func configureRefreshControl() {
         homeViewCollectionView.refreshControl = UIRefreshControl()
-        homeViewCollectionView.refreshControl?.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        homeViewCollectionView.refreshControl?.addTarget(self, action: #selector(loadFollowingBoardInformations), for: .valueChanged)
     }
     
-    @objc private func handleRefreshControl() {
-        homeViewModel.getFollowingBoards()
-        DispatchQueue.main.async { [weak self] in
-            self?.homeViewCollectionView.refreshControl?.endRefreshing()
-        }
-    }
-    
-    private func loadFollowingBoardInformations() {
+    @objc private func loadFollowingBoardInformations() {
         homeViewModel.getFollowingBoards()
     }
     
@@ -96,6 +96,7 @@ extension HomeViewController {
             .asDriver(onErrorJustReturn: "noValue")
             .drive(onNext: { [weak self] _ in
                 self?.homeViewCollectionView.reloadData()
+                self?.homeViewCollectionView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
     }
@@ -114,11 +115,13 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return UICollectionViewCell() }
+        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
+        cell.commentCountLabel.text = String(followingBoardInformation[indexPath.row].comments.count)
         if followingBoardInformation[indexPath.row].didLike {
             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             cell.likeButton.tag = 1
         } else {
+            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
             cell.likeButton.tag = 0
         }
         
@@ -163,6 +166,12 @@ extension HomeViewController: UICollectionViewDataSource {
             })
             .disposed(by: cell.disposeBag)
         
+        cell.rx.commentButtonTapped
+            .asDriver()
+            .drive(onNext: {[weak self] _ in
+                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID, commentInformation: followingBoardInformation[indexPath.row].comments), animated: true)
+            })
+            .disposed(by: cell.disposeBag)
         return cell
     }
 }
@@ -170,7 +179,7 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width - 20
-        let height = collectionView.bounds.height - 140
+        let height = collectionView.bounds.height - 130
         return CGSize(width: width, height: height)
     }
 }

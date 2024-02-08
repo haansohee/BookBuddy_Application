@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 import RxSwift
 import RxCocoa
 
@@ -38,6 +39,7 @@ extension BookDetailViewController {
     private func configureBookDetailView() {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(bookDetailView)
+        bookDetailView.showAnimatedSkeleton()
         bookDetailView.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -71,6 +73,9 @@ extension BookDetailViewController {
                     description: bookData.description,
                     image: data)
             guard let information = self?.bookSearchViewModel.bookInformations else { return }
+            DispatchQueue.main.async {
+                self?.bookDetailView.hideSkeleton()
+            }
             self?.bookDetailView.setBookInformation(information)
         }
     }

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 final class BookDetailView: UIView {
     private let bookImageView: UIImageView = {
@@ -19,9 +20,9 @@ final class BookDetailView: UIView {
     let bookTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isSkeletonable = true
         label.layer.borderColor = UIColor.black.cgColor
         label.layer.borderWidth = 1.0
-        label.text = "로딩 중..."
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 20, weight: .bold)
         label.numberOfLines = 0
@@ -33,9 +34,9 @@ final class BookDetailView: UIView {
     private let bookAuthorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isSkeletonable = true
         label.layer.borderColor = UIColor.black.cgColor
         label.layer.borderWidth = 1.0
-        label.text = "로딩 중..."
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .semibold)
         label.textColor = .lightGray
@@ -46,9 +47,9 @@ final class BookDetailView: UIView {
     private let bookCategoryLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isSkeletonable = true
         label.layer.borderColor = UIColor.black.cgColor
         label.layer.borderWidth = 1.0
-        label.text = "로딩 중..."
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .semibold)
         label.textColor = .lightGray
@@ -59,9 +60,9 @@ final class BookDetailView: UIView {
     private let bookDescriptionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isSkeletonable = true
         label.layer.borderColor = UIColor.black.cgColor
         label.layer.borderWidth = 1.0
-        label.text = "로딩 중..."
         label.textAlignment = .left
         label.numberOfLines = 0
         label.textColor = .label

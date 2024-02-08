@@ -29,10 +29,25 @@ final class MemberService {
     func getEmailCheck(email: String, completion: @escaping((String)) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getEmailCheck?email=\(email)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: MemberDTO.self) { result in
+        networkSessionManager.urlGetMethod(url: url, requestDTO: SigninMemberDTO.self) { result in
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO.email)
+                
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
+    func getMemberSignin(nickname: String, password: String, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberSignin?nickname=\(nickname)&password=\(password)") else { return }
+        networkSessionManager.urlGetMethod(url: url, requestDTO: Bool.self) { result in
+            print("result: \(result)")
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO)
                 
             case .failure(let error):
                 print("ERROR: \(error)")
@@ -123,6 +138,15 @@ final class MemberService {
         guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberNickname/") else { return }
         let memberNickname = memberNicknameInformation.toRequestDTO()
         networkSessionManager.urlPostMethod(url: url, encodeValue: memberNickname) { result in
+            completion(result)
+        }
+    }
+    
+    func updateMemberPassword(with memberPasswordInformation: MemberPasswordUpdateInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateMemberPassword/") else { return }
+        let memberPassword = memberPasswordInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: memberPassword) { result in
             completion(result)
         }
     }

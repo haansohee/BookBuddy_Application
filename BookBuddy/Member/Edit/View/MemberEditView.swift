@@ -7,7 +7,13 @@
 
 import UIKit
 
-final class MemberEditView: UIView {
+final class MemberEditView: UIScrollView {
+    let containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     let imagePickerView: UIImagePickerController = {
         let imagePickerView = UIImagePickerController()
         return imagePickerView
@@ -50,9 +56,10 @@ final class MemberEditView: UIView {
     let passwordTextField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "테스트"
+        textField.placeholder = "변경할 비밀번호를 먼저 입력하세요."
         textField.font = .systemFont(ofSize: 13.0, weight: .light)
         textField.keyboardType = .asciiCapable
+        textField.isSecureTextEntry = true
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
         textField.layer.cornerRadius = 6.0
@@ -84,11 +91,11 @@ final class MemberEditView: UIView {
     let nicknameDuplicateIdLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
+        label.text = "아이디는 영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
         label.numberOfLines = 0
         label.textAlignment = .center
         label.textColor = .systemRed
-        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.font = .systemFont(ofSize: 13, weight: .bold)
         return label
     }()
     
@@ -96,7 +103,8 @@ final class MemberEditView: UIView {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("비밀번호 변경하기", for: .normal)
-        button.backgroundColor = .systemGreen
+        button.backgroundColor = .lightGray
+        button.isEnabled = false
         button.titleLabel?.textColor = .white
         button.titleLabel?.font = .systemFont(ofSize: 14.0, weight: .medium)
         return button
@@ -106,10 +114,10 @@ final class MemberEditView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
-        label.text = ""
+        label.text = "비밀번호는 영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요"
         label.textAlignment = .center
         label.textColor = .systemRed
-        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.font = .systemFont(ofSize: 13, weight: .bold)
         return label
     }()
     
@@ -147,6 +155,7 @@ final class MemberEditView: UIView {
 
 extension MemberEditView {
     private func addSubviews() {
+        self.addSubview(containerView)
         [
             profileImageView,
             profileUpdateButton,
@@ -159,13 +168,20 @@ extension MemberEditView {
             passwordCheckLabel,
             withdrawalButton,
             signoutButton
-        ].forEach { self.addSubview($0) }
+        ].forEach { containerView.addSubview($0) }
     }
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            profileImageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 24.0),
-            profileImageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
+            containerView.topAnchor.constraint(equalTo: self.contentLayoutGuide.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: self.contentLayoutGuide.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: self.contentLayoutGuide.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: self.contentLayoutGuide.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: self.widthAnchor),
+            containerView.heightAnchor.constraint(equalTo: self.heightAnchor),
+            
+            profileImageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 24.0),
+            profileImageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
             profileImageView.widthAnchor.constraint(equalToConstant: 100.0),
             profileImageView.heightAnchor.constraint(equalToConstant: 100.0),
             
@@ -175,12 +191,12 @@ extension MemberEditView {
             profileUpdateButton.heightAnchor.constraint(equalToConstant: 25.0),
             
             nicknameTextField.topAnchor.constraint(equalTo: profileUpdateButton.bottomAnchor, constant: 40.0),
-            nicknameTextField.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 24.0),
+            nicknameTextField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 24.0),
             nicknameTextField.widthAnchor.constraint(equalToConstant: 200),
             nicknameTextField.heightAnchor.constraint(equalToConstant: 30.0),
             
             nicknameDuplicateButton.topAnchor.constraint(equalTo: nicknameTextField.topAnchor),
-            nicknameDuplicateButton.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -24.0),
+            nicknameDuplicateButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -24.0),
             nicknameDuplicateButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
             nicknameDuplicateButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),
             
@@ -194,22 +210,22 @@ extension MemberEditView {
             nicknameDuplicateIdLabel.trailingAnchor.constraint(equalTo: nicknameDuplicateButton.trailingAnchor),
             nicknameDuplicateIdLabel.heightAnchor.constraint(equalToConstant: 60.0),
             
-            passwordTextField.topAnchor.constraint(equalTo: nicknameDuplicateIdLabel.bottomAnchor, constant: 10.0),
+            passwordTextField.topAnchor.constraint(equalTo: nicknameDuplicateIdLabel.bottomAnchor, constant: 44.0),
             passwordTextField.leadingAnchor.constraint(equalTo: nicknameTextField.leadingAnchor),
             passwordTextField.widthAnchor.constraint(equalTo: nicknameTextField.widthAnchor),
             passwordTextField.heightAnchor.constraint(equalTo: nicknameTextField.heightAnchor),
             
             passwordEditButton.topAnchor.constraint(equalTo: passwordTextField.topAnchor),
-            passwordEditButton.trailingAnchor.constraint(equalTo: nicknameEditButton.trailingAnchor),
+            passwordEditButton.trailingAnchor.constraint(equalTo: nicknameDuplicateButton.trailingAnchor),
             passwordEditButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
             passwordEditButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),
             
             passwordCheckLabel.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 12.0),
-            passwordCheckLabel.leadingAnchor.constraint(equalTo: nicknameTextField.leadingAnchor),
-            passwordCheckLabel.trailingAnchor.constraint(equalTo: nicknameEditButton.trailingAnchor),
+            passwordCheckLabel.leadingAnchor.constraint(equalTo: nicknameDuplicateIdLabel.leadingAnchor),
+            passwordCheckLabel.trailingAnchor.constraint(equalTo: nicknameDuplicateIdLabel.trailingAnchor),
             passwordCheckLabel.heightAnchor.constraint(equalTo: nicknameDuplicateIdLabel.heightAnchor),
             
-            withdrawalButton.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -120),
+            withdrawalButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -120),
             withdrawalButton.leadingAnchor.constraint(equalTo: nicknameTextField.leadingAnchor),
             withdrawalButton.widthAnchor.constraint(equalTo: profileUpdateButton.widthAnchor),
             withdrawalButton.heightAnchor.constraint(equalTo: profileUpdateButton.heightAnchor),

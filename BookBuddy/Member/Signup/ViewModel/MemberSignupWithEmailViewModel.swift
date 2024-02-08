@@ -20,7 +20,6 @@ final class MemberSignupWithEmailViewModel {
     
     func nicknameDuplicateCheck(nickname: String) {
         service.getNicknameCheck(nickname: nickname) { [weak self] getNickname in
-            print("nickname: \(nickname)")
             if nickname != getNickname {
                 self?.isDone = true
                 self?.isChecked.onNext(true)

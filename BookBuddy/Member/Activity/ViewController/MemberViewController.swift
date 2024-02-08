@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 import RxSwift
 import RxCocoa
 
@@ -68,7 +69,9 @@ extension MemberViewController {
     private func configureMemberView() {
         switch viewType {
         case .member, .appleMember:
+            navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
             memberView.translatesAutoresizingMaskIntoConstraints = false
+            memberView.startSkeletonAnimation()
             memberView.boardCollectionView.dataSource = self
             memberView.boardCollectionView.delegate = self
             
@@ -148,14 +151,10 @@ extension MemberViewController {
     
     private func settingMemberProfileImage() {
         guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
-            DispatchQueue.main.async { [weak self] in
-                self?.memberView.profileImageView.image = UIImage(systemName: "person")
-            }
+            memberView.profileImageView.image = UIImage(systemName: "person")
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            self?.memberView.profileImageView.image = UIImage(data: profileData)
-        }
+        memberView.profileImageView.image = UIImage(data: profileData)
     }
     
     private func bindAll() {
@@ -190,6 +189,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedBoardWritten in
                 guard isLoadedBoardWritten else { return }
                 guard let boardCount = self?.viewModel.boardWrittenInformations?.count else { return }
+                self?.memberView.boardCountLabel.hideSkeleton()
                 self?.memberView.boardCountLabel.text = "\(boardCount)"
                 self?.memberView.boardCollectionView.reloadData()
             })
@@ -202,6 +202,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowingListInfo in
                 guard isLoadedFollowingListInfo else { return }
                 guard let followingListInfoCount = self?.viewModel.followingListInformations?.count else { return }
+                self?.memberView.followingCountLabel.hideSkeleton()
                 self?.memberView.followingCountLabel.text = "\(followingListInfoCount)"
             })
             .disposed(by: disposeBag)
@@ -213,6 +214,7 @@ extension MemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowerListInfo in
                 guard isLoadedFollowerListInfo else { return }
                 guard let followerListInfoCount = self?.viewModel.followerListInformations?.count else { return }
+                self?.memberView.followersCountLabel.hideSkeleton()
                 self?.memberView.followersCountLabel.text = "\(followerListInfoCount)"
             })
             .disposed(by: disposeBag)

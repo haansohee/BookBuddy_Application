@@ -24,18 +24,17 @@ final class BoardSearchViewCell: UICollectionViewCell {
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = 15
+        imageView.layer.cornerRadius = 20
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .systemGray4
+        imageView.tintColor = .systemGray3
         return imageView
     }()
     
     private let titleNicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트닉네임"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 13.0, weight: .bold)
@@ -67,7 +66,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     
     let likeCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .center
@@ -77,7 +75,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     
     let commentCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .center
@@ -89,7 +86,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let nicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트닉네임"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12, weight: .bold)
@@ -99,7 +95,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let contentTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트제목"
         label.textAlignment = .left
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 13.0, weight: .bold)
@@ -109,7 +104,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트내용"
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12.0, weight: .light)
@@ -119,7 +113,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     private let writeDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트날짜"
         label.textAlignment = .left
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 12.0, weight: .light)
@@ -133,7 +126,6 @@ final class BoardSearchViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .systemBackground
         self.layer.borderColor = UIColor.lightGray.cgColor
         self.layer.borderWidth = 0.3
         self.layer.cornerRadius = 3.0
@@ -191,27 +183,27 @@ extension BoardSearchViewCell {
             touchStackView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
             touchStackView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             touchStackView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
-            touchStackView.heightAnchor.constraint(equalToConstant: 30.0),
+            touchStackView.heightAnchor.constraint(equalToConstant: 40.0),
             
-            profileImageView.topAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.topAnchor, constant: 3.0),
-            profileImageView.leadingAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.leadingAnchor, constant: 3.0),
+            profileImageView.centerYAnchor.constraint(equalTo: touchStackView.centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: touchStackView.leadingAnchor, constant: 3.0),
             profileImageView.widthAnchor.constraint(equalTo: touchStackView.heightAnchor),
-            profileImageView.heightAnchor.constraint(equalTo: profileImageView.widthAnchor),
+            profileImageView.heightAnchor.constraint(equalTo: touchStackView.heightAnchor),
             
             titleNicknameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 3.0),
-            titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.safeAreaLayoutGuide.trailingAnchor, constant: -3.0),
+            titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
             titleNicknameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
-            boardImageView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 3.0),
+            boardImageView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor),
             boardImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             boardImageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
             boardImageView.heightAnchor.constraint(equalTo: boardImageView.widthAnchor),
             
             likeButton.topAnchor.constraint(equalTo: boardImageView.bottomAnchor, constant: 3.0),
             likeButton.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
-            likeButton.widthAnchor.constraint(equalToConstant: 30.0),
-            likeButton.heightAnchor.constraint(equalToConstant: 20.0),
+            likeButton.widthAnchor.constraint(equalToConstant: 24.0),
+            likeButton.heightAnchor.constraint(equalToConstant: 24.0),
             
             likeCountLabel.topAnchor.constraint(equalTo: likeButton.topAnchor),
             likeCountLabel.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 5.0),

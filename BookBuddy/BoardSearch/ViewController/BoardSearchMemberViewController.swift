@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SkeletonView
 import RxSwift
 import RxCocoa
 
@@ -20,7 +21,6 @@ final class BoardSearchMemberViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         viewModel.getBoardSearchMemberInformation(nickname)
         memberViewModel.getMemberBoardInformaion(nickname: nickname)
-//        loadFollowListInformation()
     }
     
     required init?(coder: NSCoder) {
@@ -80,9 +80,9 @@ extension BoardSearchMemberViewController {
         viewModel.isLoadedSearchMember
             .subscribe(onNext: {[weak self] _ in
                 guard let nickname = self?.viewModel.searchMemberInformation?.nickname,
-                      let profile = self?.viewModel.searchMemberInformation?.profile,
                       let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+                let profile = self?.viewModel.searchMemberInformation?.profile ?? Data()
                 DispatchQueue.main.async {
                     self?.memberView.setNameLabel(nickname)
                     if let favorite = self?.viewModel.searchMemberInformation?.favorite {
@@ -125,6 +125,7 @@ extension BoardSearchMemberViewController {
             .drive(onNext: {[weak self] isLoadedBoardWrittenInfo in
                 guard isLoadedBoardWrittenInfo else { return }
                 guard let boardCount = self?.memberViewModel.boardWrittenInformations?.count else { return }
+                self?.memberView.boardCountLabel.hideSkeleton()
                 self?.memberView.boardCountLabel.text = "\(boardCount)"
                 self?.memberView.boardCollectionView.reloadData()
             })
@@ -165,6 +166,7 @@ extension BoardSearchMemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowingListInfo in
                 guard isLoadedFollowingListInfo else { return }
                 guard let followingListInfoCount = self?.memberViewModel.followingListInformations?.count else { return }
+                self?.memberView.followingCountLabel.hideSkeleton()
                 self?.memberView.followingCountLabel.text = "\(followingListInfoCount)"
             })
             .disposed(by: disposeBag)
@@ -176,6 +178,7 @@ extension BoardSearchMemberViewController {
             .drive(onNext: {[weak self] isLoadedFollowerListInfo in
                 guard isLoadedFollowerListInfo else { return }
                 guard let followerListInfoCount = self?.memberViewModel.followerListInformations?.count else { return }
+                self?.memberView.followersCountLabel.hideSkeleton()
                 self?.memberView.followersCountLabel.text = "\(followerListInfoCount)"
             })
             .disposed(by: disposeBag)

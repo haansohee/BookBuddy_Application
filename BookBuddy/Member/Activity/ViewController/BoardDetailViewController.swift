@@ -46,7 +46,7 @@ extension BoardDetailViewController {
     
     private func setBoard() {
         guard let information = viewModel.boardWrittenInformation else { return }
-        self.title = information.nickname
+        navigationItem.title = information.nickname
         boardDetailView.setLabel(information)
     }
 }

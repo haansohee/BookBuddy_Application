@@ -12,6 +12,6 @@ struct MemberDTO: Codable {
     let nickname: String
     let email: String
     let password: String
-    let profile: Data
+    let profile: Data?
     let favorite: String?
 }

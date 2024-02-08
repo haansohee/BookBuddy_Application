@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 final class SearchResultCell: UICollectionViewCell {    
     private let bookImageView: UIImageView = {
@@ -16,8 +17,8 @@ final class SearchResultCell: UICollectionViewCell {
     
     private let bookTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "로딩 중..."
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isSkeletonable = true
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 18, weight: .semibold)
         label.numberOfLines = 0
@@ -29,7 +30,7 @@ final class SearchResultCell: UICollectionViewCell {
     private let bookAuthorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중..."
+        label.isSkeletonable = true
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.textColor = .lightGray
@@ -40,7 +41,7 @@ final class SearchResultCell: UICollectionViewCell {
     private let bookCategoryLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "로딩 중..."
+        label.isSkeletonable = true
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .medium)
         label.textColor = .lightGray

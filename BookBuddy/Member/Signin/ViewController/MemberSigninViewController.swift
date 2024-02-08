@@ -17,6 +17,7 @@ final class MemberSigninViewController: UIViewController {
     private let signWithAppleViewModel = MemberSigninWithAppleViewModel()
     private let disposeBag = DisposeBag()
     private var endEditingGesture: UITapGestureRecognizer?
+    private let activityIndicatorViewController = ActivityIndicatorViewController()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -97,29 +98,32 @@ extension MemberSigninViewController {
     
     private func bindSinginButton() {
         memberSigninView.signinButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
                 guard let nickname = self?.memberSigninView.idTextField.text,
-                      let password = self?.memberSigninView.passwordTextField.text else { return }
+                      let password = self?.memberSigninView.passwordTextField.text,
+                      let button = self?.memberSigninView.signinButton else { return }
                 if (nickname == "") || (password == "") { return }
                 self?.viewModel.signin(nickname: nickname, password: password)
+                self?.activityIndicatorViewController.startButtonTapped(button)
             })
             .disposed(by: disposeBag)
     }
     
     private func bindIsSigned() {
         viewModel.isSigned
-            .subscribe(onNext: {[weak self] isSigned in
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isSigned in
+                guard let button = self?.memberSigninView.signinButton else { return }
                 if isSigned {
-                    DispatchQueue.main.async {
-                        self?.navigationController?.popViewController(animated: false)
-                    }
+                    self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
+                    self?.navigationController?.popViewController(animated: false)
                 } else {
-                    DispatchQueue.main.async {
-                        self?.memberSigninView.idTextField.text = ""
-                        self?.memberSigninView.idTextField.attributedPlaceholder = NSAttributedString(string: "아이디 혹은 비밀번호가 일치하지 않아요!", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemRed])
-                        self?.memberSigninView.idTextField.layer.borderColor = UIColor.systemRed.cgColor
-                        self?.memberSigninView.passwordTextField.layer.borderColor = UIColor.systemRed.cgColor
-                    }
+                    self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
+                    self?.memberSigninView.idTextField.text = ""
+                    self?.memberSigninView.idTextField.attributedPlaceholder = NSAttributedString(string: "아이디 혹은 비밀번호가 일치하지 않아요!", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemRed])
+                    self?.memberSigninView.idTextField.layer.borderColor = UIColor.systemRed.cgColor
+                    self?.memberSigninView.passwordTextField.layer.borderColor = UIColor.systemRed.cgColor
                 }
             })
             .disposed(by: disposeBag)

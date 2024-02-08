@@ -14,7 +14,19 @@ final class MemberSigninViewModel {
     private(set) var isSigned = PublishSubject<Bool>()
     
     func signin(nickname: String, password: String) {
-        service.getMemberInfo(nickname: nickname, password: password) { [weak self] memberDTO in
+        service.getMemberSignin(nickname: nickname, password: password) { [weak self] result in
+            guard result else {
+                self?.isSigned.onNext(result)
+                return
+            }
+            self?.getMemberInfo(nickname: nickname, password: password) { complete in
+                self?.isSigned.onNext(complete)
+            }
+        }
+    }
+    
+    private func getMemberInfo(nickname: String, password: String, completion: @escaping(Bool)->Void) {
+        service.getMemberInfo(nickname: nickname, password: password) { memberDTO in
             if (nickname == memberDTO.nickname) && (password == memberDTO.password) {
                 UserDefaults.standard.set(memberDTO.nickname, forKey: UserDefaultsForkey.nickname.rawValue)
                 UserDefaults.standard.set(memberDTO.password, forKey: UserDefaultsForkey.password.rawValue)
@@ -22,10 +34,11 @@ final class MemberSigninViewModel {
                 UserDefaults.standard.set(memberDTO.userID, forKey: UserDefaultsForkey.userID.rawValue)
                 UserDefaults.standard.set(memberDTO.profile, forKey: UserDefaultsForkey.profile.rawValue)
                 if (memberDTO.favorite?.isEmpty) != nil { UserDefaults.standard.set(memberDTO.favorite, forKey: UserDefaultsForkey.favorite.rawValue) }
-                self?.isSigned.onNext(true)
+                completion(true)
             } else {
-                self?.isSigned.onNext(false)
+                completion(false)
             }
         }
     }
+    
 }
