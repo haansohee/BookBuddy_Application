@@ -80,7 +80,7 @@ final class MemberView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "게시물"
-        label.textColor = .systemGray2
+        label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
         return label
@@ -90,7 +90,7 @@ final class MemberView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "팔로워"
-        label.textColor = .systemGray2
+        label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
         return label
@@ -100,7 +100,7 @@ final class MemberView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "팔로잉"
-        label.textColor = .systemGray2
+        label.textColor = .label
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13, weight: .light)
         return label
@@ -140,6 +140,7 @@ final class MemberView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.isSkeletonable = true
         addSubviews()
         setLayoutConstraints()
     }

@@ -102,6 +102,7 @@ final class BookDetailView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.isSkeletonable = true
         addSubviews()
         setLayoutConstraints()
     }

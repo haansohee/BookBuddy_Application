@@ -7,24 +7,35 @@
 
 import Foundation
 import UIKit
+import SkeletonView
+import RxSwift
+import RxCocoa
 
 final class BoardDetailViewController: UIViewController {
     private let boardDetailView = BoardDetailView()
-    private let viewModel = BoardDetailVieWModel()
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureBoardDetailView()
-        setLayoutConstraintsBoardDetailView()
-        setBoard()
-    }
+    private let viewModel = BoardDetailViewModel()
+    private let boardEditViewModel = BoardEditViewModel()
+    private let disposeBag = DisposeBag()
     
-    init(boardWrittenInformation: BoardWrittenInformation) {
-        viewModel.setBoardWrittenInformation(boardWrittenInformation)
+    init(postID: Int) {
+        viewModel.getDetailBoardInformation(postID)
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureBoardDetailView()
+        setLayoutConstraintsBoardDetailView()
+        bindAll()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        editedBoardInfo()
     }
 }
 
@@ -33,6 +44,21 @@ extension BoardDetailViewController {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(boardDetailView)
         boardDetailView.translatesAutoresizingMaskIntoConstraints = false
+        boardDetailView.showAnimatedSkeleton()
+        navigationController?.navigationBar.tintColor = .systemGreen
+        navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
+        let editMenu = UIAction(title: "수정하기",
+                                image: UIImage(systemName: "pencil.circle"),
+                                handler: { [weak self] _ in
+            self?.editBoard()
+        })
+        let deleteMenu = UIAction(title: "삭제하기",
+                                  image: UIImage(systemName: "trash"),
+                                  attributes: .destructive,
+                                  handler: { [weak self] _ in
+            self?.deleteCheckAlert()
+        })
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [editMenu, deleteMenu]))
     }
     
     private func setLayoutConstraintsBoardDetailView() {
@@ -44,9 +70,51 @@ extension BoardDetailViewController {
         ])
     }
     
-    private func setBoard() {
-        guard let information = viewModel.boardWrittenInformation else { return }
-        navigationItem.title = information.nickname
-        boardDetailView.setLabel(information)
+    private func deleteCheckAlert() {
+        let alertController = UIAlertController(title: "게시글 삭제", message: "정말 삭제할까요? 🥲", preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            self?.viewModel.deleteBoard()
+        }
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        alertController.addAction(doneAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true)
+    }
+    
+    @objc private func editBoard() {
+        guard let boardWrittenInformation = viewModel.boardDetailInformation else { return }
+        let boardEditInformation = BoardEditInformation(postID: boardWrittenInformation.postID, nickname: boardWrittenInformation.nickname, contentTitle: boardWrittenInformation.contentTitle, content: boardWrittenInformation.content, boardImage: boardWrittenInformation.boardImage)
+        navigationController?.pushViewController(BoardEditViewController(boardEditInformation), animated: true)
+    }
+
+    private func editedBoardInfo() {
+        guard let postID = viewModel.postID else {return }
+        viewModel.getDetailBoardInformation(postID)
+    }
+    
+    private func bindAll() {
+        bindIsBoardDetailInfoLoaded()
+        bindIsBoardDeleted()
+    }
+    
+    private func bindIsBoardDetailInfoLoaded() {
+        viewModel.isBoardDetailInfoLoaded
+            .asDriver(onErrorJustReturn: "noValue")
+            .drive(onNext: {[weak self] value in
+                guard let boardDetailInformation = self?.viewModel.boardDetailInformation else { return }
+                self?.boardDetailView.hideSkeleton()
+                self?.boardDetailView.setBoardDetailView(boardDetailInformation)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsBoardDeleted() {
+        viewModel.isBoardDeleted
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isBoardDeleted in
+                guard isBoardDeleted else { return }
+                self?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }

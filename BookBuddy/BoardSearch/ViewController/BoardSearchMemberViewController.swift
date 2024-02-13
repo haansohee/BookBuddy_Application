@@ -217,7 +217,7 @@ extension BoardSearchMemberViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let boardWrittenInformation = memberViewModel.boardWrittenInformations?[indexPath.row] else { return }
-        navigationController?.pushViewController(BoardDetailViewController(boardWrittenInformation: boardWrittenInformation), animated: true)
+        navigationController?.pushViewController(BoardDetailViewController(postID: boardWrittenInformation.postID), animated: true)
     }
     
 }

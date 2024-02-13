@@ -39,6 +39,24 @@ final class BoardService {
         }
     }
     
+    func deleteBoard(with boardDeleteInformation: BoardDeleteInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteBoard/") else { return }
+        let boardDeleteDTO = boardDeleteInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: boardDeleteDTO) { result in
+            completion(result)
+        }
+    }
+    
+    func updateBoardInfo(with boardEditInformation: BoardEditInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateBoard/") else { return }
+        let boardEditDTO = boardEditInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(url: url, encodeValue: boardEditDTO) { result in
+            completion(result)
+        }
+    }
+    
     func getMemberBoards(nickname: String, completion: @escaping([BoardWrittenInformation])->Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberBoards?nickname=\(nickname)") else { return }
@@ -48,6 +66,19 @@ final class BoardService {
                 let boardWrittenInformaitions = responseDTO.map { $0.toDomain() }
                 completion(boardWrittenInformaitions)
                 
+            case .failure(let error):
+                print("ERROR: \(error)")
+            }
+        }
+    }
+    
+    func getDetailBoardInfo(postID: Int, userID: Int, completion: @escaping(BoardDetailInformation)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/getDetailBoardInfo?postID=\(postID)&userID=\(userID)") else { return }
+        networkSessionManager.urlGetMethod(url: url, requestDTO: BoardDetailDTO.self) { result in
+            switch result {
+            case .success(let responseDTO):
+                completion(responseDTO.toDomain())
             case .failure(let error):
                 print("ERROR: \(error)")
             }

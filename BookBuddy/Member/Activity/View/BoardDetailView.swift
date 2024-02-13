@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import SkeletonView
 
 final class BoardDetailView: UIView {
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .systemBackground
+        imageView.isSkeletonable = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -33,80 +34,69 @@ final class BoardDetailView: UIView {
     
     private let likeCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
-        label.textAlignment = .center
+        label.textAlignment = .left
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let commentCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
-        label.textAlignment = .center
+        label.textAlignment = .left
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let nicknameLabel: UILabel = {
         let label = UILabel()
-        label.text = "테스트닉네임"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .label
         label.font = .systemFont(ofSize: 12.0, weight: .bold)
         label.textAlignment = .left
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let contentTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "테스트 글 제목"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 14.0, weight: .bold)
+        label.font = .systemFont(ofSize: 13.0, weight: .bold)
         label.textAlignment = .left
         label.numberOfLines = 0
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let contentLabel: UILabel = {
         let label = UILabel()
-        label.text = "테스트 글 내용"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .label
-        label.font = .systemFont(ofSize: 13.0, weight: .light)
+        label.font = .systemFont(ofSize: 12.0, weight: .light)
         label.textAlignment = .left
         label.numberOfLines = 0
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private let writeDateLabel: UILabel = {
         let label = UILabel()
-        label.text = "20213-12-21"
-        label.layer.borderColor = UIColor.black.cgColor
-        label.layer.borderWidth = 0.5
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 13.0, weight: .light)
         label.textAlignment = .left
+        label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.isSkeletonable = true
         addSubviews()
         setLayoutConstraints()
     }
@@ -115,15 +105,20 @@ final class BoardDetailView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setLabel(_ information: BoardWrittenInformation) {
-        self.nicknameLabel.text = information.nickname
-        self.contentLabel.text = information.content
-        self.contentTitleLabel.text = information.contentTitle
-        self.writeDateLabel.text = information.writeDate
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.imageView.image = UIImage(data: information.boardImage)
-        }
+    func setEditedInfoLabel(_ information: BoardEditInformation) {
+        contentTitleLabel.text = information.contentTitle
+        contentLabel.text = information.content
+        imageView.image = UIImage(data: information.boardImage)
+    }
+    
+    func setBoardDetailView(_ information: BoardDetailInformation) {
+        nicknameLabel.text = information.nickname
+        contentLabel.text = information.content
+        contentTitleLabel.text = information.contentTitle
+        writeDateLabel.text = information.writeDate
+        likeCountLabel.text = String(information.likes)
+        commentCountLabel.text = String(information.comments.count)
+        imageView.image = UIImage(data: information.boardImage)
     }
 }
 
@@ -145,14 +140,14 @@ extension BoardDetailView {
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
-            imageView.centerXAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerXAnchor),
-            imageView.heightAnchor.constraint(equalToConstant: 330.0),
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor),
+            imageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
             
             likeButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 5.0),
-            likeButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 5.0),
-            likeButton.widthAnchor.constraint(equalToConstant: 30.0),
-            likeButton.heightAnchor.constraint(equalToConstant: 20.0),
+            likeButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 14.0),
+            likeButton.widthAnchor.constraint(equalToConstant: 24.0),
+            likeButton.heightAnchor.constraint(equalToConstant: 24.0),
             
             likeCountLabel.topAnchor.constraint(equalTo: likeButton.topAnchor),
             likeCountLabel.leadingAnchor.constraint(equalTo: likeButton.trailingAnchor, constant: 5.0),
@@ -182,7 +177,7 @@ extension BoardDetailView {
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 5.0),
             contentLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
             contentLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            contentLabel.heightAnchor.constraint(equalToConstant: 240.0),
+            contentLabel.heightAnchor.constraint(equalToConstant: 150.0),
 
             writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 5.0),
             writeDateLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
