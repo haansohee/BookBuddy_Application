@@ -25,11 +25,9 @@ final class BoardDetailViewModel {
     }
     
     func deleteBoard() {
-        guard let boardDetailInformation = boardDetailInformation else {
-            return }
+        guard let boardDetailInformation = boardDetailInformation else { return }
         let postID = BoardDeleteInformation(postID: boardDetailInformation.postID)
         boardService.deleteBoard(with: postID) { [weak self] result in
-            print("result: \(result)")
             self?.isBoardDeleted.onNext(result)
         }
     }

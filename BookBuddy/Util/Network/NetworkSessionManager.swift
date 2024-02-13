@@ -40,7 +40,6 @@ final class NetworkSessionManager {
     }
     
     func urlPostMethod<T: Codable>(url: URL, encodeValue: T, completion: @escaping(Bool)->Void) {
-        
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
         request.httpMethod = postMethod.rawValue
