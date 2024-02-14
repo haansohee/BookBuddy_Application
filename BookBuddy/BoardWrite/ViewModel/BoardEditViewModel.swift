@@ -11,15 +11,10 @@ import RxSwift
 final class BoardEditViewModel {
     private let boardService = BoardService()
     private(set) var boardEditInformation: BoardEditInformation?
-    private(set) var isBoardInfoUpdated = PublishSubject<Bool>()
-    private(set) var boardImageData: Data?
+    let isBoardInfoUpdated = PublishSubject<Bool>()
     
     func setBoardEditInformation(_ boardEditInformation: BoardEditInformation) {
         self.boardEditInformation = boardEditInformation
-    }
-    
-    func updateBoardImage(_ imageData: Data) {
-        self.boardImageData = imageData
     }
     
     func updateBoardInformation(_ boardEditInformation: BoardEditInformation) {
