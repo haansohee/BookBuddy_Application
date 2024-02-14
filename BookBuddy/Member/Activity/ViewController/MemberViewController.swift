@@ -70,6 +70,7 @@ extension MemberViewController {
         switch viewType {
         case .member, .appleMember:
             navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
+            navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
             memberView.translatesAutoresizingMaskIntoConstraints = false
             memberView.startSkeletonAnimation()
             memberView.boardCollectionView.dataSource = self
@@ -248,7 +249,7 @@ extension MemberViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let boardWrittenInformation = viewModel.boardWrittenInformations?[indexPath.row] else { return }
-        navigationController?.pushViewController(BoardDetailViewController(boardWrittenInformation: boardWrittenInformation), animated: true)
+        navigationController?.pushViewController(BoardDetailViewController(postID: boardWrittenInformation.postID), animated: true)
     }
 }
 

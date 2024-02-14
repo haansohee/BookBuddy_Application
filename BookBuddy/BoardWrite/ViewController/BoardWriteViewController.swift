@@ -244,14 +244,10 @@ extension BoardWriteViewController: UITextViewDelegate {
 
 extension BoardWriteViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
-            boardWriteView.imageView.image = editedImage
-            if let imageData = editedImage.pngData() {
-                UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.boardImage.rawValue)
-            }
-        } else {
-            print("ERROR")
-        }
+        guard let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage,
+              let imageData = editedImage.pngData() else { return }
+        boardWriteView.imageView.image = editedImage
+        UserDefaults.standard.setValue(imageData, forKey: UserDefaultsForkey.boardImage.rawValue)
         dismiss(animated: true)
     }
 }
