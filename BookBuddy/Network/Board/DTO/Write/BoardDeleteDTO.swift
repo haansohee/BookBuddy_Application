@@ -9,4 +9,5 @@ import Foundation
 
 struct BoardDeleteDTO: Codable {
     let postID: Int
+    let nickname: String
 }

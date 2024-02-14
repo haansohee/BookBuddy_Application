@@ -10,6 +10,7 @@ import Foundation
 final class NetworkSessionManager {
     private let postMethod: HTTPMethod = .POST
     private let getMethod: HTTPMethod = .GET
+    private let deleteMethod: HTTPMethod = .DELETE
     
     func urlGetMethod<T: Codable>(url: URL, requestDTO: T.Type, completion: @escaping(Result<T, Error>)->Void) {
         var request = URLRequest(url: url)
@@ -65,6 +66,38 @@ final class NetworkSessionManager {
                     
                 } catch {
                     print("ERROR Decoding Response Data: \(error)")
+                    completion(false)
+                    return
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func urlDeleteMethod<T: Codable>(url: URL, encodeValue: T, completion: @escaping(Bool)->Void) {
+        var request = URLRequest(url: url)
+        let encoder = JSONEncoder()
+        request.httpMethod = deleteMethod.rawValue
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try encoder.encode(encodeValue)
+        } catch {
+            print("ERROR: Encoding Reuqest Data: \(error)")
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("ERROR: \(error)")
+                return
+            } else if let data = data {
+                do {
+                    _ = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    completion(true)
+                    return
+                } catch {
+                    print("ERROR: Decoding Response Data: \(error)")
                     completion(false)
                     return
                 }

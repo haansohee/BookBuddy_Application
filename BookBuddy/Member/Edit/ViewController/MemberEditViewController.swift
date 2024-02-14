@@ -306,18 +306,16 @@ extension MemberEditViewController: UITextFieldDelegate {
 
 extension MemberEditViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
-            memberEditView.profileImageView.image = editedImage
-            if let imageData = editedImage.pngData(),
-               let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) {
-                UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.profile.rawValue)
-                let profileInformation = MemberUpdateInformation(nickname: nickname, profile: imageData)
-                viewModel.updateMemberInformation(profileInformation)
-            }
-            
-        } else {
-            print("ERROR")
+        guard let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
+            return
         }
+        memberEditView.profileImageView.image = editedImage
+        guard let imageData = editedImage.pngData(),
+              let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.profile.rawValue)
+        let profileInformation = MemberUpdateInformation(nickname: nickname, profile: imageData)
+        viewModel.updateMemberInformation(profileInformation)
+        
         dismiss(animated: true)
     }
 }

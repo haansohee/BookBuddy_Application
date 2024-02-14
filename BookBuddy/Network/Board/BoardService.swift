@@ -43,7 +43,7 @@ final class BoardService {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteBoard/") else { return }
         let boardDeleteDTO = boardDeleteInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: boardDeleteDTO) { result in
+        networkSessionManager.urlDeleteMethod(url: url, encodeValue: boardDeleteDTO) { result in
             completion(result)
         }
     }

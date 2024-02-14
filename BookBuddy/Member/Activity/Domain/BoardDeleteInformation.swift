@@ -9,10 +9,11 @@ import Foundation
 
 struct BoardDeleteInformation {
     let postID: Int
+    let nickname: String
 }
 
 extension BoardDeleteInformation {
     func toRequestDTO() -> BoardDeleteDTO {
-        return .init(postID: postID)
+        return .init(postID: postID, nickname: nickname)
     }
 }

@@ -24,9 +24,18 @@ final class BoardDetailViewModel {
         }
     }
     
+    func checkBoardAuthor() -> Bool {
+        guard let authorNickname = boardDetailInformation?.nickname,
+              let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return false }
+        guard authorNickname == nickname else { return false }
+        return true
+    }
+    
     func deleteBoard() {
-        guard let boardDetailInformation = boardDetailInformation else { return }
-        let postID = BoardDeleteInformation(postID: boardDetailInformation.postID)
+        guard let boardDetailInformation = boardDetailInformation,
+              let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        guard nickname == boardDetailInformation.nickname else { return }
+        let postID = BoardDeleteInformation(postID: boardDetailInformation.postID, nickname: boardDetailInformation.nickname)
         boardService.deleteBoard(with: postID) { [weak self] result in
             self?.isBoardDeleted.onNext(result)
         }

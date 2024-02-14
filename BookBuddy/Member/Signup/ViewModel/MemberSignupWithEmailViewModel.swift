@@ -58,7 +58,7 @@ final class MemberSignupWithEmailViewModel {
         DispatchQueue.global().async {
             smtp.send(mail) { [weak self] error in
                 if let error = error {
-                    print("ERROR: \(error)")
+                    print("ERROR: \(error.localizedDescription)")
                 } else {
                     self?.isDone = true
                     self?.isAuthed.onNext(true)

@@ -46,19 +46,6 @@ extension BoardDetailViewController {
         boardDetailView.translatesAutoresizingMaskIntoConstraints = false
         boardDetailView.showAnimatedSkeleton()
         navigationController?.navigationBar.tintColor = .systemGreen
-        navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
-        let editMenu = UIAction(title: "수정하기",
-                                image: UIImage(systemName: "pencil.circle"),
-                                handler: { [weak self] _ in
-            self?.editBoard()
-        })
-        let deleteMenu = UIAction(title: "삭제하기",
-                                  image: UIImage(systemName: "trash"),
-                                  attributes: .destructive,
-                                  handler: { [weak self] _ in
-            self?.deleteCheckAlert()
-        })
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [editMenu, deleteMenu]))
     }
     
     private func setLayoutConstraintsBoardDetailView() {
@@ -68,6 +55,30 @@ extension BoardDetailViewController {
             boardDetailView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             boardDetailView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
+    }
+    
+    private func checkBoardAuthor() {
+        if viewModel.checkBoardAuthor() {
+            let editMenu = UIAction(title: "수정하기",
+                                    image: UIImage(systemName: "pencil.circle"),
+                                    handler: { [weak self] _ in
+                self?.editBoard()
+            })
+            let deleteMenu = UIAction(title: "삭제하기",
+                                      image: UIImage(systemName: "trash"),
+                                      attributes: .destructive,
+                                      handler: { [weak self] _ in
+                self?.deleteCheckAlert()
+            })
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [editMenu, deleteMenu]))
+        } else {
+            let reportMenu = UIAction(title: "신고하기",
+                                      image: UIImage(systemName: "exclamationmark.bubble"),
+                                      attributes: .destructive,
+                                      handler: { _ in
+            })
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [reportMenu]))
+        }
     }
     
     private func deleteCheckAlert() {
@@ -104,6 +115,8 @@ extension BoardDetailViewController {
                 guard let boardDetailInformation = self?.viewModel.boardDetailInformation else { return }
                 self?.boardDetailView.hideSkeleton()
                 self?.boardDetailView.setBoardDetailView(boardDetailInformation)
+                self?.navigationItem.title = boardDetailInformation.nickname
+                self?.checkBoardAuthor()
             })
             .disposed(by: disposeBag)
     }
