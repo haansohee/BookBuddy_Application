@@ -10,7 +10,7 @@ import UIKit
 final class CommentCollectionView: UICollectionView {
     private var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 5.0
+        layout.minimumLineSpacing = 10.0
         layout.scrollDirection = .vertical
         layout.itemSize = CGSize(width: (UIScreen.main.bounds.width) - 10, height: 120.0)
         return layout
@@ -18,7 +18,7 @@ final class CommentCollectionView: UICollectionView {
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: self.layout)
-        self.register(CommentViewCell.self, forCellWithReuseIdentifier: "CommentViewCell")
+        self.register(CommenCollectionViewCell.self, forCellWithReuseIdentifier: "CommentViewCell")
         self.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         self.backgroundColor = .systemBackground
         self.isPagingEnabled = false

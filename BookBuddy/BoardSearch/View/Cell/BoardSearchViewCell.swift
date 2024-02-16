@@ -24,7 +24,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = 20
+        imageView.layer.cornerRadius = 17
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
@@ -106,6 +106,7 @@ final class BoardSearchViewCell: UICollectionViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.textColor = .label
+        label.numberOfLines = 0
         label.font = .systemFont(ofSize: 12.0, weight: .light)
         return label
     }()
@@ -185,17 +186,17 @@ extension BoardSearchViewCell {
             touchStackView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
             touchStackView.heightAnchor.constraint(equalToConstant: 40.0),
             
-            profileImageView.centerYAnchor.constraint(equalTo: touchStackView.centerYAnchor),
+            profileImageView.topAnchor.constraint(equalTo: touchStackView.topAnchor, constant: 3.0),
             profileImageView.leadingAnchor.constraint(equalTo: touchStackView.leadingAnchor, constant: 3.0),
-            profileImageView.widthAnchor.constraint(equalTo: touchStackView.heightAnchor),
-            profileImageView.heightAnchor.constraint(equalTo: touchStackView.heightAnchor),
+            profileImageView.bottomAnchor.constraint(equalTo: touchStackView.bottomAnchor, constant: -3.0),
+            profileImageView.widthAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
             titleNicknameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 3.0),
             titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
             titleNicknameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
-            boardImageView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor),
+            boardImageView.topAnchor.constraint(equalTo: touchStackView.bottomAnchor),
             boardImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             boardImageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
             boardImageView.heightAnchor.constraint(equalTo: boardImageView.widthAnchor),

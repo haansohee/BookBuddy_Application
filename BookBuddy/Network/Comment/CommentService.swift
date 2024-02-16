@@ -20,6 +20,15 @@ final class CommentService {
         }
     }
     
+    func deleteCommentInfo(with commentDeleteInformation: CommentDeleteInformation, completion: @escaping(Bool)->Void) {
+        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
+        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteComment/") else { return }
+        let comment = commentDeleteInformation.toRequestDTO()
+        networeSessionMangaer.urlDeleteMethod(url: url, encodeValue: comment) { result in
+            completion(result)
+        }
+    }
+    
     func getCommentInfo(postID: Int, completion: @escaping([CommentInformation]) -> Void) {
         guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
         guard let url = URL(string: serverURL+"/BookBuddyInfo/getBoardComment?postID=\(postID)") else { return }

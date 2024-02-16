@@ -1,13 +1,17 @@
 //
-//  CommentViewCell.swift
+//  CommenCollectiontViewCell.swift
 //  BookBuddy
 //
 //  Created by 한소희 on 1/25/24.
 //
 
 import UIKit
+import RxSwift
+import SwipeCellKit
 
-final class CommentViewCell: UICollectionViewCell {
+final class CommenCollectionViewCell: SwipeCollectionViewCell {
+    var disposeBag = DisposeBag()
+    
     private let isEmptyLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -23,31 +27,31 @@ final class CommentViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "person")
-        imageView.layer.cornerRadius = 15
-        imageView.layer.borderWidth = 1
+        imageView.layer.cornerRadius = 18
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.borderWidth = 0.5
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .systemGray4
+        imageView.backgroundColor = .systemBackground
+        imageView.tintColor = .label
         return imageView
     }()
     
     private let nicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "테스트닉네임"
         label.textAlignment = .left
         label.textColor = .label
-        label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.font = .systemFont(ofSize: 12.0, weight: .bold)
         return label
     }()
     
     private let writeDateLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "2024/1/31"
         label.textAlignment = .left
         label.textColor = .label
-        label.font = .systemFont(ofSize: 11.0, weight: .light)
+        label.font = .systemFont(ofSize: 10.0, weight: .light)
         return label
     }()
     
@@ -58,16 +62,22 @@ final class CommentViewCell: UICollectionViewCell {
         label.textAlignment = .left
         label.sizeToFit()
         label.textColor = .label
-        label.font = .systemFont(ofSize: 12.0)
+        label.font = .systemFont(ofSize: 11.0)
+    
         return label
     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
-        self.backgroundColor = .systemGray5
-        self.layer.cornerRadius = 6.0
+//        self.backgroundColor = .systemGray6
+//        self.layer.cornerRadius = 3.0
     }
     
     required init?(coder: NSCoder) {
@@ -101,7 +111,7 @@ final class CommentViewCell: UICollectionViewCell {
     }
 }
 
-extension CommentViewCell {
+extension CommenCollectionViewCell {
     private func addSubviews() {
         [
             isEmptyLabel,
@@ -109,7 +119,7 @@ extension CommentViewCell {
             nicknameLabel,
             writeDateLabel,
             commentLabel
-        ].forEach { addSubview($0) }
+        ].forEach { contentView.addSubview($0) }
     }
     
     private func setLayoutConstraints() {
@@ -121,23 +131,22 @@ extension CommentViewCell {
             
             profileImage.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
             profileImage.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
-            profileImage.widthAnchor.constraint(equalToConstant: 30.0),
-            profileImage.heightAnchor.constraint(equalTo: profileImage.widthAnchor),
+            profileImage.widthAnchor.constraint(equalToConstant: 36.0),
+            profileImage.heightAnchor.constraint(equalToConstant: 36.0),
             
-            nicknameLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
-            nicknameLabel.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 5.0),
-            nicknameLabel.heightAnchor.constraint(equalToConstant: 20.0),
+            nicknameLabel.topAnchor.constraint(equalTo: profileImage.topAnchor, constant: 3.0),
+            nicknameLabel.leadingAnchor.constraint(equalTo: profileImage.trailingAnchor, constant: 8.0),
+            nicknameLabel.heightAnchor.constraint(equalToConstant: 10.0),
             
-            writeDateLabel.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
-            writeDateLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 12.0),
-            writeDateLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0),
+            commentLabel.topAnchor.constraint(equalTo: nicknameLabel.bottomAnchor),
+            commentLabel.leadingAnchor.constraint(equalTo: nicknameLabel.leadingAnchor),
+            commentLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
+            
+            writeDateLabel.topAnchor.constraint(equalTo: commentLabel.bottomAnchor),
+            writeDateLabel.leadingAnchor.constraint(equalTo: nicknameLabel.leadingAnchor),
+            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
             writeDateLabel.widthAnchor.constraint(equalToConstant: 100.0),
             writeDateLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
-            
-            commentLabel.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 8.0),
-            commentLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
-            commentLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
-            commentLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8.0)
         ])
     }
 }
