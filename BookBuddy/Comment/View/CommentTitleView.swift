@@ -16,11 +16,13 @@ final class CommentTitleView: UIView {
         label.backgroundColor = .systemBackground
         label.font = .systemFont(ofSize: 15, weight: .bold)
         label.textAlignment = .center
+        label.backgroundColor = .systemGray6
         return label
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = .systemGray6
         addSubview(titleLabel)
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
@@ -28,7 +30,6 @@ final class CommentTitleView: UIView {
             titleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
             titleLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8.0)
         ])
-        self.backgroundColor = .systemBackground
     }
     
     required init?(coder: NSCoder) {

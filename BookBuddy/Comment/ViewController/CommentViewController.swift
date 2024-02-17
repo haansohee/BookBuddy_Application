@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import SwipeCellKit
 
 final class CommentViewController: UIViewController {
     private let commentTitelView = CommentTitleView()
@@ -115,8 +116,9 @@ extension CommentViewController {
     
     private func bindAll() {
         bindCommentPostButton()
-        bindIsCommentUploaded()
-        bindIsCommentLoaded()
+        bindIsLoadedComment()
+        bindIsIUploadedComment()
+        bindIsDeletedComment()
     }
     
     private func bindCommentPostButton() {
@@ -136,8 +138,8 @@ extension CommentViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsCommentUploaded() {
-        commentViewModel.isCommentUploaded
+    private func bindIsIUploadedComment() {
+        commentViewModel.isIUploadedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentUploaded in
                 guard isCommentUploaded else { return }
@@ -146,8 +148,8 @@ extension CommentViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsCommentLoaded() {
-        commentViewModel.isCommentLoaded
+    private func bindIsLoadedComment() {
+        commentViewModel.isLoadedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentLoaded in
                 guard isCommentLoaded,
@@ -159,8 +161,19 @@ extension CommentViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    private func bindIsDeletedComment() {
+        commentViewModel.isDeletedComment
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: {[weak self] isCommentDeleted in
+                guard isCommentDeleted else { return }
+                self?.commentCollectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
+// MARK: - UITextView Delegate
 extension CommentViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = true
@@ -182,6 +195,7 @@ extension CommentViewController: UITextViewDelegate {
     }
 }
 
+// MARK: - UICollectionView DataSource
 extension CommentViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         guard let commentInformationCount = commentViewModel.commentInformations?.count else { return 0 }
@@ -190,7 +204,8 @@ extension CommentViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CommentViewCell", for: indexPath) as? CommentViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CommentViewCell", for: indexPath) as? CommenCollectionViewCell else { return UICollectionViewCell() }
+        cell.delegate = self
         guard let commentInformation = commentViewModel.commentInformations else { return cell }
         guard !commentInformation.isEmpty else {
             cell.isHiddenOption(true)
@@ -203,11 +218,42 @@ extension CommentViewController: UICollectionViewDataSource {
             cell.profileImage.image = UIImage(systemName: "person")
         }
         cell.setupCommentViewCell(commentInformation[indexPath.row])
-        
         return cell
     }
 }
 
+// MARK: - SwipeCollectionViewCell Delegate
+extension CommentViewController: SwipeCollectionViewCellDelegate {
+    func collectionView(_ collectionView: UICollectionView, editActionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        guard let commentInformation = commentViewModel.commentInformations else { return nil }
+        guard orientation == .right else { return nil }
+        if commentViewModel.checkAuthorUser(with: commentInformation[indexPath.row].userID) {
+            let deleteAction = SwipeAction(style: .destructive, title: "삭제") { [weak self] action, indexPath in
+                self?.commentViewModel.deleteComment(
+                    commentUserID: commentInformation[indexPath.row].userID,
+                    commentID: commentInformation[indexPath.row].commentID,
+                    indexPath: indexPath)
+            }
+            deleteAction.image = UIImage(systemName: "trash")
+            return [deleteAction]
+        } else {
+            let reportAction = SwipeAction(style: .default, title: "신고") { action, indexPath in
+                // 신고 기능
+            }
+            reportAction.image = UIImage(systemName: "exclamationmark.bubble")
+            return [reportAction]
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, editActionsOptionsForItemAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+        var options = SwipeOptions()
+        options.expansionStyle = .selection
+        options.transitionStyle = .border
+        return options
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
 extension CommentViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard let commentInformation = commentViewModel.commentInformations else { return .zero }

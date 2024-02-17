@@ -13,54 +13,48 @@ final class BoardService {
     private let networkSessionManager = NetworkSessionManager()
     
     func setBoardInfo(with boardWriteInformation: BoardWriteInformation, completion: @escaping((Bool)) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/setBoards/") else { return }
+        let path = "/BookBuddyInfo/setBoards/"
         let board = boardWriteInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: board) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: board) { result in
             completion(result)
         }
     }
     
     func setBoardLike(with boardLikeInformation: BoardLikeInformation, completion: @escaping(Bool)->Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/setBoardLike/") else { return }
+        let path = "/BookBuddyInfo/setBoardLike/"
         let boardLikeDTO = boardLikeInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: boardLikeDTO) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: boardLikeDTO) { result in
             completion(result)
         }
     }
     
     func deleteBoardLike(with boardLikeInformation: BoardLikeInformation, completion: @escaping(Bool) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteBoardLike/") else { return }
+        let path = "/BookBuddyInfo/deleteBoardLike/"
         let boardLikeDTO = boardLikeInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: boardLikeDTO) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: boardLikeDTO) { result in
             completion(result)
         }
     }
     
     func deleteBoard(with boardDeleteInformation: BoardDeleteInformation, completion: @escaping(Bool)->Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteBoard/") else { return }
+        let path = "/BookBuddyInfo/deleteBoard/"
         let boardDeleteDTO = boardDeleteInformation.toRequestDTO()
-        networkSessionManager.urlDeleteMethod(url: url, encodeValue: boardDeleteDTO) { result in
+        networkSessionManager.urlDeleteMethod(path: path, encodeValue: boardDeleteDTO) { result in
             completion(result)
         }
     }
     
     func updateBoardInfo(with boardEditInformation: BoardEditInformation, completion: @escaping(Bool)->Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/updateBoard/") else { return }
+        let path = "/BookBuddyInfo/updateBoard/"
         let boardEditDTO = boardEditInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: boardEditDTO) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: boardEditDTO) { result in
             completion(result)
         }
     }
     
     func getMemberBoards(nickname: String, completion: @escaping([BoardWrittenInformation])->Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getMemberBoards?nickname=\(nickname)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [BoardWrittenDTO].self) { result in
+        let path = "/BookBuddyInfo/getMemberBoards?nickname=\(nickname)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [BoardWrittenDTO].self) { result in
             switch result {
             case .success(let responseDTO):
                 let boardWrittenInformaitions = responseDTO.map { $0.toDomain() }
@@ -73,9 +67,8 @@ final class BoardService {
     }
     
     func getDetailBoardInfo(postID: Int, userID: Int, completion: @escaping(BoardDetailInformation)->Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getDetailBoardInfo?postID=\(postID)&userID=\(userID)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: BoardDetailDTO.self) { result in
+        let path = "/BookBuddyInfo/getDetailBoardInfo?postID=\(postID)&userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: BoardDetailDTO.self) { result in
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO.toDomain())
@@ -86,9 +79,8 @@ final class BoardService {
     }
     
     func getSearchBoards(searchWord: String, userID: Int, completion: @escaping([BoardSearchResultsInformation]) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)&userID=\(userID)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [BoardSearchResultsDTO].self) { result in
+        let path = "/BookBuddyInfo/getSearchBoards?searchWord=\(searchWord)&userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [BoardSearchResultsDTO].self) { result in
             switch result {
             case .success(let responseDTO):
                 let boardSearchResultsInformation = responseDTO.map { $0.toDomain() }
@@ -100,9 +92,8 @@ final class BoardService {
     }
     
     func getFollowingBoards(userID: Int, completion: @escaping([FollowingBoardInformation]) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getFollowingBoards?userID=\(userID)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [FollowingBoardDTO].self) { result in
+        let path = "/BookBuddyInfo/getFollowingBoards?userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [FollowingBoardDTO].self) { result in
             switch result {
             case .success(let responseDTO):
                 let followingBoardInformation = responseDTO.map { $0.toDomain() }
@@ -114,9 +105,8 @@ final class BoardService {
     }
     
     func getBoardLikedPostID(userID: Int, completion: @escaping([Int]) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getBoardLikedPostID?userID=\(userID)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [Int].self) { result in
+        let path = "/BookBuddyInfo/getBoardLikedPostID?userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [Int].self) { result in
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO)

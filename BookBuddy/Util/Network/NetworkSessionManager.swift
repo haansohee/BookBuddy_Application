@@ -11,8 +11,11 @@ final class NetworkSessionManager {
     private let postMethod: HTTPMethod = .POST
     private let getMethod: HTTPMethod = .GET
     private let deleteMethod: HTTPMethod = .DELETE
+    private let BaseURL = Bundle.main.infoDictionary?["Server_URL"] as? String
     
-    func urlGetMethod<T: Codable>(url: URL, requestDTO: T.Type, completion: @escaping(Result<T, Error>)->Void) {
+    func urlGetMethod<T: Codable>(path: String, requestDTO: T.Type, completion: @escaping(Result<T, Error>)->Void) {
+        guard let BaseURL = BaseURL,
+              let url = URL(string: BaseURL+path) else { return }
         var request = URLRequest(url: url)
         request.httpMethod = getMethod.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -40,7 +43,9 @@ final class NetworkSessionManager {
         task.resume()
     }
     
-    func urlPostMethod<T: Codable>(url: URL, encodeValue: T, completion: @escaping(Bool)->Void) {
+    func urlPostMethod<T: Codable>(path: String, encodeValue: T, completion: @escaping(Bool)->Void) {
+        guard let BaseURL = BaseURL,
+              let url = URL(string: BaseURL+path) else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
         request.httpMethod = postMethod.rawValue
@@ -74,7 +79,9 @@ final class NetworkSessionManager {
         task.resume()
     }
     
-    func urlDeleteMethod<T: Codable>(url: URL, encodeValue: T, completion: @escaping(Bool)->Void) {
+    func urlDeleteMethod<T: Codable>(path: String, encodeValue: T, completion: @escaping(Bool)->Void) {
+        guard let BaseURL = BaseURL,
+              let url = URL(string: BaseURL+path) else { return }
         var request = URLRequest(url: url)
         let encoder = JSONEncoder()
         request.httpMethod = deleteMethod.rawValue

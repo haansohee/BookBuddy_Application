@@ -11,8 +11,9 @@ import RxSwift
 final class CommentViewModel {
     private let commentService = CommentService()
     private let dateFormatter = DateFormatter()
-    private(set) var isCommentUploaded = PublishSubject<Bool>()
-    private(set) var isCommentLoaded = PublishSubject<Bool>()
+    let isIUploadedComment = PublishSubject<Bool>()
+    let isLoadedComment = PublishSubject<Bool>()
+    let isDeletedComment = PublishSubject<Bool>()
     private(set) var commentInformations: [CommentInformation]?
     private(set) var postID: Int?
     
@@ -32,7 +33,7 @@ final class CommentViewModel {
         let uploadProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) ?? Data()
         let uploadCommentInformation = CommentUploadInformation(postID: uploadPostID, userID: userID, writeDate: wrtieDate, commentContent: commentContent, nickname: uploadNickname, profile: uploadProfile)
         commentService.setCommentInfo(with: uploadCommentInformation) { [weak self] result in
-            self?.isCommentUploaded.onNext(result)
+            self?.isIUploadedComment.onNext(result)
         }
     }
     
@@ -40,7 +41,26 @@ final class CommentViewModel {
         guard let postID = postID else { return }
         commentService.getCommentInfo(postID: postID) { [weak self] result in
             self?.commentInformations = result
-            self?.isCommentLoaded.onNext(!result.isEmpty)
+            self?.isLoadedComment.onNext(!result.isEmpty)
         }
+    }
+    
+    func checkAuthorUser(with commentUserID: Int) -> Bool {
+        let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+        guard commentUserID == userID else { return false }
+        return true
+    }
+    
+    func deleteComment(commentUserID: Int, commentID: Int, indexPath: IndexPath) {
+        let commentDeleteInfo = CommentDeleteInformation(commentID: commentID, commentUserID: commentUserID)
+        commentService.deleteCommentInfo(with: commentDeleteInfo) { [weak self] result in
+            guard result else { return }
+            self?.deleteCommentInformation(indexPath.row)
+            self?.isDeletedComment.onNext(result)
+        }
+    }
+    
+    private func deleteCommentInformation(_ index: Int) {
+        commentInformations?.remove(at: index)
     }
 }

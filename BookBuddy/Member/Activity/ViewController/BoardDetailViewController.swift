@@ -76,6 +76,7 @@ extension BoardDetailViewController {
                                       image: UIImage(systemName: "exclamationmark.bubble"),
                                       attributes: .destructive,
                                       handler: { _ in
+                // 신고 기능
             })
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [reportMenu]))
         }
