@@ -76,8 +76,6 @@ final class CommenCollectionViewCell: SwipeCollectionViewCell {
         super.init(frame: frame)
         addSubviews()
         setLayoutConstraints()
-//        self.backgroundColor = .systemGray6
-//        self.layer.cornerRadius = 3.0
     }
     
     required init?(coder: NSCoder) {

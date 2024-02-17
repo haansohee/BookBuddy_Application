@@ -11,10 +11,9 @@ import RxSwift
 final class CommentViewModel {
     private let commentService = CommentService()
     private let dateFormatter = DateFormatter()
-    let isCommentUploaded = PublishSubject<Bool>()
-    let isCommentLoaded = PublishSubject<Bool>()
-    let isCommentDeleted = PublishSubject<Bool>()
-    let commentCollectionViewCellIndexPath = BehaviorSubject<IndexPath>(value: [])
+    let isIUploadedComment = PublishSubject<Bool>()
+    let isLoadedComment = PublishSubject<Bool>()
+    let isDeletedComment = PublishSubject<Bool>()
     private(set) var commentInformations: [CommentInformation]?
     private(set) var postID: Int?
     
@@ -34,7 +33,7 @@ final class CommentViewModel {
         let uploadProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) ?? Data()
         let uploadCommentInformation = CommentUploadInformation(postID: uploadPostID, userID: userID, writeDate: wrtieDate, commentContent: commentContent, nickname: uploadNickname, profile: uploadProfile)
         commentService.setCommentInfo(with: uploadCommentInformation) { [weak self] result in
-            self?.isCommentUploaded.onNext(result)
+            self?.isIUploadedComment.onNext(result)
         }
     }
     
@@ -42,7 +41,7 @@ final class CommentViewModel {
         guard let postID = postID else { return }
         commentService.getCommentInfo(postID: postID) { [weak self] result in
             self?.commentInformations = result
-            self?.isCommentLoaded.onNext(!result.isEmpty)
+            self?.isLoadedComment.onNext(!result.isEmpty)
         }
     }
     
@@ -57,7 +56,7 @@ final class CommentViewModel {
         commentService.deleteCommentInfo(with: commentDeleteInfo) { [weak self] result in
             guard result else { return }
             self?.deleteCommentInformation(indexPath.row)
-            self?.isCommentDeleted.onNext(result)
+            self?.isDeletedComment.onNext(result)
         }
     }
     

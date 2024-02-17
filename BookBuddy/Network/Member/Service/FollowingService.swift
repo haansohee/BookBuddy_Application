@@ -13,27 +13,24 @@ final class FollowService {
     private let networkSessionManager = NetworkSessionManager()
     
     func setFollowingList(followingInformation: FollowingInformation, completion: @escaping(Bool) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/setFollowingList/") else { return }
+        let path = "/BookBuddyInfo/setFollowingList/"
         let followingInformation = followingInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: followingInformation) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: followingInformation) { result in
             completion(result)
         }
     }
     
     func deleteFollowing(followingInformation: FollowingInformation, completion: @escaping(Bool) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/deleteFollowing/") else { return }
+        let path = "/BookBuddyInfo/deleteFollowing/"
         let followingInformation = followingInformation.toRequestDTO()
-        networkSessionManager.urlPostMethod(url: url, encodeValue: followingInformation) { result in
+        networkSessionManager.urlPostMethod(path: path, encodeValue: followingInformation) { result in
             completion(result)
         }
     }
     
     func getFollowingList(userID: Int, completion: @escaping(([FollowingListInformation])) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getFollowingList?userID=\(userID)") else { return }
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [FollowingListDTO].self) { result in
+        let path = "/BookBuddyInfo/getFollowingList?userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [FollowingListDTO].self) { result in
             switch result {
             case .success(let responseDTO):
                 let followingListInformations = responseDTO.map { $0.toDomain() }
@@ -45,10 +42,8 @@ final class FollowService {
     }
     
     func getFollowerList(userID: Int, completion: @escaping(([FollowerListInformation])) -> Void) {
-        guard let serverURL = Bundle.main.infoDictionary?["Server_URL"] as? String else { return }
-        guard let url = URL(string: serverURL+"/BookBuddyInfo/getFollowerList?userID=\(userID)") else { return }
-        
-        networkSessionManager.urlGetMethod(url: url, requestDTO: [FollowerListDTO].self) { result in
+        let path = "/BookBuddyInfo/getFollowerList?userID=\(userID)"
+        networkSessionManager.urlGetMethod(path: path, requestDTO: [FollowerListDTO].self) { result in
             switch result {
             case .success(let responseDTO):
                 let followerListInformation = responseDTO.map { $0.toDomain() }

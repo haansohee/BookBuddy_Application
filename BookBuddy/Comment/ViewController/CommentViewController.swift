@@ -116,9 +116,9 @@ extension CommentViewController {
     
     private func bindAll() {
         bindCommentPostButton()
-        bindIsCommentUploaded()
-        bindIsCommentLoaded()
-        bindIsCommentDeleted()
+        bindIsLoadedComment()
+        bindIsIUploadedComment()
+        bindIsDeletedComment()
     }
     
     private func bindCommentPostButton() {
@@ -138,8 +138,8 @@ extension CommentViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsCommentUploaded() {
-        commentViewModel.isCommentUploaded
+    private func bindIsIUploadedComment() {
+        commentViewModel.isIUploadedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentUploaded in
                 guard isCommentUploaded else { return }
@@ -148,8 +148,8 @@ extension CommentViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsCommentLoaded() {
-        commentViewModel.isCommentLoaded
+    private func bindIsLoadedComment() {
+        commentViewModel.isLoadedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentLoaded in
                 guard isCommentLoaded,
@@ -162,8 +162,8 @@ extension CommentViewController {
             .disposed(by: disposeBag)
     }
     
-    private func bindIsCommentDeleted() {
-        commentViewModel.isCommentDeleted
+    private func bindIsDeletedComment() {
+        commentViewModel.isDeletedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentDeleted in
                 guard isCommentDeleted else { return }
