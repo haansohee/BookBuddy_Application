@@ -49,7 +49,6 @@ extension BoardSearchMemberViewController {
     }
     
     private func configureEditButton() {
-        print("dddd")
         if viewModel.checkAuthorUser() {
             memberView.followingButton.isHidden = true
             memberView.editButton.isHidden = false

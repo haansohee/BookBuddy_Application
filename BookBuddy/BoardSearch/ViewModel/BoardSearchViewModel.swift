@@ -91,8 +91,6 @@ final class BoardSearchViewModel {
     
     func checkAuthorUser() -> Bool {
         guard let searchMemberInformation = searchMemberInformation else { return false }
-        print("search: \(searchMemberInformation)")
-        print(userID == searchMemberInformation.userID)
         return userID == searchMemberInformation.userID ? true : false
     }
 }

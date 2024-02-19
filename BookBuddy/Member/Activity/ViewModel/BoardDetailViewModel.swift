@@ -26,7 +26,6 @@ final class BoardDetailViewModel {
     
     func checkBoardAuthor() -> Bool {
         guard let boardDetailInformation = boardDetailInformation else { return false }
-        print(boardDetailInformation.postFromUser)
         return boardDetailInformation.postFromUser
     }
     
