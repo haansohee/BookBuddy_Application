@@ -37,7 +37,6 @@ final class BoardSearchViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var endEditingGesture: UITapGestureRecognizer?
     private var viewTapGesture: UITapGestureRecognizer?
-    private var reportAction: UIAction? 
     
     init() {
         self.viewType = .recentSearch
@@ -56,7 +55,6 @@ final class BoardSearchViewController: UIViewController {
         configureRefreshControl()
         bindIsLoadedBoardSearchResults()
         addEditingTapGesture()
-        configureReportAction()
     }
     
     private func setupSearchController() {
@@ -202,17 +200,6 @@ final class BoardSearchViewController: UIViewController {
             }
         }
     }
-    
-    private func configureReportAction() {
-        reportAction = UIAction(title: "신고하기",
-                                  image: UIImage(systemName: "exclamationmark.bubble"),
-                                  attributes: .destructive,
-                                  handler: { [weak self] _ in
-            let reportViewController = ReportViewController()
-            reportViewController.modalPresentationStyle = .overFullScreen
-            self?.present(reportViewController, animated: true)
-        })
-    }
 }
 
 extension BoardSearchViewController: UISearchTextFieldDelegate {
@@ -327,7 +314,14 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 })
                 .disposed(by: cell.disposeBag)
             
-            guard let reportAction = reportAction else { return cell }
+            let reportAction = UIAction(title: "신고하기",
+                                      image: UIImage(systemName: "exclamationmark.bubble"),
+                                      attributes: .destructive,
+                                      handler: { [weak self] _ in
+                let reportViewController = ReportViewController()
+                reportViewController.modalPresentationStyle = .overFullScreen
+                self?.present(reportViewController, animated: true)
+            })
 
             if boardSearchResultsInformation[indexPath.row].postFromUser {
                 cell.ellipsisButton.isHidden = true
