@@ -16,5 +16,6 @@ struct BoardDetailInformation {
     let likes: Int
     let boardImage: Data
     let didLike: Bool
+    let postFromUser: Bool
     var comments: [CommentInformation]
 }

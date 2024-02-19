@@ -37,6 +37,7 @@ final class BoardSearchViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var endEditingGesture: UITapGestureRecognizer?
     private var viewTapGesture: UITapGestureRecognizer?
+    private var reportAction: UIAction? 
     
     init() {
         self.viewType = .recentSearch
@@ -55,6 +56,7 @@ final class BoardSearchViewController: UIViewController {
         configureRefreshControl()
         bindIsLoadedBoardSearchResults()
         addEditingTapGesture()
+        configureReportAction()
     }
     
     private func setupSearchController() {
@@ -148,6 +150,7 @@ final class BoardSearchViewController: UIViewController {
             .drive(onNext: {[weak self] isLoadedBoardSearchResults in
                 guard isLoadedBoardSearchResults else { return }
                 guard let resultsCount = self?.boardSearchViewModel.boardSearchResultsInformations?.count else { return }
+                self?.searchController.searchBar.searchTextField.resignFirstResponder()
                 self?.boardSearchCollectionView.reloadData()
                 self?.boardSearchLabel.text = "\(resultsCount)개의 검색 결과입니다."
                 self?.boardSearchCollectionView.refreshControl?.endRefreshing()
@@ -181,6 +184,7 @@ final class BoardSearchViewController: UIViewController {
         boardSearchLabel.text = "검색 중...🔎"
         searchController.searchBar.searchTextField.text = searchWord
     }
+    
     private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
         guard deleteLike else {
             if let labelText = label.text {
@@ -197,6 +201,17 @@ final class BoardSearchViewController: UIViewController {
                 label.text = String(labelTextValue)
             }
         }
+    }
+    
+    private func configureReportAction() {
+        reportAction = UIAction(title: "신고하기",
+                                  image: UIImage(systemName: "exclamationmark.bubble"),
+                                  attributes: .destructive,
+                                  handler: { [weak self] _ in
+            let reportViewController = ReportViewController()
+            reportViewController.modalPresentationStyle = .overFullScreen
+            self?.present(reportViewController, animated: true)
+        })
     }
 }
 
@@ -311,6 +326,15 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                     self?.present(CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID, commentInformation: boardSearchResultsInformation[indexPath.row].comments), animated: true)
                 })
                 .disposed(by: cell.disposeBag)
+            
+            guard let reportAction = reportAction else { return cell }
+
+            if boardSearchResultsInformation[indexPath.row].postFromUser {
+                cell.ellipsisButton.isHidden = true
+            } else {
+                cell.ellipsisButton.isHidden = false
+                cell.ellipsisButton.menu = UIMenu(children: [reportAction])
+            }
             
             return cell
             

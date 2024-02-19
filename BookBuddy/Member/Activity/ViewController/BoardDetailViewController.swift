@@ -75,8 +75,10 @@ extension BoardDetailViewController {
             let reportMenu = UIAction(title: "신고하기",
                                       image: UIImage(systemName: "exclamationmark.bubble"),
                                       attributes: .destructive,
-                                      handler: { _ in
-                // 신고 기능
+                                      handler: { [weak self] _ in
+                let reportViewController = ReportViewController()
+                reportViewController.modalPresentationStyle = .overFullScreen
+                self?.present(reportViewController, animated: true)
             })
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: UIMenu(children: [reportMenu]))
         }
@@ -93,9 +95,14 @@ extension BoardDetailViewController {
         present(alertController, animated: true)
     }
     
-    @objc private func editBoard() {
+    private func editBoard() {
         guard let boardWrittenInformation = viewModel.boardDetailInformation else { return }
-        let boardEditInformation = BoardEditInformation(postID: boardWrittenInformation.postID, nickname: boardWrittenInformation.nickname, contentTitle: boardWrittenInformation.contentTitle, content: boardWrittenInformation.content, boardImage: boardWrittenInformation.boardImage)
+        let boardEditInformation = BoardEditInformation(
+            postID: boardWrittenInformation.postID,
+            nickname: boardWrittenInformation.nickname,
+            contentTitle: boardWrittenInformation.contentTitle,
+            content: boardWrittenInformation.content,
+            boardImage: boardWrittenInformation.boardImage)
         navigationController?.pushViewController(BoardEditViewController(boardEditInformation), animated: true)
     }
 

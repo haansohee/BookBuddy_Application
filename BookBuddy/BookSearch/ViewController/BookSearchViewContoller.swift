@@ -13,7 +13,6 @@ import SkeletonView
 
 final class BookSearchViewContoller: UIViewController {
     private let searchController = SearchController()
-    private let testCell = SearchResultCell()
     private let bookSearchView = BookSearchView()
     private let viewModel = BookSearchViewModel()
     private let disposeBag = DisposeBag()
@@ -136,9 +135,7 @@ extension BookSearchViewContoller: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let bookData = viewModel.bookSearchResults[indexPath.row]
         let categoryData = viewModel.category[indexPath.row]
-        
         let controller = BookDetailViewController(data: bookData, category: categoryData)
-        
         self.present(controller, animated: true)
     }
 }

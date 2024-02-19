@@ -25,10 +25,9 @@ final class BoardDetailViewModel {
     }
     
     func checkBoardAuthor() -> Bool {
-        guard let authorNickname = boardDetailInformation?.nickname,
-              let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return false }
-        guard authorNickname == nickname else { return false }
-        return true
+        guard let boardDetailInformation = boardDetailInformation else { return false }
+        print(boardDetailInformation.postFromUser)
+        return boardDetailInformation.postFromUser
     }
     
     func deleteBoard() {

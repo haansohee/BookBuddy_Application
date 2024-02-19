@@ -10,7 +10,7 @@ import RxSwift
 import SwiftSoup
 
 final class BookSearchViewModel {
-    private(set) var isParsed = PublishSubject<Bool>()
+    let isParsed = PublishSubject<Bool>()
     private(set) var bookSearchResults: [BookSearchContents] = []
     private(set) var imageData: Data?
     private(set) var category: [String] = []

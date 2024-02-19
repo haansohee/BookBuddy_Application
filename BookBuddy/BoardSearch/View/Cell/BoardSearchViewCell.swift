@@ -41,6 +41,16 @@ final class BoardSearchViewCell: UICollectionViewCell {
         return label
     }()
     
+    let ellipsisButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.showsMenuAsPrimaryAction = true
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tintColor = .lightGray
+        button.backgroundColor = .systemBackground
+        return button
+    }()
+    
     private let boardImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -163,7 +173,8 @@ extension BoardSearchViewCell {
     private func addSubviews() {
         [
             profileImageView,
-            titleNicknameLabel
+            titleNicknameLabel,
+            ellipsisButton
         ].forEach { touchStackView.addSubview($0) }
         [
             touchStackView,
@@ -195,6 +206,12 @@ extension BoardSearchViewCell {
             titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 3.0),
             titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
             titleNicknameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
+            
+            ellipsisButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
+            ellipsisButton.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
+            ellipsisButton.widthAnchor.constraint(equalTo: profileImageView.heightAnchor),
+            ellipsisButton.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
+            
             
             boardImageView.topAnchor.constraint(equalTo: touchStackView.bottomAnchor),
             boardImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),

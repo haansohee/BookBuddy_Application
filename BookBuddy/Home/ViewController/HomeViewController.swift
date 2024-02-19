@@ -16,6 +16,7 @@ final class HomeViewController: UIViewController {
     private let commentViewModel = CommentViewModel()
     private let activityIndicatorViewController = ActivityIndicatorViewController()
     private let disposeBag = DisposeBag()
+    private var reportAction: UIAction?
     
     init(nickname: String? = nil) {
         super.init(nibName: nil, bundle: nil)
@@ -32,6 +33,7 @@ final class HomeViewController: UIViewController {
         setLayoutConstraints()
         configureHomeView()
         configureRefreshControl()
+        configureReportAction()
         bindIsLoadedFollowingBoardInfo()
     }
     
@@ -105,6 +107,17 @@ extension HomeViewController {
         guard let nickname = nickname.nickname else { return }
         navigationController?.pushViewController(BoardSearchMemberViewController(nickname: nickname), animated: true)
     }
+    
+    private func configureReportAction() {
+        reportAction = UIAction(title: "신고하기",
+                                  image: UIImage(systemName: "exclamationmark.bubble"),
+                                  attributes: .destructive,
+                                  handler: { [weak self] _ in
+            let reportViewController = ReportViewController()
+            reportViewController.modalPresentationStyle = .overFullScreen
+            self?.present(reportViewController, animated: true)
+        })
+    }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
@@ -172,6 +185,9 @@ extension HomeViewController: UICollectionViewDataSource {
                 self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID, commentInformation: followingBoardInformation[indexPath.row].comments), animated: true)
             })
             .disposed(by: cell.disposeBag)
+        
+        guard let reportAction = reportAction else { return cell }
+        cell.ellipsisButton.menu = UIMenu(children: [reportAction])
         return cell
     }
 }
