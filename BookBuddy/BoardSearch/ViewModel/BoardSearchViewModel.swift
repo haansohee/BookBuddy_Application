@@ -88,4 +88,9 @@ final class BoardSearchViewModel {
             }
         }
     }
+    
+    func checkAuthorUser() -> Bool {
+        guard let searchMemberInformation = searchMemberInformation else { return false }
+        return userID == searchMemberInformation.userID ? true : false
+    }
 }

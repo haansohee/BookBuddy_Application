@@ -109,11 +109,26 @@ final class MemberView: UIView {
     let editButton: AnimationButton = {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = false
         button.setTitle("정보 수정하기", for: .normal)
         button.isHidden = false
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .lightGray
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .light)
+        button.titleLabel?.textAlignment = .center
+        button.layer.cornerRadius = 5.0
+        return button
+    }()
+    
+    let followingButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
+        button.setTitle("로딩 중", for: .normal)
+        button.isHidden = false
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .lightGray
+        button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
         button.titleLabel?.textAlignment = .center
         button.layer.cornerRadius = 5.0
         return button
@@ -164,6 +179,7 @@ extension MemberView {
             followersLabel,
             followingLabel,
             editButton,
+            followingButton,
             boardCollectionView
         ].forEach {
             self.addSubview($0)
@@ -214,6 +230,11 @@ extension MemberView {
             followingLabel.centerXAnchor.constraint(equalTo: followingCountLabel.centerXAnchor),
             followingLabel.heightAnchor.constraint(equalTo: boardLabel.heightAnchor),
             followingLabel.widthAnchor.constraint(equalTo: boardLabel.widthAnchor),
+            
+            followingButton.topAnchor.constraint(equalTo: followingLabel.bottomAnchor, constant: 8.0),
+            followingButton.leadingAnchor.constraint(equalTo: boardCountLabel.leadingAnchor),
+            followingButton.trailingAnchor.constraint(equalTo: followingCountLabel.trailingAnchor),
+            followingButton.heightAnchor.constraint(equalToConstant: 30.0),
             
             editButton.topAnchor.constraint(equalTo: followingLabel.bottomAnchor, constant: 8.0),
             editButton.leadingAnchor.constraint(equalTo: boardCountLabel.leadingAnchor),

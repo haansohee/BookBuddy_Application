@@ -17,11 +17,12 @@ struct BoardSearchResultsDTO: Codable {
     let boardImage: Data
     let profileImage: Data?
     let didLike: Bool
+    let postFromUser: Bool
     var comments: [CommentDTO]
 }
 
 extension BoardSearchResultsDTO {
     func toDomain() -> BoardSearchResultsInformation {
-        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage, didLike: didLike, comments: comments.map { $0.toDomain() })
+        return .init(postID: postID, nickname: nickname, writeDate: writeDate, contentTitle: contentTitle, content: content, likes: likes, boardImage: boardImage, profileImage: profileImage, didLike: didLike, postFromUser: postFromUser, comments: comments.map { $0.toDomain() })
     }
 }

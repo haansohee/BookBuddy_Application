@@ -172,6 +172,15 @@ extension HomeViewController: UICollectionViewDataSource {
                 self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID, commentInformation: followingBoardInformation[indexPath.row].comments), animated: true)
             })
             .disposed(by: cell.disposeBag)
+        let reportAction = UIAction(title: "신고하기",
+                                  image: UIImage(systemName: "exclamationmark.bubble"),
+                                  attributes: .destructive,
+                                  handler: { [weak self] _ in
+            let reportViewController = ReportViewController()
+            reportViewController.modalPresentationStyle = .overFullScreen
+            self?.present(reportViewController, animated: true)
+        })
+        cell.ellipsisButton.menu = UIMenu(children: [reportAction])
         return cell
     }
 }

@@ -46,7 +46,7 @@ final class MemberSigninView: UIView {
         let button = AnimationButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Sign in", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemGreen
         button.layer.cornerRadius = 5.0

@@ -36,6 +36,7 @@ final class BoardSearchMemberViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        configureEditButton()
     }
 }
 
@@ -45,8 +46,16 @@ extension BoardSearchMemberViewController {
         memberView.translatesAutoresizingMaskIntoConstraints = false
         memberView.boardCollectionView.dataSource = self
         memberView.boardCollectionView.delegate = self
-        memberView.editButton.setTitle("로딩 중", for: .normal)
-        memberView.editButton.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)
+    }
+    
+    private func configureEditButton() {
+        if viewModel.checkAuthorUser() {
+            memberView.followingButton.isHidden = true
+            memberView.editButton.isHidden = false
+        } else {
+            memberView.followingButton.isHidden = false
+            memberView.editButton.isHidden = true
+        }
     }
     
     private func setLayoutConstraintsSearchMemberView() {
@@ -68,6 +77,7 @@ extension BoardSearchMemberViewController {
     private func bindAll() {
         bindIsLoadedSearchMember()
         bindIsLoadedBoardWrittenInfo()
+        bindFollowingButton()
         bindEditButton()
         bindIsUpdatedFollow()
         bindIsDeletedFollow()
@@ -84,6 +94,7 @@ extension BoardSearchMemberViewController {
                 let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
                 let profile = self?.viewModel.searchMemberInformation?.profile ?? Data()
                 DispatchQueue.main.async {
+                    self?.configureEditButton()
                     self?.memberView.setNameLabel(nickname)
                     if let favorite = self?.viewModel.searchMemberInformation?.favorite {
                         self?.memberView.favoriteBook.text = "\(nickname) 님이 가장 좋아하는 📗\n\(favorite)"
@@ -101,11 +112,20 @@ extension BoardSearchMemberViewController {
     
     private func bindEditButton() {
         memberView.editButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.navigationController?.pushViewController(MemberEditViewController(), animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindFollowingButton() {
+        memberView.followingButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
                 guard let followerUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 let followingUserID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
                 let followingInformation = FollowingInformation(followingUserID: followingUserID, followerUserID: followerUserID)
-                switch self?.memberView.editButton.tag {
+                switch self?.memberView.followingButton.tag {
                 case 0:
                     self?.viewModel.following(followingInformation: followingInformation)
                 case 1:
@@ -139,9 +159,9 @@ extension BoardSearchMemberViewController {
                 guard isUpdatedFollow else { return }
                 guard let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
-                self?.memberView.editButton.setTitle("팔로우 취소", for: .normal)
-                self?.memberView.editButton.backgroundColor = .lightGray
-                self?.memberView.editButton.tag = 1
+                self?.memberView.followingButton.setTitle("팔로우 취소", for: .normal)
+                self?.memberView.followingButton.backgroundColor = .lightGray
+                self?.memberView.followingButton.tag = 1
             })
             .disposed(by: disposeBag)
     }
@@ -153,9 +173,9 @@ extension BoardSearchMemberViewController {
                 guard isDeletedFollow else { return }
                 guard let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
-                self?.memberView.editButton.setTitle("팔로우", for: .normal)
-                self?.memberView.editButton.backgroundColor = .systemGreen
-                self?.memberView.editButton.tag = 0
+                self?.memberView.followingButton.setTitle("팔로우", for: .normal)
+                self?.memberView.followingButton.backgroundColor = .systemGreen
+                self?.memberView.followingButton.tag = 0
             })
             .disposed(by: disposeBag)
     }
@@ -189,13 +209,13 @@ extension BoardSearchMemberViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCheckedFollowed in
                 if isCheckedFollowed {
-                    self?.memberView.editButton.setTitle("팔로우 취소", for: .normal)
-                    self?.memberView.editButton.backgroundColor = .lightGray
-                    self?.memberView.editButton.tag = 1
+                    self?.memberView.followingButton.setTitle("팔로우 취소", for: .normal)
+                    self?.memberView.followingButton.backgroundColor = .lightGray
+                    self?.memberView.followingButton.tag = 1
                 } else {
-                    self?.memberView.editButton.setTitle("팔로우", for: .normal)
-                    self?.memberView.editButton.backgroundColor = .systemGreen
-                    self?.memberView.editButton.tag = 0
+                    self?.memberView.followingButton.setTitle("팔로우", for: .normal)
+                    self?.memberView.followingButton.backgroundColor = .systemGreen
+                    self?.memberView.followingButton.tag = 0
                 }
             })
             .disposed(by: disposeBag)

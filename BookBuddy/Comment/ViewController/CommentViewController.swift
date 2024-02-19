@@ -237,8 +237,10 @@ extension CommentViewController: SwipeCollectionViewCellDelegate {
             deleteAction.image = UIImage(systemName: "trash")
             return [deleteAction]
         } else {
-            let reportAction = SwipeAction(style: .default, title: "신고") { action, indexPath in
-                // 신고 기능
+            let reportAction = SwipeAction(style: .default, title: "신고") { [weak self] action, indexPath in
+                let reportViewController = ReportViewController()
+                reportViewController.modalPresentationStyle = .overFullScreen
+                self?.present(reportViewController, animated: true)
             }
             reportAction.image = UIImage(systemName: "exclamationmark.bubble")
             return [reportAction]
