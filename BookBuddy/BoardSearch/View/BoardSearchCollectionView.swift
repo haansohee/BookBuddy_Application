@@ -17,7 +17,7 @@ final class BoardSearchCollectionView: UICollectionView {
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: self.layout)
-        self.register(BoardSearchViewCell.self, forCellWithReuseIdentifier: "BoardSearchViewCell")
+        self.register(BoardSearchViewCell.self, forCellWithReuseIdentifier: BoardSearchViewCell.reuseIdentifier)
         self.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         self.backgroundColor = .systemBackground
         self.isPagingEnabled = false

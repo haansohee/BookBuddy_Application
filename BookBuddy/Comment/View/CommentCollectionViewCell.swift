@@ -9,7 +9,7 @@ import UIKit
 import RxSwift
 import SwipeCellKit
 
-final class CommenCollectionViewCell: SwipeCollectionViewCell {
+final class CommentCollectionViewCell: SwipeCollectionViewCell, ReuseIdentifierProtocol {
     var disposeBag = DisposeBag()
     
     private let isEmptyLabel: UILabel = {
@@ -109,7 +109,7 @@ final class CommenCollectionViewCell: SwipeCollectionViewCell {
     }
 }
 
-extension CommenCollectionViewCell {
+extension CommentCollectionViewCell {
     private func addSubviews() {
         [
             isEmptyLabel,

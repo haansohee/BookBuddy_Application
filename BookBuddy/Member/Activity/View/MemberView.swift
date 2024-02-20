@@ -140,7 +140,7 @@ final class MemberView: UIView {
         layout.minimumLineSpacing = 5.0
         layout.scrollDirection = .vertical
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: "BoardCollectionViewCell")
+        collectionView.register(BoardCollectionViewCell.self, forCellWithReuseIdentifier: BoardCollectionViewCell.reuseIdentifier)
         collectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         collectionView.isPagingEnabled = false
         collectionView.backgroundColor = .systemBackground

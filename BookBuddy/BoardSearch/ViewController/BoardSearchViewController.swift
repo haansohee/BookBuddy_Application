@@ -255,7 +255,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch viewType {
         case .boardSearch:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardSearchViewCell", for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
             guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return cell }
             if let profileImage = boardSearchResultsInformation[indexPath.row].profileImage {
                 cell.profileImageView.image = UIImage(data: profileImage)
@@ -333,7 +333,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             return cell
             
         case .recentSearch:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RecentSearchViewCell", for: indexPath) as? RecentSearchViewCell else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecentSearchViewCell.reuseIdentifier, for: indexPath) as? RecentSearchViewCell else { return UICollectionViewCell() }
             guard let recentSearchInformation = UserDefaults.standard.array(forKey: UserDefaultsForkey.recentSearch.rawValue),
                   let recentSearchWord = recentSearchInformation[indexPath.row] as? String else { return cell }
             let labelTapGesture = TapGestureRelayValue(target: self, action: #selector(searchWordLabelTapGesture(word:)))

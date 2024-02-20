@@ -27,7 +27,7 @@ final class BookSearchView: UIView {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: "SearchResultCell")
+        collectionView.register(SearchResultCell.self, forCellWithReuseIdentifier: SearchResultCell.reuseIdentifier)
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         collectionView.backgroundColor = .systemBackground
         collectionView.isPagingEnabled = false

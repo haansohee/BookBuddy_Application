@@ -110,7 +110,7 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchResultCell", for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
         let category = viewModel.category[indexPath.row]

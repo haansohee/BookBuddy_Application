@@ -25,7 +25,7 @@ final class RecentSearchView: UIView {
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(RecentSearchViewCell.self, forCellWithReuseIdentifier: "RecentSearchViewCell")
+        collectionView.register(RecentSearchViewCell.self, forCellWithReuseIdentifier: RecentSearchViewCell.reuseIdentifier)
         collectionView.contentInset = UIEdgeInsets(top: 3, left: 3, bottom: 3, right: 3)
         collectionView.backgroundColor = .systemBackground
         collectionView.isPagingEnabled = false

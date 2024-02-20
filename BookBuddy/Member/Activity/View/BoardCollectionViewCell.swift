@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class BoardCollectionViewCell: UICollectionViewCell {
+final class BoardCollectionViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     let boardImage: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
