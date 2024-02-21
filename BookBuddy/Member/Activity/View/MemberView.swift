@@ -125,7 +125,7 @@ final class MemberView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
         button.setTitle("로딩 중", for: .normal)
-        button.isHidden = false
+        button.isHidden = true
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .lightGray
         button.titleLabel?.font = .systemFont(ofSize: 14, weight: .bold)

@@ -112,12 +112,13 @@ final class BookSearchViewModel {
         }
     }
     
-    func setBookInformationData(title: String, author: String, category: String, description: String, image: Data) {
+    func setBookInformationData(title: String, author: String, category: String, description: String, image: Data, link: String) {
         let bookInformationData = BookInformation(image: image,
                                                   title: title,
                                                   author: author,
                                                   category: category,
-                                                  description: description)
+                                                  description: description,
+                                                  link: link)
         bookInformations = bookInformationData
      }
 }

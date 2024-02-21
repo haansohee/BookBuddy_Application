@@ -9,7 +9,7 @@ import Foundation
 
 struct FavoriteBookInformation {
     let nickname: String
-    let favorite: String
+    let favorite: String?
 }
 
 extension FavoriteBookInformation {

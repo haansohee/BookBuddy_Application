@@ -51,6 +51,7 @@ extension BookSearchViewContoller {
     private func setupSearchController() {
         searchController.setupSearchController()
         searchController.searchBar.searchTextField.delegate = self
+        self.navigationItem.title = "책 검색하기"
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
     }
@@ -115,6 +116,7 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
         let author = viewModel.bookSearchResults[indexPath.row].author
         let category = viewModel.category[indexPath.row]
         let description = viewModel.bookSearchResults[indexPath.row].description
+        let link = viewModel.bookSearchResults[indexPath.row].link
         
         if let imageURL = URL(string: viewModel.bookSearchResults[indexPath.row].image) {
             viewModel.loadImageData(imageURL: imageURL) { [weak self] data in
@@ -122,7 +124,8 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
                                                        author: author,
                                                        category: category,
                                                        description: description,
-                                                       image: data)
+                                                       image: data,
+                                                       link: link)
                 guard let information = self?.viewModel.bookInformations else { return }
                 cell.setBookInformation(information)
             }
@@ -136,6 +139,6 @@ extension BookSearchViewContoller: UICollectionViewDelegate {
         let bookData = viewModel.bookSearchResults[indexPath.row]
         let categoryData = viewModel.category[indexPath.row]
         let controller = BookDetailViewController(data: bookData, category: categoryData)
-        self.present(controller, animated: true)
+        present(controller, animated: true)
     }
 }
