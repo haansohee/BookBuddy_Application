@@ -43,6 +43,7 @@ final class BoardSearchMemberViewController: UIViewController {
 extension BoardSearchMemberViewController {
     private func configureSearchMemberView() {
         self.view.backgroundColor = .systemBackground
+        self.navigationController?.navigationBar.tintColor = .systemGreen
         memberView.translatesAutoresizingMaskIntoConstraints = false
         memberView.boardCollectionView.dataSource = self
         memberView.boardCollectionView.delegate = self
@@ -101,6 +102,7 @@ extension BoardSearchMemberViewController {
                     } else {
                         self?.memberView.favoriteBook.text = "\(nickname) 님은 아직 가장 좋아하는 책을 \n 설정하지 않았어요. 🥲"
                     }
+                    self?.navigationItem.title = "\(nickname)"
                     self?.memberView.profileImageView.image = profile.isEmpty ? UIImage(systemName: "person") : UIImage(data: profile)
                 }
                 self?.memberViewModel.getFollowingListInformation(userID: searchUserID)

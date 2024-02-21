@@ -8,6 +8,6 @@
 import Foundation
 
 struct FavoriteBookDTO: Codable {
-    let favorite: String
+    let favorite: String?
     let nickname: String
 }

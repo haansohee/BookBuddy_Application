@@ -13,5 +13,6 @@ struct BookInformation {
     var author: String
     var category: String
     var description: String
+    var link: String
 }
 

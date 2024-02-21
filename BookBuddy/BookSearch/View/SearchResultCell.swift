@@ -12,6 +12,8 @@ final class SearchResultCell: UICollectionViewCell, ReuseIdentifierProtocol {
     private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.borderWidth = 0.5
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
         return imageView
     }()
     
