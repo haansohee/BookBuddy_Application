@@ -37,11 +37,6 @@ final class BookDetailViewController: UIViewController {
         setLayoutConstraintsBookDetailView()
         bindAll()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
 }
 
 
@@ -136,10 +131,7 @@ extension BookDetailViewController {
                     self?.bookDetailViewModel.settingFavoriteBook(bookTitle: bookTitle)
                 case 1:
                     self?.unsetFavoriteBookAlert()
-                case .none:
-                    return
-                case .some(_):
-                    return
+                default: return
                 }
             })
             .disposed(by: disposeBag)
