@@ -18,7 +18,7 @@ final class CommentCollectionView: UICollectionView {
     
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: self.layout)
-        self.register(CommenCollectionViewCell.self, forCellWithReuseIdentifier: "CommentViewCell")
+        self.register(CommentCollectionViewCell.self, forCellWithReuseIdentifier: CommentCollectionViewCell.reuseIdentifier)
         self.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         self.backgroundColor = .systemBackground
         self.isPagingEnabled = false

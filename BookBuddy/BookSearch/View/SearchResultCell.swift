@@ -8,7 +8,7 @@
 import UIKit
 import SkeletonView
 
-final class SearchResultCell: UICollectionViewCell {    
+final class SearchResultCell: UICollectionViewCell, ReuseIdentifierProtocol {    
     private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false

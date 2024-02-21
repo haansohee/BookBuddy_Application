@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RecentSearchViewCell: UICollectionViewCell {
+final class RecentSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     let searchWordLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false

@@ -229,7 +229,7 @@ extension BoardSearchMemberViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BoardCollectionViewCell", for: indexPath) as? BoardCollectionViewCell else { return UICollectionViewCell() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardCollectionViewCell.reuseIdentifier, for: indexPath) as? BoardCollectionViewCell else { return UICollectionViewCell() }
         guard let imageData = memberViewModel.boardWrittenInformations?[indexPath.row].boardImage else { return UICollectionViewCell() }
         cell.boardImage.image = UIImage(data: imageData)
         return cell

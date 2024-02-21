@@ -8,7 +8,7 @@
 import UIKit
 import RxSwift
 
-final class BoardSearchViewCell: UICollectionViewCell {
+final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     var disposeBag = DisposeBag()
     
     let touchStackView: UIStackView = {
