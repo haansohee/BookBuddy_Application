@@ -8,7 +8,7 @@
 import Foundation
 
 enum MemberActivityStatus: String {
-    case Signin = "Sginin"
-    case Signout = "Sginout"
-    case ERROR = "ERROR"
+    case Signin
+    case Signout
+    case ERROR
 }
