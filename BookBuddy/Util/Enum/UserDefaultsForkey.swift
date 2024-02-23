@@ -8,13 +8,13 @@
 import Foundation
 
 enum UserDefaultsForkey: String {
-    case appleToken = "appleToken"
-    case password = "password"
-    case nickname = "nickname"
-    case email = "email"
-    case userID = "userID"
-    case favorite = "favorite"
-    case profile = "profile"
-    case boardImage = "boardImage"
-    case recentSearch = "recentSearch"
+    case appleToken
+    case password
+    case nickname
+    case email
+    case userID
+    case favorite
+    case profile
+    case boardImage
+    case recentSearch 
 }
