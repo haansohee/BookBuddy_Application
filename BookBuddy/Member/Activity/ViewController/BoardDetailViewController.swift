@@ -14,6 +14,7 @@ import RxCocoa
 final class BoardDetailViewController: UIViewController {
     private let boardDetailView = BoardDetailView()
     private let viewModel = BoardDetailViewModel()
+    private let homeViewModel = HomeViewModel()
     private let boardEditViewModel = BoardEditViewModel()
     private let disposeBag = DisposeBag()
     
@@ -111,9 +112,86 @@ extension BoardDetailViewController {
         viewModel.getDetailBoardInformation(postID)
     }
     
+    private func settingLikeCommentCount() {
+        guard let boardInformation = viewModel.boardDetailInformation else { return }
+        boardDetailView.likeCountLabel.text = "\(boardInformation.likes)"
+        boardDetailView.commentCountLabel.text = "\(boardInformation.comments.count)"
+        if boardInformation.didLike {
+            boardDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            boardDetailView.likeButton.tag = 1
+        } else {
+            boardDetailView.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            boardDetailView.likeButton.tag = 0
+        }
+    }
+    
+    private func changeLikeCountLabelValue(label: UILabel, deleteLike: Bool) {
+        guard deleteLike else {
+            if let labelText = label.text,
+               var labelTextValue = Int(labelText) {
+                labelTextValue += 1
+                label.text = String(labelTextValue)
+            }
+            return
+        }
+        if let labelText = label.text {
+            if var labelTextValue = Int(labelText) {
+                labelTextValue -= 1
+                label.text = String(labelTextValue)
+            }
+        }
+    }
+    
     private func bindAll() {
+        bindLikeButton()
+        bindCommentButton()
         bindIsBoardDetailInfoLoaded()
         bindIsBoardDeleted()
+    }
+    
+    private func bindLikeButton() {
+        boardDetailView.likeButton.rx.tap
+            .subscribe(onNext: {[weak self] _ in
+                guard let likedUserID = self?.homeViewModel.userID,
+                      let boardInformation = self?.viewModel.boardDetailInformation,
+                      let label = self?.boardDetailView.likeCountLabel else { return }
+                let boardLikeInformation = BoardLikeInformation(likedUserID: likedUserID,
+                                                                postUserNickname: boardInformation.nickname,
+                                                                postID: boardInformation.postID)
+                switch self?.boardDetailView.likeButton.tag {
+                case 1:
+                    self?.homeViewModel.deleteBoardLikeInformation(boardLikeInformation) { result in
+                        guard result else { return }
+                        DispatchQueue.main.async {
+                            self?.boardDetailView.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+                            self?.boardDetailView.likeButton.tag = 0
+                            self?.changeLikeCountLabelValue(label: label, deleteLike: true)
+                        }
+                    }
+                case 0:
+                    self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
+                        guard result else { return }
+                        DispatchQueue.main.async {
+                            self?.boardDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                            self?.boardDetailView.likeButton.tag = 1
+                            self?.changeLikeCountLabelValue(label: label, deleteLike: false)
+                        }
+                            
+                    }
+                default: return
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindCommentButton() {
+        boardDetailView.commentButton.rx.tap
+            .asDriver()
+            .drive(onNext: {[weak self] _ in
+                guard let boardInformation = self?.viewModel.boardDetailInformation else { return }
+                self?.present(CommentViewController(postID: boardInformation.postID, commentInformation: boardInformation.comments), animated: true)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindIsBoardDetailInfoLoaded() {
@@ -125,6 +203,7 @@ extension BoardDetailViewController {
                 self?.boardDetailView.setBoardDetailView(boardDetailInformation)
                 self?.navigationItem.title = boardDetailInformation.nickname
                 self?.checkBoardAuthor()
+                self?.settingLikeCommentCount()
             })
             .disposed(by: disposeBag)
     }

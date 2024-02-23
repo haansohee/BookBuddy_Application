@@ -13,32 +13,11 @@ import RxSwift
 import RxCocoa
 
 final class MemberViewController: UIViewController {
-    enum ViewType {
-        case notMember
-        case member
-        case appleMember
-    }
-    
     private let memberView = MemberView()
-    private let notMemberView = NotMemberView()
-    private var viewType: ViewType
     private let viewModel = MemberViewModel()
     private let disposeBag = DisposeBag()
     
-    init(memberInformation: SignupMemberInformation? = nil, appleMemberInformation: SigninWithAppleInformation? = nil) {
-        if memberInformation != nil && appleMemberInformation == nil {
-            viewType = .member
-        } else if memberInformation == nil && appleMemberInformation != nil {
-            viewType = .appleMember
-        } else {
-            viewType = .notMember
-        }
-
-        if let memberInformation = memberInformation,
-           let appleMemberInformation = appleMemberInformation {
-            self.viewModel.setMemberInformation(memberInformation)
-            self.viewModel.setAppleMemberInformation(appleMemberInformation)
-        }
+    init() {
         super.init(nibName: nil, bundle: nil)
         loadBoardInformaions()
     }
@@ -49,9 +28,8 @@ final class MemberViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        checkMember()
-        configureMemberView()
-        setLayoutConstraintsMemberView()
+        viewModel.loadMemberInformation()
+        settingMemberNickname()
         settingFavoriteBook()
         loadBoardInformaions()
         loadFollowListInformation()
@@ -60,6 +38,8 @@ final class MemberViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureMemberView()
+        setLayoutConstraintsMemberView()
         bindAll()
         self.navigationItem.hidesBackButton = true
     }
@@ -67,78 +47,27 @@ final class MemberViewController: UIViewController {
 
 extension MemberViewController {
     private func configureMemberView() {
-        switch viewType {
-        case .member, .appleMember:
-            navigationItem.title = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
-            navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
-            memberView.translatesAutoresizingMaskIntoConstraints = false
-            memberView.startSkeletonAnimation()
-            memberView.boardCollectionView.dataSource = self
-            memberView.boardCollectionView.delegate = self
-            
-        case .notMember:
-            notMemberView.translatesAutoresizingMaskIntoConstraints = false
-        }
+        view.addSubview(memberView)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        memberView.translatesAutoresizingMaskIntoConstraints = false
+        memberView.startSkeletonAnimation()
+        memberView.boardCollectionView.dataSource = self
+        memberView.boardCollectionView.delegate = self
 }
     
     private func setLayoutConstraintsMemberView() {
-        switch viewType {
-        case .member:
-            self.view.addSubview(memberView)
-            notMemberView.removeFromSuperview()
-            NSLayoutConstraint.activate([
-                memberView.topAnchor.constraint(equalTo: self.view.topAnchor),
-                memberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                memberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                memberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            ])
-            
-            if let nickname = viewModel.memberInformation?.nickname {
-                memberView.setNameLabel(nickname)
-            }
-            
-        case .appleMember:
-            self.view.addSubview(memberView)
-            notMemberView.removeFromSuperview()
-            NSLayoutConstraint.activate([
-                memberView.topAnchor.constraint(equalTo: self.view.topAnchor),
-                memberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                memberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                memberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            ])
-            if let nickname = viewModel.appleMemberInformation?.nickname {
-                memberView.setNameLabel(nickname)
-            }
-            
-        case .notMember:
-            self.view.addSubview(notMemberView)
-            memberView.removeFromSuperview()
-            NSLayoutConstraint.activate([
-                notMemberView.topAnchor.constraint(equalTo: self.view.topAnchor),
-                notMemberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                notMemberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                notMemberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            ])
-        }
+        NSLayoutConstraint.activate([
+            memberView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            memberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            memberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            memberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
     }
     
-    private func checkMember() {
-        if let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue),
-           let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
-        {
-            if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
-                let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
-                self.viewModel.setAppleMemberInformation(appleMemberInformation)
-                viewType = .appleMember
-            } else {
-                guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
-                let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
-                self.viewModel.setMemberInformation(memberInformation)
-                viewType = .member
-            }
-        } else {
-            viewType = .notMember
-        }
+    private func settingMemberNickname() {
+        guard let nickname = viewModel.memberInformation?.nickname else { return }
+        navigationItem.title = nickname
+        memberView.setNameLabel(nickname)
     }
     
     private func settingFavoriteBook() {
@@ -159,20 +88,10 @@ extension MemberViewController {
     }
     
     private func bindAll() {
-        bindJoinButton()
         bindEditButton()
         bindIsLoadedBoardWrittenInfo()
         bindIsLoadedFollowingListInfo()
         bindIsLoadedFollowerListInfo()
-    }
-    
-    private func bindJoinButton() {
-        notMemberView.joinButton.rx.tap
-            .asDriver()
-            .drive(onNext: {[weak self] _ in
-                self?.navigationController?.pushViewController(MemberSigninViewController(), animated: true)
-            })
-            .disposed(by: disposeBag)
     }
     
     private func bindEditButton() {

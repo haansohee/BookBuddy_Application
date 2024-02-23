@@ -16,7 +16,7 @@ final class BoardDetailView: UIView {
         return imageView
     }()
     
-    private let likeButton: AnimationButton = {
+    let likeButton: AnimationButton = {
         let button = AnimationButton()
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .systemRed
@@ -24,7 +24,7 @@ final class BoardDetailView: UIView {
         return button
     }()
     
-    private let commentButton: AnimationButton = {
+    let commentButton: AnimationButton = {
         let button = AnimationButton()
         button.setImage(UIImage(systemName: "bubble"), for: .normal)
         button.tintColor = .systemGray3
@@ -32,7 +32,7 @@ final class BoardDetailView: UIView {
         return button
     }()
     
-    private let likeCountLabel: UILabel = {
+    let likeCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
@@ -42,7 +42,7 @@ final class BoardDetailView: UIView {
         return label
     }()
     
-    private let commentCountLabel: UILabel = {
+    let commentCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
@@ -57,6 +57,7 @@ final class BoardDetailView: UIView {
         label.textColor = .label
         label.font = .systemFont(ofSize: 12.0, weight: .bold)
         label.textAlignment = .left
+        label.sizeToFit()
         label.isSkeletonable = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -65,7 +66,7 @@ final class BoardDetailView: UIView {
     private let contentTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.font = .systemFont(ofSize: 13.0)
         label.textAlignment = .left
         label.numberOfLines = 0
         label.isSkeletonable = true
@@ -166,23 +167,22 @@ extension BoardDetailView {
 
             nicknameLabel.topAnchor.constraint(equalTo: likeButton.bottomAnchor, constant: 8.0),
             nicknameLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
-            nicknameLabel.heightAnchor.constraint(equalToConstant: 20.0),
-            nicknameLabel.widthAnchor.constraint(equalToConstant: 80.0),
+            nicknameLabel.heightAnchor.constraint(equalToConstant: 15.0),
 
             contentTitleLabel.topAnchor.constraint(equalTo: nicknameLabel.topAnchor),
-            contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 5.0),
-            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -5.0),
+            contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 8.0),
+            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -14.0),
             contentTitleLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
 
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 5.0),
             contentLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
             contentLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            contentLabel.heightAnchor.constraint(equalToConstant: 150.0),
 
             writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 5.0),
             writeDateLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
             writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            writeDateLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor)
+            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -5.0),
+            writeDateLabel.heightAnchor.constraint(equalToConstant: 15.0)
         ])
     }
 }

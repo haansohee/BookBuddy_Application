@@ -13,6 +13,7 @@ import RxCocoa
 
 final class MemberSigninViewController: UIViewController {
     private let memberSigninView = MemberSigninView()
+    private let memberEditViewModel = MemberEditViewModel()
     private let viewModel = MemberSigninViewModel()
     private let signWithAppleViewModel = MemberSigninWithAppleViewModel()
     private let disposeBag = DisposeBag()
@@ -117,7 +118,10 @@ extension MemberSigninViewController {
                 guard let button = self?.memberSigninView.signinButton else { return }
                 if isSigned {
                     self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
-                    self?.navigationController?.popViewController(animated: false)
+//                    self?.memberEditViewModel.isSignouted.onNext(MemberActivityStatus.Signin.rawValue)
+                    let rootViewController = MainTabBarController()
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                    sceneDelegate.changeRootViewController(rootViewController, animated: false)
                 } else {
                     self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
                     self?.memberSigninView.idTextField.text = ""
@@ -134,7 +138,9 @@ extension MemberSigninViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isExistence in
                 if isExistence {
-                    self?.navigationController?.popViewController(animated: true)
+                    let rootViewController = MainTabBarController()
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                    sceneDelegate.changeRootViewController(rootViewController, animated: false)
                 } else {
                     guard let email = self?.signWithAppleViewModel.appleEmail,
                           let appleToken = self?.signWithAppleViewModel.appleToken else { return }

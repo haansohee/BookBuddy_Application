@@ -13,6 +13,7 @@ import RxCocoa
 final class MemberSigninWithAppleViewController: UIViewController {
     private let memberSigninWithAppleView =  MemberSigninWithAppleView()
     private let viewModel = MemberSigninWithAppleViewModel()
+    private let memberEditViewModel = MemberEditViewModel()
     private let disposeBag = DisposeBag()
     private var endEditingGesture: UITapGestureRecognizer?
     
@@ -77,8 +78,7 @@ extension MemberSigninWithAppleViewController {
                 guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text,
                       let email = self?.viewModel.appleEmail,
                       let appleToken = self?.viewModel.appleToken else { return }
-                if nickname == "" { return }
-
+                if nickname.isEmpty { return }
                 self?.viewModel.appleSignup(with: SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken))
             })
             .disposed(by: disposeBag)
@@ -88,7 +88,7 @@ extension MemberSigninWithAppleViewController {
         memberSigninWithAppleView.nicknameDuplicateCheckButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
                 guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text else { return }
-                if nickname == "" { return }
+                if nickname.isEmpty { return }
                 self?.viewModel.nicknameDuplicateCheck(nickname: nickname)
             })
             .disposed(by: disposeBag)
@@ -98,19 +98,19 @@ extension MemberSigninWithAppleViewController {
         viewModel.isCompleted
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isCompleted in
-                if isCompleted {
-                    guard let nickname = self?.memberSigninWithAppleView.inputNicknameTextField.text,
-                          let email = self?.viewModel.appleEmail,
-                          let appleToken = self?.viewModel.appleToken,
-                          let userID = self?.viewModel.appleUserID else { return }
-                    
-                    UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
-                    UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
-                    UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
-                    UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
-                    
-                    self?.navigationController?.popViewController(animated: true)
-                }
+                guard isCompleted,
+                      let nickname  = self?.memberSigninWithAppleView.inputNicknameTextField.text,
+                      let email = self?.viewModel.appleEmail,
+                      let appleToken = self?.viewModel.appleToken,
+                      let userID = self?.viewModel.appleUserID else { return }
+                UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+                UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
+                UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+                UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
+                self?.memberEditViewModel.isSignouted.onNext(MemberActivityStatus.Signin.rawValue)
+                let rootViewController = MainTabBarController()
+                guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                sceneDelegate.changeRootViewController(rootViewController, animated: false)
             })
             .disposed(by: disposeBag)
     }

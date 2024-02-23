@@ -113,6 +113,7 @@ extension MemberEditViewController {
         bindProfileUpdateButton()
         bindNicknameEditButton()
         bindNicknameDuplicateButton()
+        bindIsSignouted()
         bindIsProfileDeleted()
         bindIsNickanmeUpdated()
         bindIsChecked()
@@ -166,17 +167,19 @@ extension MemberEditViewController {
     private func bindSignoutButton() {
         memberEditView.signoutButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
-                DispatchQueue.main.async {
-                    self?.navigationController?.popViewController(animated: true)
-                }
+                self?.viewModel.signout()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsSignouted() {
+        viewModel.isSignouted
+            .asDriver(onErrorJustReturn: "ERROR")
+            .drive(onNext: { isSignouted in
+                guard isSignouted == MemberActivityStatus.Signout.rawValue,
+                      let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                let rootViewController = MemberSigninViewController()
+                sceneDelegate.changeRootViewController(rootViewController, animated: false)
             })
             .disposed(by: disposeBag)
     }
@@ -233,6 +236,7 @@ extension MemberEditViewController {
                 guard isChecked else { return }
                 self?.memberEditView.nicknameDuplicateIdLabel.text = "사용 가능한 닉네임이에요."
                 self?.memberEditView.nicknameEditButton.isEnabled = true
+                self?.memberEditView.nicknameEditButton.backgroundColor = .systemGreen
             })
             .disposed(by: disposeBag)
     }
@@ -241,9 +245,11 @@ extension MemberEditViewController {
         if UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil {
             memberEditView.passwordTextField.isHidden = true
             memberEditView.passwordEditButton.isHidden = true
+            memberEditView.passwordCheckLabel.isHidden = true
         } else {
             memberEditView.passwordTextField.isHidden = false
             memberEditView.passwordEditButton.isHidden = false
+            memberEditView.passwordCheckLabel.isHidden = false
         }
     }
     

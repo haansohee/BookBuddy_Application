@@ -11,10 +11,11 @@ import SwiftSoup
 
 final class BookSearchViewModel {
     let isParsed = PublishSubject<Bool>()
-    private(set) var bookSearchResults: [BookSearchContents] = []
+    var bookSearchResults: [BookSearchContents] = []
     private(set) var imageData: Data?
     private(set) var category: [String] = []
     private(set) var bookInformations: BookInformation?
+    var isSearched = false
     
     func parsing(bookTitle: String) {
         guard let baseURL = Bundle.main.infoDictionary?["API_URL"] as? String else { return }

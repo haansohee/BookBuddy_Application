@@ -15,6 +15,7 @@ final class MemberEditViewModel {
     private(set) var isNicknameUpdated = PublishSubject<Bool>()
     private(set) var isPasswordUpdated = PublishSubject<Bool>()
     private(set) var memberUpdateInformation: MemberUpdateInformation?
+    let isSignouted = BehaviorSubject(value: MemberActivityStatus.Signin.rawValue)
     
     func setMemberUpdateInformation(_ memberProfileInformation: MemberUpdateInformation) {
         self.memberUpdateInformation = memberProfileInformation
@@ -46,5 +47,17 @@ final class MemberEditViewModel {
         service.deleteMemberProfile(with: nickname) { [weak self] isProfileDeleted in
             self?.isProfileDeleted.onNext(isProfileDeleted)
         }
+    }
+    
+    func signout() {
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
+        isSignouted.onNext(MemberActivityStatus.Signout.rawValue)
     }
 }

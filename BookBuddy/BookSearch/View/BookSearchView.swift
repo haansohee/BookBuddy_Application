@@ -22,7 +22,6 @@ final class BookSearchView: UIView {
     let searchResultsCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.itemSize = CGSize(width: (UIScreen.main.bounds.width / 2) - 20, height: 370)
         layout.minimumLineSpacing = 10.0
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)

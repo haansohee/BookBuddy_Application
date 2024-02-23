@@ -78,7 +78,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -87,7 +87,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         let label = UILabel()
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 11.0, weight: .light)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -96,6 +96,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     private let nicknameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.sizeToFit()
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12, weight: .bold)
@@ -107,7 +108,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.textColor = .systemGray
-        label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.font = .systemFont(ofSize: 13.0)
         return label
     }()
     
@@ -241,22 +242,21 @@ extension BoardSearchViewCell {
             nicknameLabel.topAnchor.constraint(equalTo: likeButton.bottomAnchor, constant: 5.0),
             nicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
             nicknameLabel.heightAnchor.constraint(equalToConstant: 20.0),
-            nicknameLabel.widthAnchor.constraint(equalToConstant: 100.0),
             
             contentTitleLabel.topAnchor.constraint(equalTo: nicknameLabel.topAnchor),
-            contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 5.0),
+            contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 8.0),
             contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -3.0),
             contentTitleLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
             
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 3.0),
             contentLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
             contentLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            contentLabel.heightAnchor.constraint(equalToConstant: 130.0),
 
             writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 3.0),
             writeDateLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
             writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            writeDateLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor)
+            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -3.0),
+            writeDateLabel.heightAnchor.constraint(equalToConstant: 10.0)
         ])
     }
 }
