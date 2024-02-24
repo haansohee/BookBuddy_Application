@@ -123,7 +123,7 @@ final class BookSearchViewModel {
         bookInformations = bookInformationData
      }
     
-    func canceldSearch() {
+    func canceledSearch() {
         bookSearchResults = []
     }
     
