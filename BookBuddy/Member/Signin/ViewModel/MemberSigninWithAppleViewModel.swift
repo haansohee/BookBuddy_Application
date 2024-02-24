@@ -99,11 +99,7 @@ final class MemberSigninWithAppleViewModel {
     
     func appleSignup(with signinWithAppleInformation: SigninWithAppleInformation) {
         service.setAppleMemberInfo(with: signinWithAppleInformation) { [weak self] isCompleted in
-            if isCompleted {
-                self?.isCompleted.onNext(true)
-            } else {
-                self?.isCompleted.onNext(false)
-            }
+            self?.isCompleted.onNext(isCompleted)
         }
     }
 }

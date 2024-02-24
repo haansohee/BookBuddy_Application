@@ -117,7 +117,9 @@ extension MemberSigninViewController {
                 guard let button = self?.memberSigninView.signinButton else { return }
                 if isSigned {
                     self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
-                    self?.navigationController?.popViewController(animated: false)
+                    let rootViewController = MainTabBarController()
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                    sceneDelegate.changeRootViewController(rootViewController, animated: false)
                 } else {
                     self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
                     self?.memberSigninView.idTextField.text = ""
@@ -134,7 +136,9 @@ extension MemberSigninViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isExistence in
                 if isExistence {
-                    self?.navigationController?.popViewController(animated: true)
+                    let rootViewController = MainTabBarController()
+                    guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                    sceneDelegate.changeRootViewController(rootViewController, animated: false)
                 } else {
                     guard let email = self?.signWithAppleViewModel.appleEmail,
                           let appleToken = self?.signWithAppleViewModel.appleToken else { return }

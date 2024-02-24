@@ -8,8 +8,11 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController {
+    private let memberViewModel = MemberViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        memberViewModel.loadMemberInformation()
         setupTabBar()
     }
     
@@ -26,10 +29,10 @@ final class MainTabBarController: UITabBarController {
         let homeTab = UINavigationController(rootViewController: HomeViewController())
         homeTab.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 2)
         
-        let boardWriteTab = UINavigationController(rootViewController: checkBoardWriteView())
+        let boardWriteTab = UINavigationController(rootViewController: BoardWriteViewController())
         boardWriteTab.tabBarItem = UITabBarItem(title: "글 작성하기", image: UIImage(systemName: "square.and.pencil.circle"), tag: 3)
         
-        let memberTab = UINavigationController(rootViewController: checkMemberView())
+        let memberTab = UINavigationController(rootViewController: MemberViewController())
         memberTab.tabBarItem = UITabBarItem(title: "내 계정", image: UIImage(systemName: "person"), tag: 4)
         
         viewControllers = [
@@ -40,24 +43,5 @@ final class MainTabBarController: UITabBarController {
             memberTab
         ]
         tabBarController?.setViewControllers(viewControllers, animated: true)
-    }
-    
-    private func checkMemberView() -> UIViewController {
-        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
-              let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue) else { return MemberViewController() }
-        if let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) {
-            let memberInformation = SignupMemberInformation(nickname: nickname, email: email, password: password)
-            return MemberViewController(memberInformation: memberInformation)
-        } else if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
-            let appleMemberInformation = SigninWithAppleInformation(nickname: nickname, email: email, appleToken: appleToken)
-            return MemberViewController(appleMemberInformation: appleMemberInformation)
-        }
-        
-        return MemberViewController()
-    }
-    
-    private func checkBoardWriteView() -> UIViewController {
-        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return BoardWriteViewController() }
-        return BoardWriteViewController(nickname: nickname)
     }
 }

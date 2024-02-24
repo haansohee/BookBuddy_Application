@@ -11,31 +11,14 @@ import RxSwift
 import RxCocoa
 
 final class BoardWriteViewController: UIViewController {
-    enum ViewType {
-        case notMember
-        case member
-    }
-    
     private let boardWriteView = BoardWriteView()
-    private let notMemberView = NotMemberView()
     private let viewModel = BoardWriteViewModel()
-    private var viewType: ViewType
     private var endEditingGesture: UITapGestureRecognizer?
     private let disposeBag = DisposeBag()
     private let dateFormatter = DateFormatter()
     
-    init(nickname: String? = nil) {
-        viewType = nickname != nil ? .member : .notMember
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        checkMember()
         configureBoardWriteView()
         setLayoutConstraints()
     }
@@ -50,49 +33,24 @@ final class BoardWriteViewController: UIViewController {
 
 extension BoardWriteViewController {
     private func configureBoardWriteView() {
+        view.addSubview(boardWriteView)
         view.backgroundColor = .systemBackground
-        switch viewType {
-        case .notMember:
-            notMemberView.translatesAutoresizingMaskIntoConstraints = false
-        case .member:
-            boardWriteView.translatesAutoresizingMaskIntoConstraints = false
-            boardWriteView.titleTextField.delegate = self
-            boardWriteView.contentTextView.delegate = self
-            boardWriteView.imagePickerView.delegate = self
-            boardWriteView.imagePickerView.sourceType = .photoLibrary
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardWriteView.uploadButton)
-        }
+        boardWriteView.translatesAutoresizingMaskIntoConstraints = false
+        boardWriteView.titleTextField.delegate = self
+        boardWriteView.contentTextView.delegate = self
+        boardWriteView.imagePickerView.delegate = self
+        boardWriteView.imagePickerView.sourceType = .photoLibrary
+        self.navigationItem.title = "글 작성하기"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardWriteView.uploadButton)
     }
     
     private func setLayoutConstraints() {
-        switch viewType {
-        case .notMember:
-            self.view.addSubview(notMemberView)
-            boardWriteView.removeFromSuperview()
-            NSLayoutConstraint.activate([
-                notMemberView.topAnchor.constraint(equalTo: self.view.topAnchor),
-                notMemberView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                notMemberView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                notMemberView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            ])
-        case .member:
-            self.view.addSubview(boardWriteView)
-            notMemberView.removeFromSuperview()
-            NSLayoutConstraint.activate([
-                boardWriteView.topAnchor.constraint(equalTo: self.view.topAnchor),
-                boardWriteView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-                boardWriteView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-                boardWriteView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-            ])
-        }
-    }
-    
-    private func checkMember() {
-        guard UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) != nil else {
-            viewType = .notMember
-            return
-        }
-        viewType = .member
+        NSLayoutConstraint.activate([
+            boardWriteView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            boardWriteView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            boardWriteView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            boardWriteView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
     }
     
     private func addEditingTapGesture() {
@@ -124,7 +82,7 @@ extension BoardWriteViewController {
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
-        
+
         actionSheetController.addAction(uploadAction)
         actionSheetController.addAction(cancelAction)
         
@@ -136,7 +94,7 @@ extension BoardWriteViewController {
         let doneAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
             self?.boardWriteView.titleTextField.text = ""
             self?.boardWriteView.contentTextView.text = ""
-            self?.boardWriteView.imageView.image = UIImage(systemName: "photo")
+            self?.boardWriteView.imageView.image = UIImage(systemName: "photo.circle")
             UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.boardImage.rawValue)
         }
         alertController.addAction(doneAction)
@@ -151,18 +109,8 @@ extension BoardWriteViewController {
     }
     
     private func bindAll() {
-        bindJoinButton()
         bindUploadButton()
         bindIsBoardUploaded()
-    }
-    
-    private func bindJoinButton() {
-        notMemberView.joinButton.rx.tap
-            .asDriver()
-            .drive(onNext: { [weak self] _ in
-                self?.navigationController?.pushViewController(MemberSigninViewController(), animated: true)
-            })
-            .disposed(by: disposeBag)
     }
     
     private func bindUploadButton() {

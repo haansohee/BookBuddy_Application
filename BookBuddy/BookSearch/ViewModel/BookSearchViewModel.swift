@@ -15,6 +15,7 @@ final class BookSearchViewModel {
     private(set) var imageData: Data?
     private(set) var category: [String] = []
     private(set) var bookInformations: BookInformation?
+    private(set) var isSearched = false
     
     func parsing(bookTitle: String) {
         guard let baseURL = Bundle.main.infoDictionary?["API_URL"] as? String else { return }
@@ -121,5 +122,13 @@ final class BookSearchViewModel {
                                                   link: link)
         bookInformations = bookInformationData
      }
+    
+    func canceledSearch() {
+        bookSearchResults = []
+    }
+    
+    func checkSearched(_ isSearched: Bool) {
+        self.isSearched = isSearched
+    }
 }
 

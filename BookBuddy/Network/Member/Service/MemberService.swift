@@ -41,7 +41,6 @@ final class MemberService {
     func getMemberSignin(nickname: String, password: String, completion: @escaping(Bool)->Void) {
         let path = "/BookBuddyInfo/getMemberSignin?nickname=\(nickname)&password=\(password)"
         networkSessionManager.urlGetMethod(path: path, requestDTO: Bool.self) { result in
-            print("result: \(result)")
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO)

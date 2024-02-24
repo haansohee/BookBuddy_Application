@@ -12,21 +12,26 @@ final class MemberViewModel {
     private let boardService = BoardService()
     private let memberService = MemberService()
     private let followService = FollowService()
-    private(set) var memberInformation: SignupMemberInformation?
-    private(set) var appleMemberInformation: SigninWithAppleInformation?
     private(set) var boardWrittenInformations: [BoardWrittenInformation]?
     private(set) var followingListInformations: [FollowingListInformation]?
     private(set) var followerListInformations: [FollowerListInformation]?
     private(set) var isLoadedBoardWrittenInfo = PublishSubject<Bool>()
     private(set) var isLoadedFollowingListInfo = PublishSubject<Bool>()
     private(set) var isLoadedFollowerListInfo = PublishSubject<Bool>()
+    private(set) var memberInformation: MemberInformation?
     
-    func setMemberInformation(_ memberInformation: SignupMemberInformation) {
-        self.memberInformation = memberInformation
-    }
-    
-    func setAppleMemberInformation(_ appleMemberInformation: SigninWithAppleInformation) {
-        self.appleMemberInformation = appleMemberInformation
+    func loadMemberInformation() {
+        let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+        let profile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue)
+        let favorite = UserDefaults.standard.string(forKey: UserDefaultsForkey.favorite.rawValue)
+        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
+              let email = UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue) else { return }
+        if let appleToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) {
+            memberInformation = MemberInformation(userID: userID, email: email, appleToken: appleToken, nickname: nickname, favorite: favorite, profile: profile)
+        } else {
+            guard let password = UserDefaults.standard.string(forKey: UserDefaultsForkey.password.rawValue) else { return }
+            memberInformation = MemberInformation(userID: userID, email: email, password: password, nickname: nickname, favorite: favorite, profile: profile)
+        }
     }
     
     func getMemberBoardInformaion(nickname: String) {

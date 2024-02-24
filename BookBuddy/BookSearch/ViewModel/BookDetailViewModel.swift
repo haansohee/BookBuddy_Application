@@ -11,8 +11,15 @@ import RxSwift
 final class BookDetailViewModel {
     let isSetFavorite = PublishSubject<Bool>()
     let isUnsetFavorite = PublishSubject<Bool>()
+    let isLoadedBookInfoData = BehaviorSubject(value: "noValue")
+    private(set) var bookInformationData: BookInformation?
     private let service = MemberService()
     private let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue)
+    
+    func setBookInformationData(_ bookInformationData: BookInformation) {
+        self.bookInformationData = bookInformationData
+        isLoadedBookInfoData.onNext("setValue")
+    }
     
     func checkIsSetFavorite(bookTitle: String) -> Bool {
         guard let favoriteBook = UserDefaults.standard.string(forKey: UserDefaultsForkey.favorite.rawValue) else { return false }

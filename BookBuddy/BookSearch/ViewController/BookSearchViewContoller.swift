@@ -51,6 +51,7 @@ extension BookSearchViewContoller {
     private func setupSearchController() {
         searchController.setupSearchController()
         searchController.searchBar.searchTextField.delegate = self
+        searchController.searchBar.delegate = self
         self.navigationItem.title = "책 검색하기"
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
@@ -75,13 +76,25 @@ extension BookSearchViewContoller {
         viewModel.isParsed
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isParsed in
-                guard isParsed else { return }
+                guard isParsed else {
+                    self?.viewModel.checkSearched(false)
+                    return
+                }
                 guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
+                self?.viewModel.checkSearched(true)
                 self?.bookSearchView.searchResultsCollectionView.hideSkeleton()
                 self?.bookSearchView.searchResultsCollectionView.reloadData()
                 self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension BookSearchViewContoller: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.canceldSearch()
+        bookSearchView.searchResultsCollectionView.reloadData()
+        bookSearchView.searchResultCountLabel.text = "무슨 책을 찾으시나요? 🧐"
     }
 }
 
@@ -107,11 +120,17 @@ extension BookSearchViewContoller: UITextFieldDelegate {
 
 extension BookSearchViewContoller: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        guard viewModel.bookSearchResults.count != 0 else { return 1 }
         return viewModel.bookSearchResults.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCell.reuseIdentifier, for: indexPath) as? SearchResultCell else { return UICollectionViewCell() }
+        
+        guard !viewModel.bookSearchResults.isEmpty else {
+            cell.setIsHiddenOption(true)
+            return cell }
+        cell.setIsHiddenOption(false)
         let title = viewModel.bookSearchResults[indexPath.row].title
         let author = viewModel.bookSearchResults[indexPath.row].author
         let category = viewModel.category[indexPath.row]
@@ -136,9 +155,24 @@ extension BookSearchViewContoller: UICollectionViewDataSource {
 
 extension BookSearchViewContoller: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard !viewModel.bookSearchResults.isEmpty else { return }
         let bookData = viewModel.bookSearchResults[indexPath.row]
         let categoryData = viewModel.category[indexPath.row]
         let controller = BookDetailViewController(data: bookData, category: categoryData)
         present(controller, animated: true)
+    }
+}
+
+extension BookSearchViewContoller: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if viewModel.bookSearchResults.isEmpty {
+            let width = (UIScreen.main.bounds.width) - 20
+            let height = 380.0
+            return CGSize(width: width, height: height)
+        } else {
+            let width = (UIScreen.main.bounds.width / 2) - 20
+            let height = 370.0
+            return CGSize(width: width, height: height)
+        }
     }
 }

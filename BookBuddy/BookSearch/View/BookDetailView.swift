@@ -28,7 +28,6 @@ final class BookDetailView: UIView {
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.numberOfLines = 0
         label.textColor = .label
-        
         return label
     }()
     
@@ -41,7 +40,6 @@ final class BookDetailView: UIView {
         label.numberOfLines = 0
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .systemGray2
-        
         return label
     }()
     
@@ -54,7 +52,6 @@ final class BookDetailView: UIView {
         label.numberOfLines = 0
         label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .systemGray3
-        
         return label
     }()
     
@@ -73,7 +70,6 @@ final class BookDetailView: UIView {
         label.numberOfLines = 0
         label.textColor = .label
         label.font = .systemFont(ofSize: 14, weight: .light)
-        
         return label
     }()
     
@@ -82,7 +78,6 @@ final class BookDetailView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .systemRed
-        
         return button
     }()
     
@@ -97,12 +92,11 @@ final class BookDetailView: UIView {
         return label
     }()
     
-    private let linkButton: UIButton = {
+    let linkButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "link"), for: .normal)
         button.tintColor = .systemBlue
-        
         return button
     }()
     

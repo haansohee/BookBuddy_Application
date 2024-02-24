@@ -352,7 +352,7 @@ extension BoardSearchViewController: UICollectionViewDelegateFlowLayout {
         switch collectionView {
         case self.boardSearchCollectionView:
             let width = collectionView.bounds.width - 20
-            let height = collectionView.bounds.height + 25
+            let height = collectionView.bounds.height + 70
             return CGSize(width: width, height: height)
         case self.recentSearchView.recentSearchCollectionView:
             let width = collectionView.bounds.width - 10

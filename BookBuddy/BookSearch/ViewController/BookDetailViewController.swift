@@ -10,6 +10,7 @@ import UIKit
 import SkeletonView
 import RxSwift
 import RxCocoa
+import SafariServices
 
 final class BookDetailViewController: UIViewController {
     private let bookDetailView = BookDetailView()
@@ -19,7 +20,7 @@ final class BookDetailViewController: UIViewController {
     
     init(data: BookSearchContents, category: String) {
         super.init(nibName: nil, bundle: nil)
-        configureBookDetailView(bookData: data, category: category)
+        setBookInformationData(bookData: data, category: category)
     }
     
     required init?(coder: NSCoder) {
@@ -35,6 +36,7 @@ final class BookDetailViewController: UIViewController {
         super.viewDidLoad()
         configureBookDetailView()
         setLayoutConstraintsBookDetailView()
+        configureBookDetailInformation()
         bindAll()
     }
 }
@@ -58,49 +60,46 @@ extension BookDetailViewController {
         ])
     }
     
-    private func configureBookDetailView(bookData: BookSearchContents, category: String) {
+    private func setBookInformationData(bookData: BookSearchContents, category: String) {
         guard let imageURL = URL(string: bookData.image) else {
-            bookSearchViewModel
-                .setBookInformationData(
-                    title: bookData.title,
-                    author: bookData.author,
-                    category: category,
-                    description: bookData.description,
-                    image: Data(),
-                    link: bookData.link)
+            let bookInformation = BookInformation(image: Data(),
+                                                  title: bookData.title,
+                                                  author: bookData.author,
+                                                  category: category,
+                                                  description: bookData.description,
+                                                  link: bookData.link)
+            bookDetailViewModel
+                .setBookInformationData(bookInformation)
             return
         }
         
         bookSearchViewModel.loadImageData(imageURL: imageURL) { [weak self] data in
-            self?.bookSearchViewModel
-                .setBookInformationData(
-                    title: bookData.title,
-                    author: bookData.author,
-                    category: category,
-                    description: bookData.description,
-                    image: data,
-                    link: bookData.link)
-            guard let information = self?.bookSearchViewModel.bookInformations else { return }
-            DispatchQueue.main.async {
-                self?.bookDetailView.hideSkeleton()
-            }
-            self?.checkIsSetFavorite()
-            self?.bookDetailView.setBookInformation(information)
+            let bookInformation = BookInformation(image: data,
+                                                  title: bookData.title,
+                                                  author: bookData.author,
+                                                  category: category,
+                                                  description: bookData.description,
+                                                  link: bookData.link)
+            self?.bookDetailViewModel
+                .setBookInformationData(bookInformation)
         }
     }
     
+    private func configureBookDetailInformation() {
+        guard let information = bookDetailViewModel.bookInformationData else { return }
+        bookDetailView.hideSkeleton()
+        checkIsSetFavorite()
+        bookDetailView.setBookInformation(information)
+    }
+    
     private func checkIsSetFavorite() {
-        guard let bookInformation = bookSearchViewModel.bookInformations else { return }
+        guard let bookInformation = bookDetailViewModel.bookInformationData else { return }
         guard bookDetailViewModel.checkIsSetFavorite(bookTitle: bookInformation.title) else {
-            DispatchQueue.main.async { [weak self] in
-                self?.bookDetailView.likeButton.tag = 0
-            }
+            bookDetailView.likeButton.tag = 0
             return
         }
-        DispatchQueue.main.async { [weak self] in
-            self?.bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            self?.bookDetailView.likeButton.tag = 1
-        }
+        bookDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        bookDetailView.likeButton.tag = 1
     }
     
     private func unsetFavoriteBookAlert() {
@@ -116,6 +115,8 @@ extension BookDetailViewController {
     
     private func bindAll() {
         bindLikeButton()
+        bindLinkButton()
+        bindIsLoadedBookInfoData()
         bindIsSetFavorite()
         bindIsUnsetFavortie()
     }
@@ -135,6 +136,25 @@ extension BookDetailViewController {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func bindLinkButton() {
+        bookDetailView.linkButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let bookInformation = self?.bookDetailViewModel.bookInformationData,
+                      let url = URL(string: bookInformation.link) else { return }
+                let safariView: SFSafariViewController = SFSafariViewController(url: url)
+                self?.present(safariView, animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsLoadedBookInfoData() {
+        bookDetailViewModel.isLoadedBookInfoData
+            .asDriver(onErrorJustReturn: "noValue")
+            .drive(onNext: {[weak self] _ in
+                self?.configureBookDetailInformation()
+            }).disposed(by: disposeBag)
     }
     
     private func bindIsSetFavorite() {

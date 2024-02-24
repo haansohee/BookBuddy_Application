@@ -15,7 +15,8 @@ final class MemberEditViewController: UIViewController {
     private let memberEditView = MemberEditView()
     private let disposeBag = DisposeBag()
     private let signupVieWModel = MemberSignupWithEmailViewModel()
-    private let viewModel = MemberEditViewModel()
+    private let memberEditViewModel = MemberEditViewModel()
+    private let memberViewModel = MemberViewModel()
     private let keyboardNotification = KeyboardNotification()
     private var endEditingGesture: UITapGestureRecognizer?
     
@@ -61,7 +62,7 @@ extension MemberEditViewController {
     }
     
     private func settingMemberProfileImage() {
-        guard let profileData = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) else {
+        guard let profileData = memberViewModel.memberInformation?.profile else {
             memberEditView.profileImageView.image = UIImage(systemName: "person")
             return
         }
@@ -77,9 +78,9 @@ extension MemberEditViewController {
             self?.present(imagePickerViewController, animated: true)
         }
         let deleteAction = UIAlertAction(title: "현재 사진 삭제하기", style: .default) { [weak self] _ in
-            guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+            guard let nickname = self?.memberViewModel.memberInformation?.nickname else { return }
             self?.memberEditView.profileImageView.image = UIImage(systemName: "person")
-            self?.viewModel.deleteMemberProfile(nickname)
+            self?.memberEditViewModel.deleteMemberProfile(nickname)
         }
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
         
@@ -113,6 +114,7 @@ extension MemberEditViewController {
         bindProfileUpdateButton()
         bindNicknameEditButton()
         bindNicknameDuplicateButton()
+        bindIsSignouted()
         bindIsProfileDeleted()
         bindIsNickanmeUpdated()
         bindIsChecked()
@@ -142,11 +144,11 @@ extension MemberEditViewController {
     private func bindNicknameEditButton() {
         memberEditView.nicknameEditButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
-                guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
+                guard let nickname = self?.memberViewModel.memberInformation?.nickname,
                       let newNickname = self?.memberEditView.nicknameTextField.text else { return }
                 if newNickname.isEmpty { return }
                 let memberNicknameUpdateInformation = MemberNicknameUpdateInformation(newNickname: newNickname, nickname: nickname)
-                self?.viewModel.updateMemberNickname(memberNicknameUpdateInformation)
+                self?.memberEditViewModel.updateMemberNickname(memberNicknameUpdateInformation)
             })
             .disposed(by: disposeBag)
     }
@@ -154,11 +156,11 @@ extension MemberEditViewController {
     private func bindPasswordEditButton() {
         memberEditView.passwordEditButton.rx.tap
             .subscribe(onNext: {[weak self] _ in
-                guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue),
+                guard let nickname = self?.memberViewModel.memberInformation?.nickname,
                       let newPassword = self?.memberEditView.passwordTextField.text else { return }
                 if newPassword.isEmpty { return }
                 let memberPasswordUpdateInformation = MemberPasswordUpdateInformation(newPassword: newPassword, nickname: nickname)
-                self?.viewModel.updateMemberPassword(memberPasswordUpdateInformation)
+                self?.memberEditViewModel.updateMemberPassword(memberPasswordUpdateInformation)
             })
             .disposed(by: disposeBag)
     }
@@ -166,37 +168,40 @@ extension MemberEditViewController {
     private func bindSignoutButton() {
         memberEditView.signoutButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
-                DispatchQueue.main.async {
-                    self?.navigationController?.popViewController(animated: true)
-                }
+                self?.memberEditViewModel.signout()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsSignouted() {
+        memberEditViewModel.isSignouted
+            .asDriver(onErrorJustReturn: "ERROR")
+            .drive(onNext: { isSignouted in
+                guard isSignouted == MemberActivityStatus.Signout.rawValue,
+                      let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
+                let rootViewController = MemberSigninViewController()
+                sceneDelegate.changeRootViewController(rootViewController, animated: false)
             })
             .disposed(by: disposeBag)
     }
     
     private func bindIsProfileDeleted() {
-        viewModel.isProfileDeleted
-            .subscribe(onNext: { isProfileDeleted in
+        memberEditViewModel.isProfileDeleted
+            .subscribe(onNext: { [weak self] isProfileDeleted in
                 guard isProfileDeleted else { return }
-                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
+                self?.memberViewModel.loadMemberInformation()
             })
             .disposed(by: disposeBag)
     }
     
     private func bindIsNickanmeUpdated() {
-        viewModel.isNicknameUpdated
+        memberEditViewModel.isNicknameUpdated
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isNicknameUpdated in
                 guard isNicknameUpdated else { return }
                 guard let nickname = self?.memberEditView.nicknameTextField.text else { return }
                 if nickname.isEmpty { return }
+                self?.memberViewModel.loadMemberInformation()
                 self?.memberEditView.nicknameTextField.placeholder = nickname
                 self?.memberEditView.nicknameTextField.text = nil
                 self?.memberEditView.nicknameDuplicateIdLabel.text = "아이디는 영어, 숫자, 언더바(_)만 사용 가능해요. \n 8~16자로 입력해 주세요."
@@ -213,7 +218,7 @@ extension MemberEditViewController {
     }
     
     private func bindIsPasswordUpdated() {
-        viewModel.isPasswordUpdated
+        memberEditViewModel.isPasswordUpdated
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isPasswordUpdated in
                 guard isPasswordUpdated else { return }
@@ -226,6 +231,15 @@ extension MemberEditViewController {
             .disposed(by: disposeBag)
     }
     
+    private func bindIsProfileUpdated() {
+        memberEditViewModel.isProfileUpdated
+            .subscribe(onNext: {[weak self] isProfileUpdated in
+                guard isProfileUpdated else { return }
+                self?.memberViewModel.loadMemberInformation()
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func bindIsChecked() {
         signupVieWModel.isChecked
             .asDriver(onErrorJustReturn: false)
@@ -233,22 +247,25 @@ extension MemberEditViewController {
                 guard isChecked else { return }
                 self?.memberEditView.nicknameDuplicateIdLabel.text = "사용 가능한 닉네임이에요."
                 self?.memberEditView.nicknameEditButton.isEnabled = true
+                self?.memberEditView.nicknameEditButton.backgroundColor = .systemGreen
             })
             .disposed(by: disposeBag)
     }
     
     private func configurePasswordTextField() {
-        if UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil {
-            memberEditView.passwordTextField.isHidden = true
-            memberEditView.passwordEditButton.isHidden = true
-        } else {
+        guard (memberViewModel.memberInformation?.appleToken) != nil else {
             memberEditView.passwordTextField.isHidden = false
             memberEditView.passwordEditButton.isHidden = false
+            memberEditView.passwordCheckLabel.isHidden = false
+            return
         }
+        memberEditView.passwordTextField.isHidden = true
+        memberEditView.passwordEditButton.isHidden = true
+        memberEditView.passwordCheckLabel.isHidden = true
     }
     
     private func configureNicknameTextField() {
-        guard let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        guard let nickname = memberViewModel.memberInformation?.nickname else { return }
         memberEditView.nicknameTextField.placeholder = nickname
     }
 }
@@ -311,11 +328,9 @@ extension MemberEditViewController: UIImagePickerControllerDelegate {
         }
         memberEditView.profileImageView.image = editedImage
         guard let imageData = editedImage.pngData(),
-              let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-        UserDefaults.standard.set(imageData, forKey: UserDefaultsForkey.profile.rawValue)
+              let nickname = memberViewModel.memberInformation?.nickname else { return }
         let profileInformation = MemberUpdateInformation(nickname: nickname, profile: imageData)
-        viewModel.updateMemberInformation(profileInformation)
-        
+        memberEditViewModel.updateMemberInformation(profileInformation)
         dismiss(animated: true)
     }
 }
