@@ -77,11 +77,11 @@ extension BookSearchViewContoller {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isParsed in
                 guard isParsed else {
-                    self?.viewModel.isSearched = false
+                    self?.viewModel.checkSearched(false)
                     return
                 }
                 guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
-                self?.viewModel.isSearched = true
+                self?.viewModel.checkSearched(true)
                 self?.bookSearchView.searchResultsCollectionView.hideSkeleton()
                 self?.bookSearchView.searchResultsCollectionView.reloadData()
                 self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
@@ -92,7 +92,7 @@ extension BookSearchViewContoller {
 
 extension BookSearchViewContoller: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.bookSearchResults = []
+        viewModel.canceldSearch()
         bookSearchView.searchResultsCollectionView.reloadData()
         bookSearchView.searchResultCountLabel.text = "무슨 책을 찾으시나요? 🧐"
     }
@@ -120,10 +120,8 @@ extension BookSearchViewContoller: UITextFieldDelegate {
 
 extension BookSearchViewContoller: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if viewModel.bookSearchResults.count == 0 { return 1
-        } else {
-            return viewModel.bookSearchResults.count
-        }
+        guard viewModel.bookSearchResults.count != 0 else { return 1 }
+        return viewModel.bookSearchResults.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

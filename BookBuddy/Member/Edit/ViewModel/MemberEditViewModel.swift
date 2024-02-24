@@ -10,41 +10,40 @@ import RxSwift
 
 final class MemberEditViewModel {
     private let service = MemberService()
-    private var isProfileUpdated = PublishSubject<Bool>()
-    private(set) var isProfileDeleted = PublishSubject<Bool>()
-    private(set) var isNicknameUpdated = PublishSubject<Bool>()
-    private(set) var isPasswordUpdated = PublishSubject<Bool>()
-    private(set) var memberUpdateInformation: MemberUpdateInformation?
+    let isProfileUpdated = PublishSubject<Bool>()
+    let isProfileDeleted = PublishSubject<Bool>()
+    let isNicknameUpdated = PublishSubject<Bool>()
+    let isPasswordUpdated = PublishSubject<Bool>()
     let isSignouted = BehaviorSubject(value: MemberActivityStatus.Signin.rawValue)
-    
-    func setMemberUpdateInformation(_ memberProfileInformation: MemberUpdateInformation) {
-        self.memberUpdateInformation = memberProfileInformation
-    }
     
     func updateMemberInformation(_ memberProfileInformation: MemberUpdateInformation) {
         service.updateMemberProfile(with: memberProfileInformation) { [weak self] isProfileUpdated in
+            guard isProfileUpdated else { return }
+            UserDefaults.standard.set(memberProfileInformation.profile, forKey: UserDefaultsForkey.profile.rawValue)
             self?.isProfileUpdated.onNext(isProfileUpdated)
         }
     }
     
     func updateMemberNickname(_ memberNicknameInformation: MemberNicknameUpdateInformation) {
         service.updateMemberNickname(with: memberNicknameInformation) { [weak self] isNicknameUpdated in
-            self?.isNicknameUpdated.onNext(isNicknameUpdated)
             guard isNicknameUpdated else { return }
+            self?.isNicknameUpdated.onNext(isNicknameUpdated)
             UserDefaults.standard.set(memberNicknameInformation.newNickname, forKey: UserDefaultsForkey.nickname.rawValue)
         }
     }
     
     func updateMemberPassword(_ memberPasswordInformation: MemberPasswordUpdateInformation) {
         service.updateMemberPassword(with: memberPasswordInformation) { [weak self] isPasswordUpdated in
-            self?.isPasswordUpdated.onNext(isPasswordUpdated)
             guard isPasswordUpdated else { return }
+            self?.isPasswordUpdated.onNext(isPasswordUpdated)
             UserDefaults.standard.set(memberPasswordInformation.newPassword, forKey: UserDefaultsForkey.password.rawValue)
         }
     }
     
     func deleteMemberProfile(_ nickname: String) {
         service.deleteMemberProfile(with: nickname) { [weak self] isProfileDeleted in
+            guard isProfileDeleted else { return }
+            UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
             self?.isProfileDeleted.onNext(isProfileDeleted)
         }
     }

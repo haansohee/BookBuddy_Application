@@ -39,10 +39,6 @@ final class BookDetailViewController: UIViewController {
         configureBookDetailInformation()
         bindAll()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
 }
 
 
