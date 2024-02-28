@@ -47,7 +47,6 @@ extension HomeViewController {
         navigationItem.title = "홈"
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
-        homeViewCollectionView.delegate = self
     }
     
     private func addSubviews() {
@@ -91,6 +90,16 @@ extension HomeViewController {
         }
     }
     
+    private func calculateCellHeight(textString: String) -> CGFloat {
+        let label = UILabel(frame: CGRectMake(0, 0, UIScreen.main.bounds.width - 100, CGFloat.greatestFiniteMagnitude))
+        label.text = textString
+        label.font = .systemFont(ofSize: 12.0, weight: .light)
+        label.numberOfLines = 0
+        label.textAlignment = .left
+        label.sizeToFit()
+        return label.frame.height + 60
+    }
+    
     private func bindIsLoadedFollowingBoardInfo() {
         homeViewModel.isUploadedFollowingBoardInfo
             .asDriver(onErrorJustReturn: "noValue")
@@ -116,6 +125,9 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
         guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
+        let readMoreIsHidden = homeViewModel.IsHiddenReadMore(followingBoardInformation[indexPath.row].content)
+        cell.readMoreButton.isHidden = readMoreIsHidden
+        
         cell.commentCountLabel.text = String(followingBoardInformation[indexPath.row].comments.count)
         if followingBoardInformation[indexPath.row].didLike {
             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
@@ -160,8 +172,7 @@ extension HomeViewController: UICollectionViewDataSource {
                         }
                         self?.changeLikeCountLabelValue(label: cell.likeCountLabel, deleteLike: false)
                     }
-                default:
-                    return
+                default: return
                 }
             })
             .disposed(by: cell.disposeBag)
@@ -169,9 +180,12 @@ extension HomeViewController: UICollectionViewDataSource {
         cell.rx.commentButtonTapped
             .asDriver()
             .drive(onNext: {[weak self] _ in
-                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID, commentInformation: followingBoardInformation[indexPath.row].comments), animated: true)
+                self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID,
+                                                    commentInformation: followingBoardInformation[indexPath.row].comments),
+                              animated: true)
             })
             .disposed(by: cell.disposeBag)
+        
         let reportAction = UIAction(title: "신고하기",
                                   image: UIImage(systemName: "exclamationmark.bubble"),
                                   attributes: .destructive,
@@ -181,14 +195,14 @@ extension HomeViewController: UICollectionViewDataSource {
             self?.present(reportViewController, animated: true)
         })
         cell.ellipsisButton.menu = UIMenu(children: [reportAction])
+        cell.rx.readMoreButtonTapped
+            .subscribe(onNext: { _ in
+                DispatchQueue.main.async {
+                    cell.readMoreIsTapped(true)
+                    collectionView.reconfigureItems(at: [IndexPath(row: indexPath.row, section: 0)])
+                }
+            })
+            .disposed(by: cell.disposeBag)
         return cell
-    }
-}
-
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.bounds.width - 20
-        let height = collectionView.bounds.height - 100
-        return CGSize(width: width, height: height)
     }
 }

@@ -8,7 +8,14 @@
 import UIKit
 import SkeletonView
 
-final class BoardDetailView: UIView {
+final class BoardDetailView: UIScrollView {
+    private let containerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .systemBackground
+        return view
+    }()
+    
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.isSkeletonable = true
@@ -135,18 +142,25 @@ extension BoardDetailView {
             contentLabel,
             contentTitleLabel,
             writeDateLabel
-        ].forEach { self.addSubview($0) }
+        ].forEach { containerView.addSubview($0) }
+        self.addSubview(containerView)
     }
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
-            imageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            containerView.topAnchor.constraint(equalTo: self.contentLayoutGuide.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: self.contentLayoutGuide.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: self.contentLayoutGuide.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: self.contentLayoutGuide.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: self.frameLayoutGuide.widthAnchor),
+            
+            imageView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 8.0),
+            imageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor),
             
             likeButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 5.0),
-            likeButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 14.0),
+            likeButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 14.0),
             likeButton.widthAnchor.constraint(equalToConstant: 24.0),
             likeButton.heightAnchor.constraint(equalToConstant: 24.0),
             
@@ -171,7 +185,7 @@ extension BoardDetailView {
 
             contentTitleLabel.topAnchor.constraint(equalTo: nicknameLabel.topAnchor),
             contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 8.0),
-            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -14.0),
+            contentTitleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -14.0),
             contentTitleLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
 
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 5.0),
@@ -181,7 +195,7 @@ extension BoardDetailView {
             writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 5.0),
             writeDateLabel.leadingAnchor.constraint(equalTo: likeButton.leadingAnchor),
             writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -5.0),
+            writeDateLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -5.0),
             writeDateLabel.heightAnchor.constraint(equalToConstant: 15.0)
         ])
     }

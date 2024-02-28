@@ -103,10 +103,7 @@ extension MemberSigninWithAppleViewController {
                       let email = self?.viewModel.appleEmail,
                       let appleToken = self?.viewModel.appleToken,
                       let userID = self?.viewModel.appleUserID else { return }
-                UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
-                UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
-                UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
-                UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
+                self?.viewModel.setUserDefaults(nickname: nickname, email: email, appleToken: appleToken, userID: userID)
                 self?.memberEditViewModel.isSignouted.onNext(MemberActivityStatus.Signin.rawValue)
                 let rootViewController = MainTabBarController()
                 guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }

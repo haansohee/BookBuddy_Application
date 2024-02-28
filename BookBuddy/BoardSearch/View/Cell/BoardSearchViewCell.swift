@@ -10,6 +10,18 @@ import RxSwift
 
 final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     var disposeBag = DisposeBag()
+    private var contentLabelConstraints: NSLayoutConstraint?
+    private var contentLabelConstraintsIsTapped: NSLayoutConstraint?
+    
+    let readMoreButton: AnimationButton = {
+        let button = AnimationButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("...더 보기", for: .normal)
+        button.setTitleColor(.systemGray2, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
+        button.titleLabel?.textAlignment = .left
+        return button
+    }()
     
     let touchStackView: UIStackView = {
         let stackView = UIStackView()
@@ -24,7 +36,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = 17
+        imageView.layer.cornerRadius = 20
         imageView.layer.borderWidth = 1
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
@@ -112,12 +124,12 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         return label
     }()
     
-    private let contentLabel: UILabel = {
+    let contentLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.textColor = .label
-        label.numberOfLines = 0
+        label.numberOfLines = 1
         label.font = .systemFont(ofSize: 12.0, weight: .light)
         return label
     }()
@@ -134,15 +146,17 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
+        readMoreIsTapped(false)
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.layer.borderColor = UIColor.lightGray.cgColor
-        self.layer.borderWidth = 0.3
-        self.layer.cornerRadius = 3.0
+        contentLabelConstraints = contentLabel.trailingAnchor.constraint(
+            equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -200.0)
+        contentLabelConstraintsIsTapped = contentLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0)
         addSubviews()
         setLayoutConstraints()
+        readMoreIsTapped(false)
     }
     
     required init?(coder: NSCoder) {
@@ -168,6 +182,20 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         likeCountLabel.text = String(followingBoardInfo.likes)
         writeDateLabel.text = followingBoardInfo.writeDate
     }
+    
+    func readMoreIsTapped(_ isTapped: Bool) {
+        if isTapped {
+            contentLabelConstraints?.isActive = !isTapped
+            contentLabelConstraintsIsTapped?.isActive = isTapped
+            readMoreButton.setTitle("", for: .normal)
+            contentLabel.numberOfLines = 0
+        } else {
+            contentLabelConstraintsIsTapped?.isActive = isTapped
+            contentLabelConstraints?.isActive = !isTapped
+            readMoreButton.setTitle("...더 보기", for: .normal)
+            contentLabel.numberOfLines = 1
+        }
+    }
 }
 
 extension BoardSearchViewCell {
@@ -187,6 +215,7 @@ extension BoardSearchViewCell {
             nicknameLabel,
             contentTitleLabel,
             contentLabel,
+            readMoreButton,
             writeDateLabel
         ].forEach { addSubview($0) }
     }
@@ -196,20 +225,20 @@ extension BoardSearchViewCell {
             touchStackView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
             touchStackView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
             touchStackView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
-            touchStackView.heightAnchor.constraint(equalToConstant: 40.0),
+            touchStackView.heightAnchor.constraint(equalToConstant: 50.0),
             
-            profileImageView.topAnchor.constraint(equalTo: touchStackView.topAnchor, constant: 3.0),
-            profileImageView.leadingAnchor.constraint(equalTo: touchStackView.leadingAnchor, constant: 3.0),
-            profileImageView.bottomAnchor.constraint(equalTo: touchStackView.bottomAnchor, constant: -3.0),
+            profileImageView.topAnchor.constraint(equalTo: touchStackView.topAnchor, constant: 5.0),
+            profileImageView.leadingAnchor.constraint(equalTo: touchStackView.leadingAnchor, constant: 5.0),
+            profileImageView.bottomAnchor.constraint(equalTo: touchStackView.bottomAnchor, constant: -5.0),
             profileImageView.widthAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
             titleNicknameLabel.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 3.0),
-            titleNicknameLabel.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
+            titleNicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 5.0),
             titleNicknameLabel.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
             ellipsisButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            ellipsisButton.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -3.0),
+            ellipsisButton.leadingAnchor.constraint(equalTo: titleNicknameLabel.trailingAnchor, constant: 5.0),
+            ellipsisButton.trailingAnchor.constraint(equalTo: touchStackView.trailingAnchor, constant: -5.0),
             ellipsisButton.widthAnchor.constraint(equalTo: profileImageView.heightAnchor),
             ellipsisButton.heightAnchor.constraint(equalTo: profileImageView.heightAnchor),
             
@@ -220,7 +249,7 @@ extension BoardSearchViewCell {
             boardImageView.heightAnchor.constraint(equalTo: boardImageView.widthAnchor),
             
             likeButton.topAnchor.constraint(equalTo: boardImageView.bottomAnchor, constant: 3.0),
-            likeButton.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
+            likeButton.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12.0),
             likeButton.widthAnchor.constraint(equalToConstant: 24.0),
             likeButton.heightAnchor.constraint(equalToConstant: 24.0),
             
@@ -240,22 +269,26 @@ extension BoardSearchViewCell {
             commentCountLabel.heightAnchor.constraint(equalTo: likeButton.heightAnchor),
             
             nicknameLabel.topAnchor.constraint(equalTo: likeButton.bottomAnchor, constant: 5.0),
-            nicknameLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
+            nicknameLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12.0),
             nicknameLabel.heightAnchor.constraint(equalToConstant: 20.0),
             
             contentTitleLabel.topAnchor.constraint(equalTo: nicknameLabel.topAnchor),
             contentTitleLabel.leadingAnchor.constraint(equalTo: nicknameLabel.trailingAnchor, constant: 8.0),
-            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -3.0),
+            contentTitleLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0),
             contentTitleLabel.heightAnchor.constraint(equalTo: nicknameLabel.heightAnchor),
             
             contentLabel.topAnchor.constraint(equalTo: contentTitleLabel.bottomAnchor, constant: 3.0),
-            contentLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
-            contentLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
+            contentLabel.leadingAnchor.constraint(equalTo: nicknameLabel.leadingAnchor),
 
-            writeDateLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 3.0),
-            writeDateLabel.leadingAnchor.constraint(equalTo: profileImageView.leadingAnchor),
+            readMoreButton.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 1.0),
+            readMoreButton.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
+            readMoreButton.widthAnchor.constraint(equalToConstant: 60.0),
+            readMoreButton.heightAnchor.constraint(equalToConstant: 24.0),
+
+            writeDateLabel.topAnchor.constraint(equalTo: readMoreButton.bottomAnchor, constant: 3.0),
+            writeDateLabel.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
+            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -12.0),
             writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -3.0),
             writeDateLabel.heightAnchor.constraint(equalToConstant: 10.0)
         ])
     }

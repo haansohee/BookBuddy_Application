@@ -12,10 +12,20 @@ import RxCocoa
 
 final class BoardWriteViewController: UIViewController {
     private let boardWriteView = BoardWriteView()
-    private let viewModel = BoardWriteViewModel()
+    private let boardWriteViewModel = BoardWriteViewModel()
+    private let memberViewModel = MemberViewModel()
     private var endEditingGesture: UITapGestureRecognizer?
     private let disposeBag = DisposeBag()
     private let dateFormatter = DateFormatter()
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        memberViewModel.loadMemberInformation()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -118,7 +128,7 @@ extension BoardWriteViewController {
             .subscribe(onNext: { [weak self] _ in
                 guard let contentTitle = self?.boardWriteView.titleTextField.text,
                       let content = self?.boardWriteView.contentTextView.text,
-                      let nickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+                      let nickname = self?.memberViewModel.memberInformation?.nickname else { return }
                 
                 if (contentTitle == "") {
                     DispatchQueue.main.async {
@@ -140,19 +150,19 @@ extension BoardWriteViewController {
                 self?.dateFormatter.dateFormat = "yyyy-MM-dd"
                 guard let date = self?.dateFormatter.string(from: Date()) else { return }
                 
-                if let profileImage = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) {
+                if let profileImage = self?.memberViewModel.memberInformation?.profile {
                     let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
-                    self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                    self?.boardWriteViewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
                 } else {
                     let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: Data())
-                    self?.viewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                    self?.boardWriteViewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
                 }
             })
             .disposed(by: disposeBag)
     }
     
     private func bindIsBoardUploaded() {
-        viewModel.isBoardUploaded
+        boardWriteViewModel.isBoardUploaded
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isUpload in
                 self?.uploadSuccessAlert(title: "업로드 완료", message: "성공적으로 업로드가 되었어요.")
