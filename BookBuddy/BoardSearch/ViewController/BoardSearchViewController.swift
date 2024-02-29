@@ -257,6 +257,8 @@ extension BoardSearchViewController: UICollectionViewDataSource {
         case .boardSearch:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
             guard let boardSearchResultsInformation = boardSearchViewModel.boardSearchResultsInformations else {  return cell }
+            let isHiddenReadMore = homeViewModel.IsHiddenReadMore(boardSearchResultsInformation[indexPath.row].content)
+            cell.readMoreButton.isHidden = isHiddenReadMore
             if let profileImage = boardSearchResultsInformation[indexPath.row].profileImage {
                 cell.profileImageView.image = UIImage(data: profileImage)
             } else {
@@ -276,7 +278,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
             viewTapGesture.nickname = boardSearchResultsInformation[indexPath.row].nickname
             cell.touchStackView.addGestureRecognizer(viewTapGesture)
             
-            cell.rx.likeButtonTapped
+            cell.rx.didTapLikeButton
                 .asDriver()
                 .drive(onNext: {[weak self] _ in
                     guard let likedUserID = self?.boardSearchViewModel.userID else { return }
@@ -307,7 +309,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 })
                 .disposed(by: cell.disposeBag)
             
-            cell.rx.commentButtonTapped
+            cell.rx.didTapCommentButton
                 .asDriver()
                 .drive(onNext: {[weak self] _ in
                     self?.present(CommentViewController(postID: boardSearchResultsInformation[indexPath.row].postID, commentInformation: boardSearchResultsInformation[indexPath.row].comments), animated: true)
@@ -329,7 +331,13 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                 cell.ellipsisButton.isHidden = false
                 cell.ellipsisButton.menu = UIMenu(children: [reportAction])
             }
-            
+            cell.rx.didTapReadMoreButton
+                .asDriver()
+                .drive(onNext: { _ in
+                    cell.isTappedReadMore(true)
+                    collectionView.reconfigureItems(at: [IndexPath(row: indexPath.row, section: 0)])
+                })
+                .disposed(by: cell.disposeBag)
             return cell
             
         case .recentSearch:

@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 
 extension Reactive where Base: BoardSearchViewCell {
-    var likeButtonTapped: ControlEvent<Void> { base.likeButton.rx.tap }
-    var commentButtonTapped: ControlEvent<Void> { base.commentButton.rx.tap }
-    var readMoreButtonTapped: ControlEvent<Void> { base.readMoreButton.rx.tap }
+    var didTapLikeButton: ControlEvent<Void> { base.likeButton.rx.tap }
+    var didTapCommentButton: ControlEvent<Void> { base.commentButton.rx.tap }
+    var didTapReadMoreButton: ControlEvent<Void> { base.readMoreButton.rx.tap }
 }

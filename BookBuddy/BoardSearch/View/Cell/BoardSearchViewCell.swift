@@ -146,7 +146,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
-        readMoreIsTapped(false)
+        isTappedReadMore(false)
     }
     
     override init(frame: CGRect) {
@@ -156,7 +156,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         contentLabelConstraintsIsTapped = contentLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0)
         addSubviews()
         setLayoutConstraints()
-        readMoreIsTapped(false)
+        isTappedReadMore(false)
     }
     
     required init?(coder: NSCoder) {
@@ -183,7 +183,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         writeDateLabel.text = followingBoardInfo.writeDate
     }
     
-    func readMoreIsTapped(_ isTapped: Bool) {
+    func isTappedReadMore(_ isTapped: Bool) {
         if isTapped {
             contentLabelConstraints?.isActive = !isTapped
             contentLabelConstraintsIsTapped?.isActive = isTapped

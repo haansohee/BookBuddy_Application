@@ -40,7 +40,7 @@ final class HomeViewModel {
         if content.contains("\n") || content.contains("\n\n") {
             return false
         } else {
-            return content.count < 15 ? true : false
+            return content.count < 15
         }
     }
 }

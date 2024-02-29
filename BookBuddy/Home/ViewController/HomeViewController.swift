@@ -125,8 +125,8 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
         guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
-        let readMoreIsHidden = homeViewModel.IsHiddenReadMore(followingBoardInformation[indexPath.row].content)
-        cell.readMoreButton.isHidden = readMoreIsHidden
+        let isHiddenReadMore = homeViewModel.IsHiddenReadMore(followingBoardInformation[indexPath.row].content)
+        cell.readMoreButton.isHidden = isHiddenReadMore
         
         cell.commentCountLabel.text = String(followingBoardInformation[indexPath.row].comments.count)
         if followingBoardInformation[indexPath.row].didLike {
@@ -148,7 +148,7 @@ extension HomeViewController: UICollectionViewDataSource {
         nicknameTapGesture.nickname = followingBoardInformation[indexPath.row].nickname
         cell.touchStackView.addGestureRecognizer(nicknameTapGesture)
         
-        cell.rx.likeButtonTapped
+        cell.rx.didTapLikeButton
             .asDriver()
             .drive(onNext: {[weak self] _ in
                 guard let likedUserID = self?.homeViewModel.userID else { return }
@@ -177,7 +177,7 @@ extension HomeViewController: UICollectionViewDataSource {
             })
             .disposed(by: cell.disposeBag)
         
-        cell.rx.commentButtonTapped
+        cell.rx.didTapCommentButton
             .asDriver()
             .drive(onNext: {[weak self] _ in
                 self?.present(CommentViewController(postID: followingBoardInformation[indexPath.row].postID,
@@ -195,12 +195,11 @@ extension HomeViewController: UICollectionViewDataSource {
             self?.present(reportViewController, animated: true)
         })
         cell.ellipsisButton.menu = UIMenu(children: [reportAction])
-        cell.rx.readMoreButtonTapped
-            .subscribe(onNext: { _ in
-                DispatchQueue.main.async {
-                    cell.readMoreIsTapped(true)
-                    collectionView.reconfigureItems(at: [IndexPath(row: indexPath.row, section: 0)])
-                }
+        cell.rx.didTapReadMoreButton
+            .asDriver()
+            .drive(onNext: { _ in
+                cell.isTappedReadMore(true)
+                collectionView.reconfigureItems(at: [IndexPath(row: indexPath.row, section: 0)])
             })
             .disposed(by: cell.disposeBag)
         return cell
