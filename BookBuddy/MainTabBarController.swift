@@ -8,11 +8,8 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController {
-    private let memberViewModel = MemberViewModel()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        memberViewModel.loadMemberInformation()
         setupTabBar()
     }
     

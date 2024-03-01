@@ -92,7 +92,7 @@ extension BookSearchViewContoller {
 
 extension BookSearchViewContoller: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.canceldSearch()
+        viewModel.canceledSearch()
         bookSearchView.searchResultsCollectionView.reloadData()
         bookSearchView.searchResultCountLabel.text = "무슨 책을 찾으시나요? 🧐"
     }

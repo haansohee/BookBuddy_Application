@@ -21,7 +21,6 @@ final class MemberSigninViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        checkUserDefaults()
     }
     
     override func viewDidLoad() {
@@ -50,14 +49,6 @@ extension MemberSigninViewController {
             memberSigninView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             memberSigninView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
-    }
-    
-    private func checkUserDefaults() {
-        if (UserDefaults.standard.string(forKey: UserDefaultsForkey.appleToken.rawValue) != nil) &&
-            (UserDefaults.standard.string(forKey: UserDefaultsForkey.email.rawValue) != nil) &&
-            (UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) != nil) {
-            self.navigationController?.popViewController(animated: true)
-        }
     }
     
     private func bindAll() {

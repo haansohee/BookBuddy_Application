@@ -97,6 +97,13 @@ final class MemberSigninWithAppleViewModel {
         self.appleUserID = userID
     }
     
+    func setUserDefaults(nickname: String, email: String, appleToken: String, userID: Int) {
+        UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+        UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
+        UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+        UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
+    }
+    
     func appleSignup(with signinWithAppleInformation: SigninWithAppleInformation) {
         service.setAppleMemberInfo(with: signinWithAppleInformation) { [weak self] isCompleted in
             self?.isCompleted.onNext(isCompleted)

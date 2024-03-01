@@ -35,4 +35,12 @@ final class HomeViewModel {
             completion(result)
         }
     }
+    
+    func IsHiddenReadMore(_ content: String) -> Bool {
+        if content.contains("\n") || content.contains("\n\n") {
+            return false
+        } else {
+            return content.count < 15
+        }
+    }
 }

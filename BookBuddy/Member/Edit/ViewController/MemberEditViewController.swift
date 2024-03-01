@@ -20,6 +20,15 @@ final class MemberEditViewController: UIViewController {
     private let keyboardNotification = KeyboardNotification()
     private var endEditingGesture: UITapGestureRecognizer?
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        memberViewModel.loadMemberInformation()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubview()
@@ -45,6 +54,8 @@ extension MemberEditViewController {
     
     private func configureMemberEditView() {
         self.view.backgroundColor = .systemBackground
+        navigationItem.title = "정보 수정하기"
+        navigationController?.navigationBar.tintColor = .systemGreen
         memberEditView.translatesAutoresizingMaskIntoConstraints = false
         memberEditView.nicknameTextField.delegate = self
         memberEditView.passwordTextField.delegate = self
