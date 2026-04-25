@@ -92,7 +92,6 @@ final class BoardService {
     func getFollowingBoards(userID: Int, completion: @escaping([FollowingBoardInformation]) -> Void) {
         let path = "/BookBuddyInfo/getFollowingBoards?userID=\(userID)"
         networkSessionManager.urlGetMethod(path: path, requestDTO: [FollowingBoardDTO].self) { result in
-            print("url get method result: \(result)")
             switch result {
             case .success(let responseDTO):
                 let followingBoardInformation = responseDTO.map { $0.toDomain() }

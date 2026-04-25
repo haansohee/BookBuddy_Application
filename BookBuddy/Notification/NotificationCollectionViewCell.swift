@@ -104,25 +104,25 @@ extension NotificationCollectionViewCell {
     
     private func setLayoutConstraints() {
         NSLayoutConstraint.activate([
-            profileImageView.centerYAnchor.constraint(equalTo: self.safeAreaLayoutGuide.centerYAnchor),
-            profileImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 12.0),
+            profileImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            profileImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.0),
             profileImageView.widthAnchor.constraint(equalToConstant: 50.0),
             profileImageView.heightAnchor.constraint(equalTo: profileImageView.widthAnchor),
-            
-            notificationContentLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 15.0),
+
+            notificationContentLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 15.0),
             notificationContentLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 8.0),
             notificationContentLabel.trailingAnchor.constraint(equalTo: boardImageView.leadingAnchor, constant: -8.0),
-            notificationContentLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -15.0),
-            
+            notificationContentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -15.0),
+
             boardImageView.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            boardImageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -12.0),
+            boardImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12.0),
             boardImageView.widthAnchor.constraint(equalToConstant: 60.0),
             boardImageView.heightAnchor.constraint(equalTo: boardImageView.widthAnchor),
-            
-            notificationBlackLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
-            notificationBlackLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
-            notificationBlackLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
-            notificationBlackLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
+
+            notificationBlackLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0),
+            notificationBlackLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8.0),
+            notificationBlackLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8.0),
+            notificationBlackLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0),
         ])
     }
 }

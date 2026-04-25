@@ -10,7 +10,7 @@ import Foundation
 final class NotificationService {
     private let networkSessionManager = NetworkSessionManager()
     
-    func sendLikeNofitication(with sendNotification: SendNotificationInformation, completion: @escaping(Bool)->Void) {
+    func sendLikeNotification(with sendNotification: SendNotificationInformation, completion: @escaping(Bool)->Void) {
         let path = "/BookBuddyInfo/sendLikeNofitication/"
         let likeNotification = sendNotification.toRequestDTO()
         networkSessionManager.urlPostMethod(path: path, encodeValue: likeNotification) { result in

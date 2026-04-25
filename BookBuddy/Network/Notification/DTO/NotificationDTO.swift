@@ -8,14 +8,21 @@
 import Foundation
 
 struct NotificationDTO: Codable {
-    let notificaitonID: Int
+    let notificationID: Int
     let notificationContent: String
     let profileImage: Data?
     let boardImage: Data
+
+    enum CodingKeys: String, CodingKey {
+        case notificationID = "notificaitonID"
+        case notificationContent
+        case profileImage
+        case boardImage
+    }
 }
 
 extension NotificationDTO {
     func toDomain() -> NotificationInformation {
-        return .init(notificaitonID: notificaitonID, notificationContent: notificationContent, profileImage: profileImage, boardImage: boardImage)
+        return .init(notificationID: notificationID, notificationContent: notificationContent, profileImage: profileImage, boardImage: boardImage)
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import AuthenticationServices
+import UserNotifications
 import RxSwift
 import Firebase
 

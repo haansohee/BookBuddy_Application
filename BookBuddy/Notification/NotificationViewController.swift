@@ -25,11 +25,11 @@ final class NotificationViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         addSubivews()
         configureNotificationView()
         setLayoutConstraintsNotificationView()
         isLoadedNotificationInfo()
-        super.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {

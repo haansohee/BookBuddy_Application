@@ -140,8 +140,11 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
-        
+        guard let followingBoardInformation = homeViewModel.followingBoardInformations else {
+            cell.setIsHiddenOption(false)
+            return cell
+        }
+
         guard !followingBoardInformation.isEmpty else {
             cell.setIsHiddenOption(false)
             return cell}

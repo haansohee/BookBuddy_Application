@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import UserNotifications
 import Firebase
 
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -44,25 +45,22 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // Notification 의 응답에 대한 처리를 해 줄 수 있는 메서드.
-        // UNNotificaationReponse 타입의 response를 매개변수로 받음.
-        // UNNotificationResponse를 살펴보면, actionIdentifier default로,
-        // 1. 사용자가 notification을 종료하였을 때,
-        // 2. 사용자가 notification을 열었을 때 (클릭했을 때)
-        // 두 가지 동작을 기본적으로 처리함.
+        defer { completionHandler() }
+
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController,
-              let currentViewController = rootViewController.presentedViewController else { return }
-        currentViewController.navigationController?.pushViewController(NotificationViewController(), animated: true)
-        completionHandler()
+              let rootViewController = windowScene.windows.first?.rootViewController else { return }
+
+        let currentViewController = rootViewController.presentedViewController ?? rootViewController
+
+        if let navigationController = currentViewController as? UINavigationController {
+            navigationController.pushViewController(NotificationViewController(), animated: true)
+        } else {
+            currentViewController.navigationController?.pushViewController(NotificationViewController(), animated: true)
+        }
     }
 }
 
 extension AppDelegate: MessagingDelegate {
-    func messaging(_ messaging: Messaging, didReceive remoteMessage: MessagingDelegate) {
-        
-    }
-    
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken else { return }
         let dataDict: [String: String] = ["token": fcmToken]
