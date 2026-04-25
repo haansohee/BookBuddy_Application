@@ -36,12 +36,6 @@ import Firebase
         Messaging.messaging().apnsToken = deviceToken
     }
     
-    func applicationDidFinishLaunching(_ application: UIApplication) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let rootViewController = windowScene.windows.first?.rootViewController,
-              let currentViewController = rootViewController.presentedViewController else { return }
-        currentViewController.navigationController?.pushViewController(NotificationViewController(), animated: true)
-    }
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {

@@ -129,8 +129,6 @@ final class BookSearchViewModel {
                     
                     if urlCount == currentCount {
                         completion(true)
-                    } else {
-                        completion(false)
                     }
                     
                 } catch let error {

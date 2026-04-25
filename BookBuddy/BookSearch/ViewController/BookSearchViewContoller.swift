@@ -76,7 +76,7 @@ extension BookSearchViewContoller {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isParsed in
                 guard isParsed else {
-                    self?.bookSearchView.searchResultCountLabel.text = "검색된 결과가 없어요.loadImageData🥲"
+                    self?.bookSearchView.searchResultCountLabel.text = "검색된 결과가 없어요. 🥲"
                     return }
                 guard let searchResults = self?.viewModel.bookSearchResults else { return }
                 self?.bookSearchView.searchResultsCollectionView.hideSkeleton()

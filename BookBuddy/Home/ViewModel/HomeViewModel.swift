@@ -34,8 +34,6 @@ final class HomeViewModel {
     
     func sendLikeNotification(_ postID: Int) {
         guard let senderNickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
-        if let senderProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) {
-        }
         let sendLikeNotificationInfo = SendNotificationInformation(senderNickname: senderNickname, postID: postID)
         notificationService.sendLikeNofitication(with: sendLikeNotificationInfo) { result in
             guard result else { return }

@@ -28,6 +28,7 @@ final class NotificationViewController: UIViewController {
         addSubivews()
         configureNotificationView()
         setLayoutConstraintsNotificationView()
+        isLoadedNotificationInfo()
         super.viewDidLoad()
     }
     
@@ -61,7 +62,7 @@ extension NotificationViewController {
     }
     
     private func calculateCellHeight(textString: String) -> CGFloat {
-        let label = UILabel(frame: CGRectMake(0, 0, UIScreen.main.bounds.width-100, CGFloat.greatestFiniteMagnitude))
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width-100, height: CGFloat.greatestFiniteMagnitude))
         label.text = textString
         label.textAlignment = .left
         label.numberOfLines = 0

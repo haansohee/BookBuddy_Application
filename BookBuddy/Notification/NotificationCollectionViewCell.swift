@@ -28,7 +28,6 @@ final class NotificationCollectionViewCell: UICollectionViewCell, ReuseIdentifie
     private let boardImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(systemName: "person")
         imageView.layer.cornerRadius = 5.0
         imageView.contentMode = .scaleAspectFill
