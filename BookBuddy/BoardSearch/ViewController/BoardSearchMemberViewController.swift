@@ -75,6 +75,13 @@ extension BoardSearchMemberViewController {
         viewModel.checkFollowed(userID: userID, searchUserID: searchUserID)
     }
     
+    private func followErrorAlert(message: String) {
+        let alertActionController = UIAlertController(title: "BookBuddy", message: message, preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "확인", style: .default)
+        alertActionController.addAction(doneAction)
+        present(alertActionController, animated: true)
+    }
+    
     private func bindAll() {
         bindIsLoadedSearchMember()
         bindIsLoadedBoardWrittenInfo()
@@ -132,10 +139,7 @@ extension BoardSearchMemberViewController {
                     self?.viewModel.following(followingInformation: followingInformation)
                 case 1:
                     self?.viewModel.deleteFollowing(followingInformation: followingInformation)
-                case .none:
-                    return
-                case .some(_):
-                    return
+                default: return
                 }
             })
             .disposed(by: disposeBag)
@@ -158,7 +162,9 @@ extension BoardSearchMemberViewController {
         viewModel.isUpdatedFollow
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isUpdatedFollow in
-                guard isUpdatedFollow else { return }
+                guard isUpdatedFollow else {
+                    self?.followErrorAlert(message: "잠시후에 다시 시도해 주세요.")
+                    return }
                 guard let searchUserID = self?.viewModel.searchMemberInformation?.userID else { return }
                 self?.memberViewModel.getFollowerListInformation(userID: searchUserID)
                 self?.memberView.followingButton.setTitle("팔로우 취소", for: .normal)

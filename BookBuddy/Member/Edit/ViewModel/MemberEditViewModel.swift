@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import UserNotifications
 
 final class MemberEditViewModel {
     private let service = MemberService()
@@ -49,14 +50,36 @@ final class MemberEditViewModel {
     }
     
     func signout() {
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
-        isSignouted.onNext(MemberActivityStatus.Signout.rawValue)
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            switch settings.authorizationStatus {
+            case .authorized:
+                guard let fcmToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.fcmToken.rawValue) else { return }
+                let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+                let fcmTokenInformation = FcmTokenInformation(userID: userID, fcmToken: fcmToken)
+                self?.service.deleteMemberFcmToken(with: fcmTokenInformation) { result in
+                    guard result else { return }
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
+                    UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.fcmToken.rawValue)
+                    self?.isSignouted.onNext(MemberActivityStatus.Signout.rawValue)
+                }
+            default:
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.profile.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.appleToken.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
+                UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
+                self?.isSignouted.onNext(MemberActivityStatus.Signout.rawValue)
+            }
+        }
     }
 }

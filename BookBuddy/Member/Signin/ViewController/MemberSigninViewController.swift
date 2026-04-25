@@ -50,7 +50,7 @@ extension MemberSigninViewController {
             memberSigninView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
     }
-    
+
     private func bindAll() {
         bindSignupButton()
         bindSinginButton()
@@ -81,7 +81,8 @@ extension MemberSigninViewController {
     
     private func bindSignupButton() {
         memberSigninView.startToEmailButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
                 self?.navigationController?.pushViewController(MemberSignupWithEmailViewController(), animated: true)
             })
             .disposed(by: disposeBag)
@@ -94,7 +95,10 @@ extension MemberSigninViewController {
                 guard let nickname = self?.memberSigninView.idTextField.text,
                       let password = self?.memberSigninView.passwordTextField.text,
                       let button = self?.memberSigninView.signinButton else { return }
-                if (nickname == "") || (password == "") { return }
+                if (nickname == "") || (password == "") {
+                    self?.memberSigninView.idTextField.attributedPlaceholder = NSAttributedString(string: "아이디와 비밀번호 모두 입력해 주세요.", attributes: [NSAttributedString.Key.foregroundColor: UIColor.systemRed])
+                    self?.memberSigninView.idTextField.layer.borderColor = UIColor.systemRed.cgColor
+                    return }
                 self?.viewModel.signin(nickname: nickname, password: password)
                 self?.activityIndicatorViewController.startButtonTapped(button)
             })
@@ -108,6 +112,7 @@ extension MemberSigninViewController {
                 guard let button = self?.memberSigninView.signinButton else { return }
                 if isSigned {
                     self?.activityIndicatorViewController.stopButtonTapped(button, buttonTitle: "Sign in")
+                    self?.viewModel.updateMemberFcmToken()
                     let rootViewController = MainTabBarController()
                     guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
                     sceneDelegate.changeRootViewController(rootViewController, animated: false)
@@ -165,30 +170,13 @@ extension MemberSigninViewController: ASAuthorizationControllerDelegate {
         if let credential = authorization.credential as? ASAuthorizationAppleIDCredential {
             let userIdentifier = credential.user
             guard let identityToken = credential.identityToken,
-                  let appleToken = String(data: identityToken, encoding: .utf8)
-            else { return }
+                  let appleToken = String(data: identityToken, encoding: .utf8) else { return }
 
             let provider = ASAuthorizationAppleIDProvider()
-            provider.getCredentialState(forUserID: userIdentifier) { credentialState, error in
+            provider.getCredentialState(forUserID: userIdentifier) { [weak self] credentialState, error in
                 switch credentialState {
-                case .revoked:
-                    print("revoked")
-                    
                 case .authorized:
-                    if let email = credential.email {
-                        DispatchQueue.main.async {
-                            self.navigationController?.pushViewController(MemberSigninWithAppleViewController(email: email, appleToken: appleToken), animated: true)
-                        }
-                    } else {
-                        self.signWithAppleViewModel.appleSignin(appleToken: appleToken)
-                    }
-                    
-                case .notFound:
-                    print("notfount")
-                    
-                case .transferred:
-                    print("transferred")
-
+                    self?.signWithAppleViewModel.appleSignin(appleToken: appleToken)
                 default:
                     break
                 }

@@ -16,7 +16,7 @@ final class CommentViewController: UIViewController {
     private let commentCollectionView = CommentCollectionView()
     private let commentPostView = CommentPostView()
     private let commentViewModel = CommentViewModel()
-    private let homeViewmodel = HomeViewModel()
+    private let homeViewModel = HomeViewModel()
     private let disposeBag = DisposeBag()
     private let activityIndicatorViewController = ActivityIndicatorViewController()
     private let keyboardNotification = KeyboardNotification()
@@ -125,7 +125,7 @@ extension CommentViewController {
         commentPostView.commentPostButton.rx.tap
             .asDriver()
             .drive(onNext: {[weak self] _ in
-                guard let userID = self?.homeViewmodel.userID else { return }
+                guard let userID = self?.homeViewModel.userID else { return }
                 guard let commentContent = self?.commentPostView.commentTextView.text,
                       let button = self?.commentPostView.commentPostButton else { return }
                 if commentContent.isEmpty { return }
@@ -142,8 +142,10 @@ extension CommentViewController {
         commentViewModel.isIUploadedComment
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: {[weak self] isCommentUploaded in
-                guard isCommentUploaded else { return }
+                guard isCommentUploaded,
+                      let postID = self?.commentViewModel.postID else { return }
                 self?.commentViewModel.loadCommentInformation()
+                self?.homeViewModel.sendCommentNotification(postID)
             })
             .disposed(by: disposeBag)
     }

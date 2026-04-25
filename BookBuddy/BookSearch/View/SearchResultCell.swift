@@ -77,7 +77,6 @@ final class SearchResultCell: UICollectionViewCell, ReuseIdentifierProtocol {
     
     func setBookInformation(_ information: BookInformation) {
         let image = UIImage(data: information.image)
-        
         DispatchQueue.main.async {
             self.bookTitleLabel.text = information.title
             self.bookAuthorLabel.text = information.author

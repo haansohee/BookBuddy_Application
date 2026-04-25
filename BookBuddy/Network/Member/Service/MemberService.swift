@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import RxCocoa
-import RxSwift
 
 final class MemberService {
     private let networkSessionManager = NetworkSessionManager()
@@ -18,7 +16,7 @@ final class MemberService {
             switch result {
             case .success(let responseDTO):
                 completion(responseDTO.nickname)
-
+                
             case .failure(let error):
                 print("ERROR: \(error)")
             }
@@ -138,9 +136,25 @@ final class MemberService {
         }
     }
     
+    func updateMemberFcmToken(with fcmTokenInformation: FcmTokenInformation, completion: @escaping(Bool)->Void) {
+        let path = "/BookBuddyInfo/updateMemeberFcmToken/"
+        let fcmToken = fcmTokenInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(path: path, encodeValue: fcmToken) { result in
+            completion(result)
+        }
+    }
+    
     func deleteMemberProfile(with nickname: String, completion: @escaping((Bool)) -> Void) {
         let path = "/BookBuddyInfo/deleteMemberProfile/"
         networkSessionManager.urlPostMethod(path: path, encodeValue: nickname) { result in
+            completion(result)
+        }
+    }
+    
+    func deleteMemberFcmToken(with fcmTokenInformation: FcmTokenInformation, completion: @escaping(Bool)-> Void) {
+        let path = "/BookBuddyInfo/deleteMemberFcmToken/"
+        let fcmToken = fcmTokenInformation.toRequestDTO()
+        networkSessionManager.urlPostMethod(path: path, encodeValue: fcmToken) { result in
             completion(result)
         }
     }

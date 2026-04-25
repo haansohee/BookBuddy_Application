@@ -8,9 +8,36 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController {
+    private let memberSigninViewModel = MemberSigninViewModel()
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        setFcmToken()
+        updateFcmToken()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabBar()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    private func setFcmToken() {
+        NotificationCenter.default.addObserver(forName: Notification.Name("FCMToken"), object: nil, queue: nil) { [weak self] fcmToken in
+            guard let fcmToken = fcmToken.userInfo?.values.first as? String else { return }
+            self?.memberSigninViewModel.updateMemberFcmToken(fcmToken)
+        }
+    }
+    
+    private func updateFcmToken() {
+        memberSigninViewModel.updateMemberFcmToken()
     }
     
     private func setupTabBar() {

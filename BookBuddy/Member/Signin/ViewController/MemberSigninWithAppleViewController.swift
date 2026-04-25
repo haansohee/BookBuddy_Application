@@ -99,11 +99,8 @@ extension MemberSigninWithAppleViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isCompleted in
                 guard isCompleted,
-                      let nickname  = self?.memberSigninWithAppleView.inputNicknameTextField.text,
-                      let email = self?.viewModel.appleEmail,
-                      let appleToken = self?.viewModel.appleToken,
-                      let userID = self?.viewModel.appleUserID else { return }
-                self?.viewModel.setUserDefaults(nickname: nickname, email: email, appleToken: appleToken, userID: userID)
+                      let appleToken = self?.viewModel.appleToken else { return }
+                self?.viewModel.appleSignin(appleToken: appleToken)
                 self?.memberEditViewModel.isSignouted.onNext(MemberActivityStatus.Signin.rawValue)
                 let rootViewController = MainTabBarController()
                 guard let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }

@@ -190,7 +190,7 @@ extension MemberEditViewController {
             .drive(onNext: { isSignouted in
                 guard isSignouted == MemberActivityStatus.Signout.rawValue,
                       let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate else { return }
-                let rootViewController = MemberSigninViewController()
+                let rootViewController = UINavigationController(rootViewController: MemberSigninViewController())
                 sceneDelegate.changeRootViewController(rootViewController, animated: false)
             })
             .disposed(by: disposeBag)

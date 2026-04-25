@@ -25,6 +25,13 @@ final class BoardSearchCollectionView: UICollectionView {
         let layout = UICollectionViewCompositionalLayout(section: section)
         return layout
     }()
+    
+    let notificationButton: AnimationButton = {
+        let button = AnimationButton(frame: CGRect(x: 0, y: 0, width: 34, height: 34))
+        button.setImage(UIImage(systemName: "bell"), for: .normal)
+        button.tintColor = .systemGreen
+        return button
+    }()
 
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: self.layout)

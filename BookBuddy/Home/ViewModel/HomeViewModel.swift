@@ -10,8 +10,10 @@ import RxSwift
 
 final class HomeViewModel {
     private let boardService = BoardService()
+    private let notificationService = NotificationService()
     private(set) var followingBoardInformations: [FollowingBoardInformation]?
     private(set) var userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+    private let userProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue)
     private(set) var isUploadedFollowingBoardInfo = BehaviorSubject(value: "noValue")
     private(set) var isUploadedBoardLikedInfo = BehaviorSubject(value: "noValue")
     private(set) var boardLikedPostIDList: [BoardLikeInformation]?
@@ -27,6 +29,24 @@ final class HomeViewModel {
     func setBoardLikeInformation(_ boardLikeInformation: BoardLikeInformation, completion: @escaping(Bool)->Void) {
         boardService.setBoardLike(with: boardLikeInformation) { result in
             completion(result)
+        }
+    }
+    
+    func sendLikeNotification(_ postID: Int) {
+        guard let senderNickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        if let senderProfile = UserDefaults.standard.data(forKey: UserDefaultsForkey.profile.rawValue) {
+        }
+        let sendLikeNotificationInfo = SendNotificationInformation(senderNickname: senderNickname, postID: postID)
+        notificationService.sendLikeNofitication(with: sendLikeNotificationInfo) { result in
+            guard result else { return }
+        }
+    }
+    
+    func sendCommentNotification(_ postID: Int) {
+        guard let senderNickname = UserDefaults.standard.string(forKey: UserDefaultsForkey.nickname.rawValue) else { return }
+        let sendCommentNotificationInfo = SendNotificationInformation(senderNickname: senderNickname, postID: postID)
+        notificationService.sendCommentNotification(with: sendCommentNotificationInfo) { result in
+            guard result else { return }
         }
     }
     
