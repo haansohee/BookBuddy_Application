@@ -20,6 +20,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         button.setTitleColor(.systemGray2, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         button.titleLabel?.textAlignment = .left
+        button.isHidden = false
         return button
     }()
     
@@ -30,6 +31,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         stackView.alignment = .center
         stackView.spacing = 5.0
         stackView.distribution = .fillProportionally
+        stackView.isHidden = false
         return stackView
     }()
     
@@ -41,6 +43,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         imageView.layer.borderColor = UIColor.systemGray3.cgColor
         imageView.clipsToBounds = true
         imageView.tintColor = .systemGray3
+        imageView.isHidden = false
         return imageView
     }()
     
@@ -50,6 +53,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.isHidden = false
         return label
     }()
     
@@ -60,6 +64,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         button.tintColor = .lightGray
         button.backgroundColor = .systemBackground
+        button.isHidden = false
         return button
     }()
     
@@ -67,6 +72,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .systemGray4
+        imageView.isHidden = false
         return imageView
     }()
     
@@ -75,6 +81,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .systemRed
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = false
         return button
     }()
     
@@ -83,6 +90,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         button.setImage(UIImage(systemName: "bubble"), for: .normal)
         button.tintColor = .systemGray3
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = false
         return button
     }()
     
@@ -92,6 +100,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = false
         return label
     }()
     
@@ -101,6 +110,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.font = .systemFont(ofSize: 11.0, weight: .light)
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = false
         return label
     }()
 
@@ -112,6 +122,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.textAlignment = .left
         label.textColor = .label
         label.font = .systemFont(ofSize: 12, weight: .bold)
+        label.isHidden = false
         return label
     }()
     
@@ -121,6 +132,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.textAlignment = .left
         label.textColor = .systemGray
         label.font = .systemFont(ofSize: 13.0)
+        label.isHidden = false
         return label
     }()
     
@@ -131,6 +143,7 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.textColor = .label
         label.numberOfLines = 1
         label.font = .systemFont(ofSize: 12.0, weight: .light)
+        label.isHidden = false
         return label
     }()
     
@@ -140,6 +153,18 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
         label.textAlignment = .left
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 12.0, weight: .light)
+        label.isHidden = false
+        return label
+    }()
+    
+    private let followingBlankLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        label.textColor = .label
+        label.text = "팔로워잉 한 버디가 없어요. \n 둘러보기에서 마음에 드는 버디를 팔로잉 해 보세요! 😀"
+        label.font = .systemFont(ofSize: 13.0, weight: .bold)
+        label.isHidden = true
         return label
     }()
     
@@ -161,6 +186,26 @@ final class BoardSearchViewCell: UICollectionViewCell, ReuseIdentifierProtocol {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setIsHiddenOption(_ isExistedInfo: Bool) {
+        [
+            profileImageView,
+            titleNicknameLabel,
+            ellipsisButton,
+            touchStackView,
+            boardImageView,
+            likeButton,
+            likeCountLabel,
+            commentButton,
+            commentCountLabel,
+            nicknameLabel,
+            contentTitleLabel,
+            contentLabel,
+            readMoreButton,
+            writeDateLabel
+        ].forEach { $0.isHidden = !isExistedInfo }
+        followingBlankLabel.isHidden = isExistedInfo
     }
     
     func setBoardSearchViewCell(boardSearchResultsInfo: BoardSearchResultsInformation) {
@@ -216,7 +261,8 @@ extension BoardSearchViewCell {
             contentTitleLabel,
             contentLabel,
             readMoreButton,
-            writeDateLabel
+            writeDateLabel,
+            followingBlankLabel
         ].forEach { addSubview($0) }
     }
     
@@ -289,7 +335,12 @@ extension BoardSearchViewCell {
             writeDateLabel.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
             writeDateLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -12.0),
             writeDateLabel.trailingAnchor.constraint(equalTo: contentTitleLabel.trailingAnchor),
-            writeDateLabel.heightAnchor.constraint(equalToConstant: 10.0)
+            writeDateLabel.heightAnchor.constraint(equalToConstant: 10.0),
+            
+            followingBlankLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8.0),
+            followingBlankLabel.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+            followingBlankLabel.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8.0),
+            followingBlankLabel.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
         ])
     }
 }

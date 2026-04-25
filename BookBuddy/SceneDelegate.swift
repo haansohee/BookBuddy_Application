@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.backgroundColor = .systemBackground
         self.window?.makeKeyAndVisible()
         guard UserDefaults.standard.string(forKey: UserDefaultsForkey.userID.rawValue) != nil else {
-            self.window?.rootViewController = MemberSigninViewController()
+            self.window?.rootViewController = UINavigationController(rootViewController: MemberSigninViewController())
             return
         }
         self.window?.rootViewController = MainTabBarController()

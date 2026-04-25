@@ -32,7 +32,6 @@ extension BookSearchViewContoller {
     private func configureBookSearchView() {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(bookSearchView)
-        
         bookSearchView.translatesAutoresizingMaskIntoConstraints = false
         bookSearchView.searchResultsCollectionView.showAnimatedSkeleton()
         bookSearchView.searchResultsCollectionView.dataSource = self
@@ -77,14 +76,12 @@ extension BookSearchViewContoller {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] isParsed in
                 guard isParsed else {
-                    self?.viewModel.checkSearched(false)
-                    return
-                }
-                guard let searchResults = self?.viewModel.bookSearchResults.count else { return }
-                self?.viewModel.checkSearched(true)
+                    self?.bookSearchView.searchResultCountLabel.text = "검색된 결과가 없어요. 🥲"
+                    return }
+                guard let searchResults = self?.viewModel.bookSearchResults else { return }
                 self?.bookSearchView.searchResultsCollectionView.hideSkeleton()
                 self?.bookSearchView.searchResultsCollectionView.reloadData()
-                self?.bookSearchView.searchResultCountLabel.text = "\(searchResults)개의 검색 결과예요."
+                self?.bookSearchView.searchResultCountLabel.text = "\(searchResults.count)개의 검색 결과예요."
             })
             .disposed(by: disposeBag)
     }
@@ -111,9 +108,7 @@ extension BookSearchViewContoller: UITextFieldDelegate {
         textField.resignFirstResponder()
         guard let bookTitle = self.searchController.searchBar.searchTextField.text else { return false }
         self.viewModel.parsing(bookTitle: bookTitle)
-        DispatchQueue.main.async { [weak self] in
-            self?.bookSearchView.searchResultCountLabel.text = "검색 중...📗"
-        }
+        bookSearchView.searchResultCountLabel.text = "검색 중...📗"
         return true
     }
 }

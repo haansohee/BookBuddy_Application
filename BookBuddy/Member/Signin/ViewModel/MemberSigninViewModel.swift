@@ -7,7 +7,9 @@
 
 import Foundation
 import AuthenticationServices
+import UserNotifications
 import RxSwift
+import Firebase
 
 final class MemberSigninViewModel {
     private let service = MemberService()
@@ -41,4 +43,27 @@ final class MemberSigninViewModel {
         }
     }
     
+    func updateMemberFcmToken(_ fcmToken: String? = nil) {
+        UNUserNotificationCenter.current().getNotificationSettings {[weak self] settings in
+            switch settings.authorizationStatus {
+            case .authorized:
+                let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+                if let fcmToken = fcmToken {
+                    UserDefaults.standard.set(fcmToken, forKey: UserDefaultsForkey.fcmToken.rawValue)
+                    let fcmTokenInformation = FcmTokenInformation(userID: userID, fcmToken: fcmToken)
+                    self?.service.updateMemberFcmToken(with: fcmTokenInformation) { _ in }
+                } else {
+                    Messaging.messaging().token { messagingFcmToken, _ in
+                        guard let fcmToken = messagingFcmToken else { return }
+                        let fcmTokenInformation = FcmTokenInformation(userID: userID, fcmToken: fcmToken)
+                        self?.service.updateMemberFcmToken(with: fcmTokenInformation) { result in
+                            guard result else { return }
+                            UserDefaults.standard.set(fcmToken, forKey: UserDefaultsForkey.fcmToken.rawValue)
+                        }
+                    }
+                }
+            default: return
+            }
+        }
+    }
 }

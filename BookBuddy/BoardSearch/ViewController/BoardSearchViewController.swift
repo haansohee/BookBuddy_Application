@@ -297,6 +297,7 @@ extension BoardSearchViewController: UICollectionViewDataSource {
                     case 0:
                         self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
                             guard result else { return }
+                            self?.homeViewModel.sendLikeNotification(boardSearchResultsInformation[indexPath.row].postID)
                             DispatchQueue.main.async {
                                 cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
                                 cell.likeButton.tag = 1

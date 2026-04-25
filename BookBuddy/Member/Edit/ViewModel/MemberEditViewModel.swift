@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import UserNotifications
 
 final class MemberEditViewModel {
     private let service = MemberService()
@@ -49,6 +50,22 @@ final class MemberEditViewModel {
     }
     
     func signout() {
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            let userID = UserDefaults.standard.integer(forKey: UserDefaultsForkey.userID.rawValue)
+            let fcmToken = UserDefaults.standard.string(forKey: UserDefaultsForkey.fcmToken.rawValue)
+
+            if settings.authorizationStatus == .authorized, let fcmToken = fcmToken {
+                let fcmTokenInformation = FcmTokenInformation(userID: userID, fcmToken: fcmToken)
+                self?.service.deleteMemberFcmToken(with: fcmTokenInformation) { _ in
+                    self?.clearLocalCredentialsAndEmitSignout()
+                }
+            } else {
+                self?.clearLocalCredentialsAndEmitSignout()
+            }
+        }
+    }
+
+    private func clearLocalCredentialsAndEmitSignout() {
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.nickname.rawValue)
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.password.rawValue)
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.email.rawValue)
@@ -57,6 +74,7 @@ final class MemberEditViewModel {
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.favorite.rawValue)
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.userID.rawValue)
         UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.recentSearch.rawValue)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.fcmToken.rawValue)
         isSignouted.onNext(MemberActivityStatus.Signout.rawValue)
     }
 }

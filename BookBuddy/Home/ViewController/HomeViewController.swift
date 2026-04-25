@@ -32,7 +32,7 @@ final class HomeViewController: UIViewController {
         setLayoutConstraints()
         configureHomeView()
         configureRefreshControl()
-        bindIsLoadedFollowingBoardInfo()
+        bindAll()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,6 +45,8 @@ extension HomeViewController {
     private func configureHomeView() {
         view.backgroundColor = .systemBackground
         navigationItem.title = "홈"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: homeViewCollectionView.notificationButton)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         homeViewCollectionView.translatesAutoresizingMaskIntoConstraints = false
         homeViewCollectionView.dataSource = self
     }
@@ -100,12 +102,26 @@ extension HomeViewController {
         return label.frame.height + 60
     }
     
+    private func bindAll() {
+        bindIsLoadedFollowingBoardInfo()
+        bindNotificationButton()
+    }
+    
     private func bindIsLoadedFollowingBoardInfo() {
         homeViewModel.isUploadedFollowingBoardInfo
             .asDriver(onErrorJustReturn: "noValue")
             .drive(onNext: { [weak self] _ in
                 self?.homeViewCollectionView.reloadData()
                 self?.homeViewCollectionView.refreshControl?.endRefreshing()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindNotificationButton() {
+        homeViewCollectionView.notificationButton.rx.tap
+            .asDriver()
+            .drive(onNext: {[weak self] _ in
+                self?.navigationController?.pushViewController(NotificationViewController(), animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -118,13 +134,21 @@ extension HomeViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let followingBoardInfoCount = homeViewModel.followingBoardInformations?.count else { return 0}
+        guard let followingBoardInfoCount = homeViewModel.followingBoardInformations?.count else { return 1}
         return followingBoardInfoCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BoardSearchViewCell.reuseIdentifier, for: indexPath) as? BoardSearchViewCell else { return UICollectionViewCell() }
-        guard let followingBoardInformation = homeViewModel.followingBoardInformations else { return cell }
+        guard let followingBoardInformation = homeViewModel.followingBoardInformations else {
+            cell.setIsHiddenOption(false)
+            return cell
+        }
+
+        guard !followingBoardInformation.isEmpty else {
+            cell.setIsHiddenOption(false)
+            return cell}
+        cell.setIsHiddenOption(true)
         let isHiddenReadMore = homeViewModel.IsHiddenReadMore(followingBoardInformation[indexPath.row].content)
         cell.readMoreButton.isHidden = isHiddenReadMore
         
@@ -166,6 +190,7 @@ extension HomeViewController: UICollectionViewDataSource {
                 case 0:
                     self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
                         guard result else { return }
+                        self?.homeViewModel.sendLikeNotification(followingBoardInformation[indexPath.row].postID)
                         DispatchQueue.main.async {
                             cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
                             cell.likeButton.tag = 1

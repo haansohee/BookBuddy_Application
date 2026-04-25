@@ -31,6 +31,8 @@ extension MemberSignupWithEmailViewController {
     private func configureMemberSignupWithEmailView() {
         self.view.backgroundColor = .systemBackground
         self.view.addSubview(memberSignupWithEmailView)
+        self.navigationController?.navigationBar.tintColor = .systemGreen
+        navigationItem.title = "회원가입"
         memberSignupWithEmailView.translatesAutoresizingMaskIntoConstraints = false
         [
             memberSignupWithEmailView.nickNameTextField,
@@ -316,8 +318,10 @@ extension MemberSignupWithEmailViewController: UITextFieldDelegate {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             
             if newPassword.isValidPassword {
+                memberSignupWithEmailView.passwordCheckTextField.isEnabled = true
                 memberSignupWithEmailView.passwordCheckLabel.text = ""
             } else {
+                memberSignupWithEmailView.passwordCheckTextField.isEnabled = false
                 memberSignupWithEmailView.passwordCheckLabel.text = "영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요."
             }
             return true
@@ -334,9 +338,6 @@ extension MemberSignupWithEmailViewController: UITextFieldDelegate {
             if newPassword == password {
                 self.viewModel.passwordIsValid(isDone: true)
                 memberSignupWithEmailView.passwordCheckLabel.text = ""
-            } else if newPassword.isValidPassword {
-                self.viewModel.passwordIsValid(isDone: false)
-                memberSignupWithEmailView.passwordCheckLabel.text = "영어 대소문자, 숫자, 특수문자를 조합해 주세요. \n 8~30자로 입력해 주세요."
             } else {
                 self.viewModel.passwordIsValid(isDone: false)
                 memberSignupWithEmailView.passwordCheckLabel.text = "비밀번호가 일치하지 않아요."

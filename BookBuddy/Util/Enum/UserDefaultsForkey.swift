@@ -9,6 +9,7 @@ import Foundation
 
 enum UserDefaultsForkey: String {
     case appleToken
+    case fcmToken
     case password
     case nickname
     case email

@@ -6,10 +6,16 @@
 	<string>${API_URL}</string>
 	<key>AUTH_URL</key>
 	<string>${AUTH_URL}</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>sso.BookBuddy</string>
+	</array>
 	<key>BookBuddy_Email</key>
 	<string>${BookBuddy_Email}</string>
 	<key>BookBuddy_Password</key>
 	<string>${BookBuddy_Password}</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -24,6 +30,8 @@
 	<string>${Client_Id}</string>
 	<key>Client_Secret</key>
 	<string>${Client_Secret}</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -50,6 +58,7 @@
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>processing</string>
 	</array>
 </dict>

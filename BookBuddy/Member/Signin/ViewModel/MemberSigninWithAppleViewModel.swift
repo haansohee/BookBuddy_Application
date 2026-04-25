@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import Firebase
 
 final class MemberSigninWithAppleViewModel {
     private let service = MemberService()
@@ -29,30 +30,32 @@ final class MemberSigninWithAppleViewModel {
     
     func appleSignin(appleToken: String) {
         let tokenDecoding = decodeJWT(jwtToken: appleToken)
-        guard let email = tokenDecoding["email"] else { return }
-        service.getAppleMemberInfo(email: email as! String) { [weak self] memberAppleTokenDTO in
-            if let nickname = memberAppleTokenDTO.nickname {
-                let email = memberAppleTokenDTO.email
-                let appleToken = memberAppleTokenDTO.appleToken
-                let userID = memberAppleTokenDTO.userID
-                let profile = memberAppleTokenDTO.profile
-                UserDefaults.standard.set(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
-                UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
-                UserDefaults.standard.set(email, forKey: UserDefaultsForkey.email.rawValue)
-                UserDefaults.standard.set(userID, forKey: UserDefaultsForkey.userID.rawValue)
-                UserDefaults.standard.set(profile, forKey: UserDefaultsForkey.profile.rawValue)
-                if memberAppleTokenDTO.favorite?.isEmpty != nil { UserDefaults.standard.set(memberAppleTokenDTO.favorite, forKey: UserDefaultsForkey.favorite.rawValue)}
-                self?.isExistence.onNext(true)
-            } else {
-                guard let appleToken = memberAppleTokenDTO.appleToken,
-                      let email = memberAppleTokenDTO.email,
-                      let userID = memberAppleTokenDTO.userID else { return }
-                
+        guard let email = tokenDecoding["email"] as? String else { return }
+        service.getAppleMemberInfo(email: email) {[weak self] appleMemberInfo in
+            guard let nickname = appleMemberInfo.nickname,
+                  let appleEmail = appleMemberInfo.email,
+                  let userID = appleMemberInfo.userID else {
                 self?.setAppleEmail(email)
                 self?.setAppleToken(appleToken)
-                self?.setUserID(userID)
                 self?.isExistence.onNext(false)
+                return }
+            guard !nickname.isEmpty else {
+                self?.setAppleEmail(appleEmail)
+                self?.setAppleToken(appleToken)
+                self?.isExistence.onNext(false)
+                return
             }
+            let profile = appleMemberInfo.profile
+            let favorite = appleMemberInfo.favorite
+            UserDefaults.standard.set(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
+            UserDefaults.standard.set(appleEmail, forKey: UserDefaultsForkey.email
+                .rawValue)
+            UserDefaults.standard.set(userID, forKey: UserDefaultsForkey.userID
+                .rawValue)
+            UserDefaults.standard.set(profile, forKey: UserDefaultsForkey.profile.rawValue)
+            UserDefaults.standard.set(favorite, forKey: UserDefaultsForkey.favorite.rawValue)
+            UserDefaults.standard.set(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
+            self?.isExistence.onNext(true)
         }
     }
     
@@ -93,20 +96,10 @@ final class MemberSigninWithAppleViewModel {
         self.appleEmail = email
     }
     
-    func setUserID(_ userID: Int) {
-        self.appleUserID = userID
-    }
-    
-    func setUserDefaults(nickname: String, email: String, appleToken: String, userID: Int) {
-        UserDefaults.standard.setValue(nickname, forKey: UserDefaultsForkey.nickname.rawValue)
-        UserDefaults.standard.setValue(email, forKey: UserDefaultsForkey.email.rawValue)
-        UserDefaults.standard.setValue(appleToken, forKey: UserDefaultsForkey.appleToken.rawValue)
-        UserDefaults.standard.setValue(userID, forKey: UserDefaultsForkey.userID.rawValue)
-    }
-    
     func appleSignup(with signinWithAppleInformation: SigninWithAppleInformation) {
         service.setAppleMemberInfo(with: signinWithAppleInformation) { [weak self] isCompleted in
             self?.isCompleted.onNext(isCompleted)
         }
     }
+    
 }

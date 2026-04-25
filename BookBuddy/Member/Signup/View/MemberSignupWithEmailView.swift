@@ -196,6 +196,7 @@ final class MemberSignupWithEmailView: UIScrollView {
         textField.placeholder = "비밀번호를 재입력하세요."
         textField.font = .systemFont(ofSize: 15, weight: .medium)
         textField.isSecureTextEntry = true
+        textField.isEnabled = false
         textField.layer.borderColor = UIColor.systemGray6.cgColor
         textField.layer.borderWidth = 0.5
         textField.layer.cornerRadius = 6.0

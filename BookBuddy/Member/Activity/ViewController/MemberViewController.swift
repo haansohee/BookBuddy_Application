@@ -19,6 +19,7 @@ final class MemberViewController: UIViewController {
     
     init() {
         super.init(nibName: nil, bundle: nil)
+        viewModel.loadMemberInformation()
         loadBoardInformaions()
     }
     
@@ -40,6 +41,9 @@ final class MemberViewController: UIViewController {
         super.viewDidLoad()
         configureMemberView()
         setLayoutConstraintsMemberView()
+        settingMemberNickname()
+        settingMemberProfileImage()
+        settingFavoriteBook()
         bindAll()
         self.navigationItem.hidesBackButton = true
     }
