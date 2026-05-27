@@ -85,7 +85,13 @@ final class NotificationCollectionViewCell: UICollectionViewCell, ReuseIdentifie
     }
     
     func setNotificationInfo(_ information: NotificationInformation) {
-        boardImageView.image = UIImage(data: information.boardImage)
+        if let boardImage = information.boardImage {
+            boardImageView.image = UIImage(data: boardImage)
+            boardImageView.isHidden = false
+        } else {
+            boardImageView.image = nil
+            boardImageView.isHidden = true
+        }
         notificationContentLabel.text = information.notificationContent
         guard let profileImage = information.profileImage else { return }
         profileImageView.image = UIImage(data: profileImage)

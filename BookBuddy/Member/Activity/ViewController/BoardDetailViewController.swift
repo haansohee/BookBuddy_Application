@@ -171,12 +171,12 @@ extension BoardDetailViewController {
                 case 0:
                     self?.homeViewModel.setBoardLikeInformation(boardLikeInformation) { result in
                         guard result else { return }
+                        self?.homeViewModel.sendLikeNotification(boardInformation.postID)
                         DispatchQueue.main.async {
                             self?.boardDetailView.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
                             self?.boardDetailView.likeButton.tag = 1
                             self?.changeLikeCountLabelValue(label: label, deleteLike: false)
                         }
-                            
                     }
                 default: return
                 }

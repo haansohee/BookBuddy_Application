@@ -11,5 +11,5 @@ struct NotificationInformation {
     let notificationID: Int
     let notificationContent: String
     let profileImage: Data?
-    let boardImage: Data
+    let boardImage: Data?
 }

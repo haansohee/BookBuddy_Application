@@ -11,10 +11,10 @@ struct NotificationDTO: Codable {
     let notificationID: Int
     let notificationContent: String
     let profileImage: Data?
-    let boardImage: Data
+    let boardImage: Data?
 
     enum CodingKeys: String, CodingKey {
-        case notificationID = "notificaitonID"
+        case notificationID
         case notificationContent
         case profileImage
         case boardImage
