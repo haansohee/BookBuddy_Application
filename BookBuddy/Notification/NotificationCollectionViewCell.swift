@@ -85,10 +85,25 @@ final class NotificationCollectionViewCell: UICollectionViewCell, ReuseIdentifie
     }
     
     func setNotificationInfo(_ information: NotificationInformation) {
-        boardImageView.image = UIImage(data: information.boardImage)
+        if let boardImage = information.boardImage {
+            boardImageView.image = UIImage(data: boardImage)
+            boardImageView.isHidden = false
+            if let widthConstraint = boardImageView.constraints.first(where: { $0.firstAttribute == .width }) {
+                widthConstraint.constant = 60.0
+            }
+        } else {
+            boardImageView.image = nil
+            boardImageView.isHidden = true
+            if let widthConstraint = boardImageView.constraints.first(where: { $0.firstAttribute == .width }) {
+                widthConstraint.constant = 0.0
+            }
+        }
         notificationContentLabel.text = information.notificationContent
-        guard let profileImage = information.profileImage else { return }
-        profileImageView.image = UIImage(data: profileImage)
+        if let profileImage = information.profileImage {
+            profileImageView.image = UIImage(data: profileImage)
+        } else {
+            profileImageView.image = UIImage(systemName: "person")
+        }
     }
 }
 
