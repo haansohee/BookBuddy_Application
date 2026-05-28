@@ -69,7 +69,10 @@ extension BoardEditViewController {
         guard let boardEditInformation = boardEditViewModel.boardEditInformation else { return }
         boardEditView.titleTextField.text = boardEditInformation.contentTitle
         boardEditView.contentTextView.text = boardEditInformation.content
-        boardEditView.imageView.image = UIImage(data: boardEditInformation.boardImage)
+        boardEditView.updateContentPlaceholderVisibility()
+        if let image = UIImage(data: boardEditInformation.boardImage) {
+            boardEditView.setSelectedImage(image)
+        }
     }
     
     private func addEditingTapGesture() {
@@ -90,8 +93,7 @@ extension BoardEditViewController {
     
     private func imageUploadTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTapGesture))
-        boardEditView.imageView.isUserInteractionEnabled = true
-        boardEditView.imageView.addGestureRecognizer(tapGesture)
+        boardEditView.imageCardView.addGestureRecognizer(tapGesture)
     }
     
     @objc private func imageViewTapGesture() {
@@ -179,21 +181,25 @@ extension BoardEditViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = true
     }
-    
+
     func textViewDidEndEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = false
     }
-    
+
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
         return true
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        boardEditView.updateContentPlaceholderVisibility()
     }
 }
 
 extension BoardEditViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
-        boardEditView.imageView.image = editedImage
+        boardEditView.setSelectedImage(editedImage)
         dismiss(animated: true)
     }
 }
