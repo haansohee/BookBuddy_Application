@@ -1,0 +1,219 @@
+//
+//  BoardWriteViewController.swift
+//  BookBuddy
+//
+//  Created by 한소희 on 12/19/23.
+//
+
+import Foundation
+import UIKit
+import RxSwift
+import RxCocoa
+
+final class BoardWriteViewController: UIViewController {
+    private let boardWriteView = BoardWriteView()
+    private let boardWriteViewModel = BoardWriteViewModel()
+    private let memberViewModel = MemberViewModel()
+    private var endEditingGesture: UITapGestureRecognizer?
+    private let disposeBag = DisposeBag()
+    private let dateFormatter = DateFormatter()
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        memberViewModel.loadMemberInformation()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureBoardWriteView()
+        setLayoutConstraints()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        addEditingTapGesture()
+        imageUploadTapGesture()
+        bindAll()
+    }
+}
+
+extension BoardWriteViewController {
+    private func configureBoardWriteView() {
+        view.addSubview(boardWriteView)
+        view.backgroundColor = .systemBackground
+        boardWriteView.translatesAutoresizingMaskIntoConstraints = false
+        boardWriteView.titleTextField.delegate = self
+        boardWriteView.contentTextView.delegate = self
+        boardWriteView.imagePickerView.delegate = self
+        boardWriteView.imagePickerView.sourceType = .photoLibrary
+        self.navigationItem.title = "글 작성하기"
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardWriteView.uploadButton)
+    }
+    
+    private func setLayoutConstraints() {
+        NSLayoutConstraint.activate([
+            boardWriteView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            boardWriteView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            boardWriteView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            boardWriteView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        ])
+    }
+    
+    private func addEditingTapGesture() {
+        endEditingGesture = UITapGestureRecognizer(target: self, action: #selector(endEditing))
+        self.endEditingGesture?.isEnabled = false
+        guard let endEditingGesture = endEditingGesture else { return }
+        self.view.addGestureRecognizer(endEditingGesture)
+    }
+    
+    @objc private func endEditing() {
+        self.view.endEditing(true)
+    }
+    
+    private func imageUploadTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTapGesture))
+        boardWriteView.imageCardView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func imageViewTapGesture() {
+        let actionSheetController = UIAlertController(title: "글 대표 이미지", message: "이미지를 업로드할까요?", preferredStyle: .actionSheet)
+        
+        let uploadAction = UIAlertAction(title: "앨범에서 선택하기", style: .default) { [weak self] _ in
+            guard let imagePickerViewController = self?.boardWriteView.imagePickerView else { return }
+            imagePickerViewController.allowsEditing = true
+            DispatchQueue.main.async {
+                self?.present(imagePickerViewController, animated: true)
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+
+        actionSheetController.addAction(uploadAction)
+        actionSheetController.addAction(cancelAction)
+        
+        present(actionSheetController, animated: true)
+    }
+    
+    private func uploadSuccessAlert(title: String, message: String? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.boardWriteView.titleTextField.text = ""
+            self?.boardWriteView.contentTextView.text = ""
+            self?.boardWriteView.updateContentPlaceholderVisibility()
+            self?.boardWriteView.resetSelectedImage()
+            UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.boardImage.rawValue)
+        }
+        alertController.addAction(doneAction)
+        present(alertController, animated: true)
+    }
+    
+    private func boardBlankAlert(message: String) {
+        let alertActionController = UIAlertController(title: "모두 작성해 주세요.", message: message, preferredStyle: .alert)
+        let doneAction = UIAlertAction(title: "확인", style: .default)
+        alertActionController.addAction(doneAction)
+        present(alertActionController, animated: true)
+    }
+    
+    private func bindAll() {
+        bindUploadButton()
+        bindIsBoardUploaded()
+    }
+    
+    private func bindUploadButton() {
+        boardWriteView.uploadButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                guard let contentTitle = self?.boardWriteView.titleTextField.text,
+                      let content = self?.boardWriteView.contentTextView.text,
+                      let nickname = self?.memberViewModel.memberInformation?.nickname else { return }
+                
+                if (contentTitle == "") {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "글 제목을 입력해 주세요.")
+                    }
+                } else if (content == "") {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "글 내용을 입력해 주세요.")
+                    }
+                }
+                
+                guard let boardImage = UserDefaults.standard.data(forKey: UserDefaultsForkey.boardImage.rawValue) else {
+                    DispatchQueue.main.async {
+                        self?.boardBlankAlert(message: "게시물을 대표할 이미지를 선택해 주세요.")
+                    }
+                    return
+                }
+                
+                self?.dateFormatter.dateFormat = "yyyy-MM-dd"
+                guard let date = self?.dateFormatter.string(from: Date()) else { return }
+                
+                if let profileImage = self?.memberViewModel.memberInformation?.profile {
+                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: profileImage)
+                    self?.boardWriteViewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                } else {
+                    let boardWriteInformation = BoardWriteInformation(nickname: nickname, writeDate: date, contentTitle: contentTitle, content: content, boardImage: boardImage, profileImage: Data())
+                    self?.boardWriteViewModel.uploadBoard(boardWriteInformation: boardWriteInformation)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsBoardUploaded() {
+        boardWriteViewModel.isBoardUploaded
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isUpload in
+                self?.uploadSuccessAlert(title: "업로드 완료", message: "성공적으로 업로드가 되었어요.")
+            }).disposed(by: disposeBag)
+    }
+}
+
+extension BoardWriteViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.endEditingGesture?.isEnabled = true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        self.endEditingGesture?.isEnabled = false
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+extension BoardWriteViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        self.endEditingGesture?.isEnabled = true
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.endEditingGesture?.isEnabled = false
+    }
+
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        textView.resignFirstResponder()
+        return true
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        boardWriteView.updateContentPlaceholderVisibility()
+    }
+}
+
+extension BoardWriteViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage,
+              let imageData = editedImage.pngData() else { return }
+        boardWriteView.setSelectedImage(editedImage)
+        UserDefaults.standard.setValue(imageData, forKey: UserDefaultsForkey.boardImage.rawValue)
+        dismiss(animated: true)
+    }
+}
+
+extension BoardWriteViewController: UINavigationControllerDelegate {
+    
+}

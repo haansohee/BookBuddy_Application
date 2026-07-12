@@ -17,8 +17,8 @@ Pods/
 **/.firebaserc
 
 *.xcconfig
-
-
+*.plist
+*.entitlements
 
 ### Firebase Patch ###
 
