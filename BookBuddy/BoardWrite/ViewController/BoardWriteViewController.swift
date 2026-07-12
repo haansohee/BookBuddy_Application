@@ -76,8 +76,7 @@ extension BoardWriteViewController {
     
     private func imageUploadTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imageViewTapGesture))
-        boardWriteView.imageView.isUserInteractionEnabled = true
-        boardWriteView.imageView.addGestureRecognizer(tapGesture)
+        boardWriteView.imageCardView.addGestureRecognizer(tapGesture)
     }
     
     @objc private func imageViewTapGesture() {
@@ -104,7 +103,8 @@ extension BoardWriteViewController {
         let doneAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
             self?.boardWriteView.titleTextField.text = ""
             self?.boardWriteView.contentTextView.text = ""
-            self?.boardWriteView.imageView.image = UIImage(systemName: "photo.circle")
+            self?.boardWriteView.updateContentPlaceholderVisibility()
+            self?.boardWriteView.resetSelectedImage()
             UserDefaults.standard.removeObject(forKey: UserDefaultsForkey.boardImage.rawValue)
         }
         alertController.addAction(doneAction)
@@ -189,14 +189,18 @@ extension BoardWriteViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = true
     }
-    
+
     func textViewDidEndEditing(_ textView: UITextView) {
         self.endEditingGesture?.isEnabled = false
     }
-    
+
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         textView.resignFirstResponder()
         return true
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        boardWriteView.updateContentPlaceholderVisibility()
     }
 }
 
@@ -204,7 +208,7 @@ extension BoardWriteViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage,
               let imageData = editedImage.pngData() else { return }
-        boardWriteView.imageView.image = editedImage
+        boardWriteView.setSelectedImage(editedImage)
         UserDefaults.standard.setValue(imageData, forKey: UserDefaultsForkey.boardImage.rawValue)
         dismiss(animated: true)
     }
